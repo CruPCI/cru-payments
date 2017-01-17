@@ -16,12 +16,13 @@ module.exports = {
     rules: [
       // all files with a `.ts` extension but not `.spec.ts` will be handled by `ts-loader`
       { test: /^(?!.*\.spec\.ts$).*\.ts$/, loader: 'ts-loader' }
-    ]
+    ],
+    noParse: /node_modules\/lodash\/lodash\.js/
   },
   devtool: "source-map",
   devServer: {
     inline: true,
-    port: 3000
+    port: 3000 // Whitelisted for TSYS staging
   },
   resolve: {
     extensions: ['.ts', '.js']
