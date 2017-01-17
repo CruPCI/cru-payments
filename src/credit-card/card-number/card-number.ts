@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import {cleanInput} from '../../utils/parsing';
-import {validateCardType, getCardTypeError, getCardTypeName} from './utils/card-types';
+import * as cardTypes from './utils/card-types';
 import {luhnCheck} from './utils/luhn-check';
 
 export function validateMinLength(input: string|number){
@@ -13,12 +13,17 @@ export function validateMaxLength(input: string|number){
   return cardNumber.length <= 16;
 }
 
-export function validateType(input: string|number) {
+export function validateKnownType(input: string|number) {
   const cardNumber = cleanInput(input);
-  return validateCardType(cardNumber);
+  return cardTypes.validateKnownType(cardNumber);
 }
 
-export function validateNumber(input: string|number){
+export function validateTypeLength(input: string|number) {
+  const cardNumber = cleanInput(input);
+  return cardTypes.validateTypeLength(cardNumber);
+}
+
+export function validateChecksum(input: string|number){
   const cardNumber = cleanInput(input);
   return luhnCheck(cardNumber);
 }
@@ -28,8 +33,9 @@ export function validateAll(input: string|number){
   return !_.isEmpty(cardNumber) &&
     validateMinLength(cardNumber) &&
     validateMaxLength(cardNumber) &&
-    validateType(cardNumber) &&
-    validateNumber(cardNumber);
+    validateKnownType(cardNumber) &&
+    validateTypeLength(cardNumber) &&
+    validateChecksum(cardNumber);
 }
 
 export function errors(input: string|number){
@@ -41,10 +47,13 @@ export function errors(input: string|number){
   if(!validateMaxLength(cardNumber)){
     errors.push('Card number contain at most 16 digits');
   }
-  if(!validateType(cardNumber)){
-    errors.push(getCardTypeError(cardNumber));
+  if(!validateKnownType(cardNumber)){
+    errors.push('Card type is not accepted by this system');
   }
-  if(!validateNumber(cardNumber)){
+  if(validateKnownType(cardNumber) && !validateTypeLength(cardNumber)){
+    errors.push(`This is an invalid ${cardTypes.getCardTypeName(cardNumber)} number. It should have ${cardTypes.expectedLength(cardNumber).join(' or ')} digits but the number entered has ${cardNumber.length}.`);
+  }
+  if(!validateChecksum(cardNumber)){
     errors.push('Card number is invalid. At least one digit was entered incorrectly.');
   }
   return errors;
@@ -52,5 +61,7 @@ export function errors(input: string|number){
 
 export function getCardType(input: string|number){
   const cardNumber = cleanInput(input);
-  return getCardTypeName(cardNumber);
+  return cardTypes.getCardTypeName(cardNumber);
 }
+
+export {expectedLength as expectedLengthForType} from './utils/card-types';

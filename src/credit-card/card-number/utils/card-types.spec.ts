@@ -1,22 +1,49 @@
 import * as cardTypes from './card-types';
 
 describe('card types', () => {
-  describe('validateCardType', () => {
+  describe('validateKnownType', () => {
+    it('should return true for known types', () => {
+      // Valid length for type
+      expect(cardTypes.validateKnownType('4111111111111')).toEqual(true);
+      expect(cardTypes.validateKnownType('4111111111111111')).toEqual(true);
+      expect(cardTypes.validateKnownType('5111111111111118')).toEqual(true);
+      expect(cardTypes.validateKnownType('6011111111111117')).toEqual(true);
+      expect(cardTypes.validateKnownType('341111111111111')).toEqual(true);
+      expect(cardTypes.validateKnownType('36111111111111')).toEqual(true);
+
+      // Invalid length for type
+      expect(cardTypes.validateKnownType('4')).toEqual(true);
+      expect(cardTypes.validateKnownType('41111111111111')).toEqual(true);
+      expect(cardTypes.validateKnownType('411111111111111')).toEqual(true);
+      expect(cardTypes.validateKnownType('511111111111111')).toEqual(true);
+      expect(cardTypes.validateKnownType('601111111111111')).toEqual(true);
+      expect(cardTypes.validateKnownType('34111111111111')).toEqual(true);
+      expect(cardTypes.validateKnownType('3611111111111')).toEqual(true);
+    });
+    it('should return false for unknown types', () => {
+      expect(cardTypes.validateKnownType('1')).toEqual(false);
+      expect(cardTypes.validateKnownType('1111111111111111')).toEqual(false);
+      expect(cardTypes.validateKnownType('50')).toEqual(false);
+      expect(cardTypes.validateKnownType('57')).toEqual(false);
+      expect(cardTypes.validateKnownType('38')).toEqual(false);
+    });
+  });
+  describe('validateTypeLength', () => {
     it('should return true for valid numbers', () => {
-      expect(cardTypes.validateCardType('4111111111111')).toEqual(true);
-      expect(cardTypes.validateCardType('4111111111111111')).toEqual(true);
-      expect(cardTypes.validateCardType('5111111111111118')).toEqual(true);
-      expect(cardTypes.validateCardType('6011111111111117')).toEqual(true);
-      expect(cardTypes.validateCardType('341111111111111')).toEqual(true);
-      expect(cardTypes.validateCardType('36111111111111')).toEqual(true);
+      expect(cardTypes.validateTypeLength('4111111111111')).toEqual(true);
+      expect(cardTypes.validateTypeLength('4111111111111111')).toEqual(true);
+      expect(cardTypes.validateTypeLength('5111111111111118')).toEqual(true);
+      expect(cardTypes.validateTypeLength('6011111111111117')).toEqual(true);
+      expect(cardTypes.validateTypeLength('341111111111111')).toEqual(true);
+      expect(cardTypes.validateTypeLength('36111111111111')).toEqual(true);
     });
     it('should return false for invalid numbers', () => {
-      expect(cardTypes.validateCardType('41111111111111')).toEqual(false);
-      expect(cardTypes.validateCardType('411111111111111')).toEqual(false);
-      expect(cardTypes.validateCardType('511111111111111')).toEqual(false);
-      expect(cardTypes.validateCardType('601111111111111')).toEqual(false);
-      expect(cardTypes.validateCardType('34111111111111')).toEqual(false);
-      expect(cardTypes.validateCardType('3611111111111')).toEqual(false);
+      expect(cardTypes.validateTypeLength('41111111111111')).toEqual(false);
+      expect(cardTypes.validateTypeLength('411111111111111')).toEqual(false);
+      expect(cardTypes.validateTypeLength('511111111111111')).toEqual(false);
+      expect(cardTypes.validateTypeLength('601111111111111')).toEqual(false);
+      expect(cardTypes.validateTypeLength('34111111111111')).toEqual(false);
+      expect(cardTypes.validateTypeLength('3611111111111')).toEqual(false);
     });
   });
 
@@ -69,24 +96,22 @@ describe('card types', () => {
       expect(cardTypes.getCardTypeName('305')).toEqual('Diners Club');
       expect(cardTypes.getCardTypeName('36000000000000')).toEqual('Diners Club');
     });
+    it('should return an empty string for an unknown type', () => {
+      expect(cardTypes.getCardTypeName('38')).toEqual('');
+      expect(cardTypes.getCardTypeName('111111111')).toEqual('');
+      expect(cardTypes.getCardTypeName('22222')).toEqual('');
+    });
   });
 
-  describe('getCardTypeError', () => {
-    it('should return no errors if card is valid', () => {
-      expect(cardTypes.getCardTypeError('4111111111111')).toEqual('');
-      expect(cardTypes.getCardTypeError('6011111111111117')).toEqual('');
+  describe('expectedLength', () => {
+    it('should return the expected length for a given type', () => {
+      expect(cardTypes.expectedLength('4111111111111')).toEqual([13,16]);
+      expect(cardTypes.expectedLength('51')).toEqual([16]);
+      expect(cardTypes.expectedLength('34')).toEqual([15]);
     });
-    it('should return an error if card type is unknown', () => {
-      expect(cardTypes.getCardTypeError('7')).toEqual('Card type is not accepted by this system');
-      expect(cardTypes.getCardTypeError('6248291239482947')).toEqual('Card type is not accepted by this system');
-      expect(cardTypes.getCardTypeError('1234567890123456')).toEqual('Card type is not accepted by this system');
-      expect(cardTypes.getCardTypeError('999999')).toEqual('Card type is not accepted by this system');
-      expect(cardTypes.getCardTypeError('7771234')).toEqual('Card type is not accepted by this system');
-    });
-    it('should return an error if card type is known but the length is invalid', () => {
-      expect(cardTypes.getCardTypeError('41111111111111')).toEqual('This is an invalid Visa number. It should have 13 or 16 digits but the number entered has 14.');
-      expect(cardTypes.getCardTypeError('510000000000000')).toEqual('This is an invalid MasterCard number. It should have 16 digits but the number entered has 15.');
-      expect(cardTypes.getCardTypeError('34000000000000')).toEqual('This is an invalid American Express number. It should have 15 digits but the number entered has 14.');
+    it('should return undefined for an unknown type', () => {
+      expect(cardTypes.expectedLength('11')).toEqual(undefined);
+      expect(cardTypes.expectedLength('38')).toEqual(undefined);
     });
   });
 });

@@ -12,12 +12,15 @@ describe('credit card', () => {
         validate: {
           minLength: jasmine.any(Function),
           maxLength: jasmine.any(Function),
-          number: jasmine.any(Function),
+          knownType: jasmine.any(Function),
+          typeLength: jasmine.any(Function),
+          checksum: jasmine.any(Function),
           all: jasmine.any(Function)
         },
         errors: jasmine.any(Function),
         info: {
-          type: jasmine.any(Function)
+          type: jasmine.any(Function),
+          expectedLengthForType: jasmine.any(Function)
         }
       });
     });

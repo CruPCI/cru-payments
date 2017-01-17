@@ -32,24 +32,22 @@ const cardTypes = [
   }
 ];
 
-export function validateCardType(cardNumber: string){
+export function validateKnownType(cardNumber: string){
+  return !!getCardType(cardNumber);
+}
+
+export function validateTypeLength(cardNumber: string){
   return lengthValid(getCardType(cardNumber), cardNumber);
 }
 
 export function getCardTypeName(cardNumber: string){
   const cardType = getCardType(cardNumber);
-  return cardType && cardType.displayName;
+  return cardType ? cardType.displayName : '';
 }
 
-export function getCardTypeError(cardNumber: string){
+export function expectedLength(cardNumber: string){
   const cardType = getCardType(cardNumber);
-  if(!cardType){
-    return 'Card type is not accepted by this system';
-  }
-  if(!lengthValid(cardType, cardNumber)){
-    return `This is an invalid ${cardType.displayName} number. It should have ${cardType.lengths.join(' or ')} digits but the number entered has ${cardNumber.length}.`;
-  }
-  return '';
+  return cardType && cardType.lengths;
 }
 
 function getCardType(cardNumber: string) {
@@ -62,3 +60,4 @@ function getCardType(cardNumber: string) {
 function lengthValid(cardType: any, cardNumber: string) {
   return _.includes(cardType && cardType.lengths, cardNumber.length);
 }
+

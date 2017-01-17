@@ -33,34 +33,46 @@ describe('card number', () => {
       expect(cardNumber.validateMaxLength('123456789012345678')).toEqual(false);
     });
   });
-  describe('validateType', () => {
+  describe('validateKnownType', () => {
     it('should clean input', () => {
       spyOn(parsing, 'cleanInput').and.callThrough();
-      cardNumber.validateType(123);
+      cardNumber.validateKnownType(123);
+      expect(parsing.cleanInput).toHaveBeenCalledWith(123);
+    });
+    it('should call validateKnownType', () => {
+      spyOn(cardTypes, 'validateKnownType').and.returnValue(true);
+      expect(cardNumber.validateKnownType('123')).toEqual(true);
+      expect(cardTypes.validateKnownType).toHaveBeenCalledWith('123');
+    });
+  });
+  describe('validateTypeLength', () => {
+    it('should clean input', () => {
+      spyOn(parsing, 'cleanInput').and.callThrough();
+      cardNumber.validateTypeLength(123);
       expect(parsing.cleanInput).toHaveBeenCalledWith(123);
     });
     it('should call validateCardType', () => {
-      spyOn(cardTypes, 'validateCardType').and.returnValue(true);
-      expect(cardNumber.validateType('123')).toEqual(true);
-      expect(cardTypes.validateCardType).toHaveBeenCalledWith('123');
+      spyOn(cardTypes, 'validateTypeLength').and.returnValue(true);
+      expect(cardNumber.validateTypeLength('123')).toEqual(true);
+      expect(cardTypes.validateTypeLength).toHaveBeenCalledWith('123');
     });
   });
-  describe('validateNumber', () => {
+  describe('validateChecksum', () => {
     it('should clean input', () => {
       spyOn(parsing, 'cleanInput').and.callThrough();
-      cardNumber.validateNumber(123);
+      cardNumber.validateChecksum(123);
       expect(parsing.cleanInput).toHaveBeenCalledWith(123);
     });
     it('should call validateCardType', () => {
       spyOn(luhn, 'luhnCheck').and.returnValue(true);
-      expect(cardNumber.validateNumber('123')).toEqual(true);
+      expect(cardNumber.validateChecksum('123')).toEqual(true);
       expect(luhn.luhnCheck).toHaveBeenCalledWith('123');
     });
   });
   describe('validateAll', () => {
     it('should clean input', () => {
       spyOn(parsing, 'cleanInput').and.callThrough();
-      cardNumber.validateNumber(123);
+      cardNumber.validateAll(123);
       expect(parsing.cleanInput).toHaveBeenCalledWith(123);
     });
     it('should return true for valid card numbers', () => {
