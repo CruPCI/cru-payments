@@ -12,6 +12,7 @@ import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/publish';
 import 'rxjs/add/operator/publishReplay';
 import 'rxjs/add/operator/catch';
+import 'rxjs/add/operator/toPromise';
 
 declare const $: any;
 
@@ -39,7 +40,7 @@ let previousEncryptObservable: Observable<any> = Observable.of('initial');
 
 export function init(env: string, deviceId: string, manifest: string){
   // Return Observable that will emit an array of inputs to be used for TSYS encryption
-  inputsObservable =  Observable.of(inputs)
+  inputsObservable = Observable.of(inputs)
     .mergeMap(inputs => {
       // Since the TSYS library only lets us use the public key once, we need to delete the old divs and inputs in preparation for reloading the TSYS library
       removeOldDivs();
@@ -78,10 +79,11 @@ export function init(env: string, deviceId: string, manifest: string){
 }
 
 function importVendorCode(env: string, deviceId: string, manifest: string){
-  const fileRef: HTMLElement = document.createElement("script");
+  const fileRef: HTMLScriptElement = document.createElement("script");
   fileRef.setAttribute("type", "text/javascript");
   const uri: string = env === 'production' ? tsepUri.production : tsepUri.staging;
   fileRef.setAttribute("src", `${uri}/${deviceId}?${manifest}`);
+  fileRef.onload = () => dispatchEvent(new Event('load')); // Make TSYS's error handling run when the page has already loaded
   document.body.appendChild(fileRef);
 }
 
