@@ -143,6 +143,7 @@ export function encrypt(cardNumber: string, cvv: string, month: number, year: nu
     .publishReplay().refCount();
 }
 
+// For testing
 export {
   inputsObservable as _inputsObservable
 };

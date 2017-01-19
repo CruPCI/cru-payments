@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/CruGlobal/cru-payments.svg?branch=master)](https://travis-ci.org/CruGlobal/cru-payments)
 [![codecov](https://codecov.io/gh/CruGlobal/cru-payments/branch/master/graph/badge.svg)](https://codecov.io/gh/CruGlobal/cru-payments)
 
-## Using
+## Usage
 
 ### Importing
 
@@ -20,11 +20,14 @@ TODO: publish as package somewhere
 
 Note: Use `cruPayments` instead of `cruPayments.creditCard` if using `cru-payments-cc.js`
 
+##### `cruPayments.creditCard.init(environment, deviceId, manifest)`
+Must be called at least once before calling `cruPayments.creditCard.encrypt`. If environment is `'production'`, it will grab the code from TSYS's production servers, otherwise it will use TSYS's staging servers.
+
 ##### `cruPayments.creditCard.validate(cardNumber, cvv, month, year)`
 Returns true if card number, cvv, and expiry date are all valid
 
 ##### `cruPayments.creditCard.encrypt(cardNumber, cvv, month, year)`
-Returns an Observable of that emits the results of the tokenization. If a `Promise` is desired, call `.toPromise()` on this Observable.
+Returns an Observable of that emits the results of the tokenization. If a `Promise` is desired, call `.toPromise()` on this Observable. `cruPayments.creditCard.init` must have been called first.
 
 ##### Card Number
 
@@ -69,8 +72,14 @@ Returns true if all of the above cvv validators return true
 
 ##### Card Expiry Date
 
-###### `cruPayments.creditCard.expiryDate.validate.(month, year)`
+###### `cruPayments.creditCard.expiryDate.validate.month(month, year)`
 Returns true if the expiration date is the current month or in the future
+
+###### `cruPayments.creditCard.expiryDate.validate.year(year)`
+Returns true if the year is not in the past
+
+###### `cruPayments.creditCard.expiryDate.validate.all(month, year)`
+Alias for `cruPayments.creditCard.expiryDate.validate.month`
 
 
 #### Bank Account

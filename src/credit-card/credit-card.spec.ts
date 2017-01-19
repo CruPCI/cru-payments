@@ -41,7 +41,11 @@ describe('credit card', () => {
   describe('expiryDate', () => {
     it('should export all the published functions', () => {
       expect(creditCard.expiryDate).toEqual({
-        validate: jasmine.any(Function)
+        validate: {
+          month: jasmine.any(Function),
+          year: jasmine.any(Function),
+          all: jasmine.any(Function)
+        }
       });
     });
   });

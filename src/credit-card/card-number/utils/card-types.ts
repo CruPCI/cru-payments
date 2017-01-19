@@ -1,4 +1,6 @@
 import * as _ from 'lodash';
+import {cleanInput} from '../../../utils/parsing';
+
 const cardTypes = [
   {
     name: 'VISA',
@@ -46,7 +48,7 @@ export function getCardTypeName(cardNumber: string){
 }
 
 export function expectedLength(cardNumber: string){
-  const cardType = getCardType(cardNumber);
+  const cardType = getCardType(cleanInput(cardNumber));
   return cardType && cardType.lengths;
 }
 

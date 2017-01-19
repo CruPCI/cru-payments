@@ -42,10 +42,10 @@ export function errors(input: string|number){
   const cardNumber = cleanInput(input);
   let errors = [];
   if(!validateMinLength(cardNumber)){
-    errors.push('Card number contain at least 13 digits');
+    errors.push('Card number must contain at least 13 digits');
   }
   if(!validateMaxLength(cardNumber)){
-    errors.push('Card number contain at most 16 digits');
+    errors.push('Card number cannot contain more than 16 digits');
   }
   if(!validateKnownType(cardNumber)){
     errors.push('Card type is not accepted by this system');

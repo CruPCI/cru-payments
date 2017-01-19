@@ -140,14 +140,14 @@ describe('card number', () => {
   describe('errors', () => {
     it('should return errors for a card without enough digits', () => {
       expect(cardNumber.errors('123')).toEqual([
-        'Card number contain at least 13 digits',
+        'Card number must contain at least 13 digits',
         'Card type is not accepted by this system',
         'Card number is invalid. At least one digit was entered incorrectly.'
       ]);
     });
     it('should return errors for a card with too many digits', () => {
       expect(cardNumber.errors('12345678901234567')).toEqual([
-        'Card number contain at most 16 digits',
+        'Card number cannot contain more than 16 digits',
         'Card type is not accepted by this system',
         'Card number is invalid. At least one digit was entered incorrectly.'
       ]);

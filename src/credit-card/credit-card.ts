@@ -3,7 +3,7 @@ import 'rxjs/add/observable/throw';
 import {cleanInput} from '../utils/parsing';
 import * as cardNumberModule from './card-number/card-number';
 import {validateMinLength as cvvValidateMinLength, validateMaxLength as cvvValidateMaxLength, validateAll as cvvValidateAll} from './cvv/cvv';
-import {validateExpiryDate} from './expiry-date/expiry-date';
+import {validateMonth, validateYear} from './expiry-date/expiry-date';
 import {encrypt as tsysEncrypt} from '../payment-providers/tsys/tsys';
 
 export {init} from '../payment-providers/tsys/tsys';
@@ -33,18 +33,22 @@ export const cvv = {
 };
 
 export const expiryDate = {
-  validate: validateExpiryDate
+  validate: {
+    month: validateMonth,
+    year: validateYear,
+    all: validateMonth
+  }
 };
 
-export function validate(cardNumber: string|number, cvv: string|number, month: number, year: number){
-  return cardNumberModule.validateAll(cardNumber) &&
-    cvvValidateAll(cvv) &&
-    validateExpiryDate(month, year);
+export function validate(cardNumber: string|number, cvvInput: string|number, month: string|number, year: string|number){
+  return card.validate.all(cardNumber) &&
+    cvv.validate.all(cvvInput) &&
+    expiryDate.validate.all(month, year);
 }
 
-export function encrypt(cardNumber: string|number, cvv: string|number, month: number, year: number){
+export function encrypt(cardNumber: string|number, cvv: string|number, month: string|number, year: string|number){
   if(!validate(cardNumber, cvv, month, year)){
     return Observable.throw('Credit card details invalid');
   }
-  return tsysEncrypt(cleanInput(cardNumber), cleanInput(cvv), month, year);
+  return tsysEncrypt(cleanInput(cardNumber), cleanInput(cvv), Number(cleanInput(month)), Number(cleanInput(year)));
 }
