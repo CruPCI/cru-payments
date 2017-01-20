@@ -1,16 +1,38 @@
-import * as _ from 'lodash';
+import {Observable} from 'rxjs/Observable';
+import 'rxjs/add/observable/throw';
+import {cleanInput} from '../utils/parsing';
 
-export function validateRoutingNumber(routingNumber: string|number = ''){
-    const routingNumberString: string = String(routingNumber);
-    let digits = routingNumberString.split('');
-    if(Number(digits[0]) > 3) return false; // Added to match EP validation https://github.com/CruGlobal/give-ep-extensions/blob/develop/cortex/resources/bank-account-resource/src/main/java/com/elasticpath/extensions/rest/resource/bankaccounts/validator/BankAccountValidator.java#L57
-    let multipliers = [3, 7, 1, 3, 7, 1, 3, 7, 1];
 
-    let checksum = _(digits)
-      .zip(multipliers)
-      .map((array: [number, number]) => {
-        return array[0] * array[1];
-      })
-      .sum();
-    return checksum !== 0 && checksum % 10 === 0;
+import * as routingNumberModule from './routing-number/routing-number';
+import * as accountNumberModule from './account-number/account-number';
+import {encrypt as bankAccountEncrypt} from '../payment-providers/ccp/ccp';
+
+export {init} from '../payment-providers/ccp/ccp';
+
+export const routingNumber = {
+  validate: {
+    length: routingNumberModule.validateLength,
+    checksum: routingNumberModule.validateChecksum,
+    all: routingNumberModule.validateAll
+  }
+};
+
+export const accountNumber = {
+  validate: {
+    minLength: accountNumberModule.validateMinLength,
+    maxLength: accountNumberModule.validateMaxLength,
+    all: accountNumberModule.validateAll
+  }
+};
+
+export function validate(routingNumberInput: string|number, accountNumberInput: string|number){
+  return routingNumber.validate.all(routingNumberInput) &&
+    accountNumber.validate.all(accountNumberInput);
+}
+
+export function encrypt(accountNumberInput: string|number){
+  if(!accountNumber.validate.all(accountNumberInput)){
+    return Observable.throw('Bank account number invalid');
+  }
+  return bankAccountEncrypt(cleanInput(accountNumberInput));
 }

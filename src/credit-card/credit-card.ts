@@ -4,7 +4,7 @@ import {cleanInput} from '../utils/parsing';
 import * as cardNumberModule from './card-number/card-number';
 import {validateMinLength as cvvValidateMinLength, validateMaxLength as cvvValidateMaxLength, validateAll as cvvValidateAll} from './cvv/cvv';
 import {validateMonth, validateYear} from './expiry-date/expiry-date';
-import {encrypt as tsysEncrypt} from '../payment-providers/tsys/tsys';
+import {encrypt as creditCardEncrypt} from '../payment-providers/tsys/tsys';
 
 export {init} from '../payment-providers/tsys/tsys';
 
@@ -50,5 +50,5 @@ export function encrypt(cardNumber: string|number, cvv: string|number, month: st
   if(!validate(cardNumber, cvv, month, year)){
     return Observable.throw('Credit card details invalid');
   }
-  return tsysEncrypt(cleanInput(cardNumber), cleanInput(cvv), Number(cleanInput(month)), Number(cleanInput(year)));
+  return creditCardEncrypt(cleanInput(cardNumber), cleanInput(cvv), Number(cleanInput(month)), Number(cleanInput(year)));
 }

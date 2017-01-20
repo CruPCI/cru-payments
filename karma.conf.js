@@ -43,9 +43,6 @@ module.exports = function(config) {
     },
 
     karmaTypescriptConfig: {
-      compilerOptions: {
-        "lib": ["es5", "dom", "es2015.promise"]
-      },
       reports: {
         'html': 'coverage',
         'lcovonly': {

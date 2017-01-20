@@ -6,6 +6,12 @@ import 'rxjs/add/observable/throw';
 
 describe('credit card', () => {
 
+  describe('init', () => {
+    it('should export init', () => {
+      expect(creditCard.init).toEqual(jasmine.any(Function));
+    });
+  });
+
   describe('card', () => {
     it('should export all the published functions', () => {
       expect(creditCard.card).toEqual({
