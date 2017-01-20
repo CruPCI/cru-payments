@@ -1,13 +1,14 @@
 {
   "name": "cru-payments",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Library for validating and encrypting credit card and bank account info",
   "main": "dist/cru-payments.js",
   "scripts": {
     "start": "webpack-dev-server",
     "build": "webpack -p",
     "lint": "eslint 'src/**'",
-    "test": "karma start"
+    "test": "karma start",
+    "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",

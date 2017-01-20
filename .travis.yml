@@ -1,16 +1,25 @@
 language: node_js
-node_js: "7"
+node_js: '7'
 before_install:
-  - curl -o- -L https://yarnpkg.com/install.sh | bash
-  - export PATH=$HOME/.yarn/bin:$PATH
+- curl -o- -L https://yarnpkg.com/install.sh | bash
+- export PATH=$HOME/.yarn/bin:$PATH
 install:
-  - yarn
+- yarn
 script:
-  - yarn run lint
-  - yarn run test
-  - yarn run build
+- yarn run lint
+- yarn run test
+- yarn run build
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+- bash <(curl -s https://codecov.io/bash)
 cache:
   directories:
   - node_modules
+deploy:
+  provider: npm
+  email: ozzieorca@gmail.com
+  api_key:
+    secure: S89+RI42vYthYQZ1fGM8gEYCHfXzi/RZB7O6Sn7EAKc7ySDbDReHHQo2AZnlm85woqr9aobMfhqQX/gyO4u/eG9gcQ3550J3zu2vX9WXb6DR3Uug9TcH1TN4MIrYle1ZNO6oBzBSXpepceXVa7uu2ReYgtHZ99e2XZ24P78UfEJW2N8nMVcgfU/giXfEZJ/m+g6csLABU/hrq37uxAqNFyHMcIPXXd847z0zv3MowgxbW56yPtTuwUfHGIck+YC+2/iYDN8cNXeoCUo+ia5l6Q1mu1yh8NMFJa2D1GAK4FBVuMUe9bbzbs42wvQGty8Gyz2jF2qLAmKkBVdd/f+g4hxy7vTc4vhEcNFkV8Gkh5tR1uPu3JCfZ2y4WplUoayW5RQSP41UxyGAxa7SjGQsYi22QPlW43i5kU62XhhcWhZG0+a+vTw5t8pXqy1f34Yzz3MHOD1dMhfBp2HekVd33It1Geiqf+w2zv5WSio9OoyRXYsInljLLSq7BAK/77kQezzGxVLjkMMJcgEl4fIQ9Y0zMiZtVdVvT5zGgzA0poR7jFmD9jFxTTGuEgkUWdTkJmoR8/Kzcgmen6PFvqgWHd8m9EaHHy3Acejap4duTFqX3s4AW4vFzRVFUIp3vMU2yIsTMpaFCj2n53+lAYZe1RCc7Up8q9ZTpWq3wMnbX/w=
+  on:
+    tags: true
+    repo: CruGlobal/cru-payments
+  skip_cleanup: true
