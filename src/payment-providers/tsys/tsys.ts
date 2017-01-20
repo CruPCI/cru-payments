@@ -14,8 +14,6 @@ import 'rxjs/add/operator/publishReplay';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/toPromise';
 
-declare const $: any;
-
 const inputs = [
   {
     id: 'tsep-cardNumDiv',
@@ -136,7 +134,7 @@ export function encrypt(cardNumber: string, cvv: string, month: number, year: nu
         };
 
         // Trigger focusout event so that the TSYS library will attempt encrypting and tokenizing the credit card
-        $(inputs.cardNumber).trigger('focusout');
+        (<any> window).jqtsep(inputs.cardNumber).trigger('focusout');
       });
     })
     // Publish the replay so subscriptions share the same value and don't reinitialize the Observable

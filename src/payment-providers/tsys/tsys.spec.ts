@@ -131,8 +131,8 @@ describe('tsys', () => {
 
       // Mock jquery and trigger
       this.triggerFn = jasmine.createSpy('trigger');
-      (<any> window).$ = () => ({trigger: this.triggerFn });
-      spyOn((<any> window), '$').and.callThrough();
+      (<any> window).jqtsep = () => ({trigger: this.triggerFn });
+      spyOn((<any> window), 'jqtsep').and.callThrough();
     });
     it('should fill the TSYS inputs', (done) => {
       tsys.encrypt('1234567890123', '123', 12, 2015)
@@ -150,7 +150,7 @@ describe('tsys', () => {
     it('should trigger the focusout event to start the TSYS encryption', (done) => {
       tsys.encrypt('1234567890123', '123', 12, 2015)
         .subscribe(() => {
-          expect((<any> window).$).toHaveBeenCalledWith(this.cardInput);
+          expect((<any> window).jqtsep).toHaveBeenCalledWith(this.cardInput);
           expect(this.triggerFn ).toHaveBeenCalledWith('focusout');
           done();
         }, () => done.fail('it should not have thrown an error'));
