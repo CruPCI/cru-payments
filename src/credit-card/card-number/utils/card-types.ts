@@ -1,4 +1,3 @@
-import * as _ from 'lodash';
 import {cleanInput} from '../../../utils/parsing';
 
 const cardTypes = [
@@ -53,13 +52,21 @@ export function expectedLength(cardNumber: string){
 }
 
 function getCardType(cardNumber: string) {
-  return _.find(cardTypes, cardType => {
+  for(const cardType of cardTypes) {
     const cardExpression = new RegExp('^' + cardType.prefixExpression);
-    return cardExpression.test(cardNumber);
-  });
+    if(cardExpression.test(cardNumber)){
+      return cardType;
+    }
+  }
 }
 
 function lengthValid(cardType: any, cardNumber: string) {
-  return _.includes(cardType && cardType.lengths, cardNumber.length);
+  if(cardType && cardType.lengths){
+    for(const length of cardType.lengths){
+      if(length === cardNumber.length)
+        return true;
+    }
+  }
+  return false;
 }
 

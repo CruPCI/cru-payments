@@ -1,4 +1,3 @@
-import * as _ from 'lodash';
 import {cleanInput} from '../../utils/parsing';
 import * as cardTypes from './utils/card-types';
 import {luhnCheck} from './utils/luhn-check';
@@ -30,7 +29,7 @@ export function validateChecksum(input: string|number){
 
 export function validateAll(input: string|number){
   const cardNumber = cleanInput(input);
-  return !_.isEmpty(cardNumber) &&
+  return !!cardNumber &&
     validateMinLength(cardNumber) &&
     validateMaxLength(cardNumber) &&
     validateKnownType(cardNumber) &&

@@ -1,4 +1,3 @@
-import * as _ from 'lodash';
 import {cleanInput} from '../../utils/parsing';
 
 export function validateMinLength(input: string|number){
@@ -13,7 +12,7 @@ export function validateMaxLength(input: string|number){
 
 export function validateAll(input: string|number){
   const cvv = cleanInput(input);
-  return !_.isEmpty(cvv) &&
+  return !!cvv &&
     validateMinLength(cvv) &&
     validateMaxLength(cvv);
 }
