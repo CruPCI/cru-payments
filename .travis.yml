@@ -16,10 +16,11 @@ cache:
   - node_modules
 deploy:
   provider: npm
-  email: ozzieorca@gmail.com
+  email: lee.braddock@cru.org
   api_key:
     secure: "IYl59T7asCO5CHDNSH73MJLwEELVT2o/W/NnQb18EulI4GWZHmSXrB5eodqAVmDtw3wMjLnsN44qzFW9DZ0Y77b+LlcD6QCZmwrWtXM9kDgDsMJsq6A7NqNNItxbBtsR/+JZW9UoU1tTSmEbm91Y90VCb/4q9QSslBZbP4qibgSYH+ce61e44+RLxCn5aMYZf9pm1jlJOjw1QR7++3HbWbTylVYf/nIkUlRBbvwIUW9pZBqudBCRYTJ5Tq3Csf8o1dh2J8w0NQPchuuj/DubVZue9KRP67G+PEMe6OcfuGrYgi0PhSj+0u996Y+63bAKV45WKd4ceNnDHHN9KcDzTs2276KI0Et5iAgQXV44ORYZCM5yblArKsSEhYayLMi2KND0FexqEfOndAX2ODBIIEgG2Gk44goQGKfEoWEMoYLual0CR0ZA1HJ0rkWZ8yFjS2Sbv+6FaOO2XPypSW1FGU4e5sWnrjLxVcM3pe0wu0j8FXJD5Cl3WtJx2/gwWLmmPgoJ18svRugNvWDGjQz1Ar6xmGWKQF9gAPF664z4je8qYRfIYXlz8x8PW4ZXuwgCmrOzSFKMEhmlzptIlAXQL3PibY+B+KDvW9+VOOGXEcBjvqbESvLBHlbEpLhmtxGX8l+GgoXEQtwhX1up6UyUDi0r/skkz9JQl7gCdXviY14="
   on:
-    tags: true
     repo: CruPCI/cru-payments
+    branch: master
+    tags: true
   skip_cleanup: true
