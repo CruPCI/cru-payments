@@ -89,13 +89,15 @@ FPqri0cb2JZfXJ/DgYSF6vUpwmJG8wVQZKjeGcjDOL5UlsuusFncCzWBQ7RKNUSesmQRMSGkVb1/
             done();
           });
     });
-    it('should return false if the key is invalid', (done) => {
+    it('should throw an error if the key is invalid', (done) => {
       ccp.init('staging', '<backup key>');
       ccp.encrypt('1234567890123456')
-        .subscribe(value => {
-          expect(value).toEqual(false);
+        .subscribe(() => {
+          done.fail('should have thrown an error');
+        }, error => {
+          expect(error).toEqual('Error encrypting bank account number');
           done();
-        }, () => done.fail('should not have thrown an error'));
+        });
     });
     it('should return the encrypted account number', (done) => {
       ccp.init('staging', this.validKey);
