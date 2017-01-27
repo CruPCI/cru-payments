@@ -1,6 +1,6 @@
 {
   "name": "cru-payments",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Library for validating and encrypting credit card and bank account info",
   "main": "dist/cru-payments.js",
   "scripts": {
@@ -51,3 +51,4 @@
     "webpack-dev-server": "^2.2.0-rc.0"
   }
 }
+
