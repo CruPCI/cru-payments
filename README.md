@@ -1,6 +1,6 @@
 # Cru Payments
-[![Build Status](https://travis-ci.org/CruGlobal/cru-payments.svg?branch=master)](https://travis-ci.org/CruGlobal/cru-payments)
-[![codecov](https://codecov.io/gh/CruGlobal/cru-payments/branch/master/graph/badge.svg)](https://codecov.io/gh/CruGlobal/cru-payments)
+[![Build Status](https://travis-ci.org/CruPCI/cru-payments.svg?branch=master)](https://travis-ci.org/CruPCI/cru-payments)
+[![codecov](https://codecov.io/gh/CruPCI/cru-payments/branch/master/graph/badge.svg)](https://codecov.io/gh/CruPCI/cru-payments)
 
 ## Importing
 
