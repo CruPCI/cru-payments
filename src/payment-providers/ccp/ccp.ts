@@ -2,6 +2,7 @@ import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/observable/from';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/observable/throw';
+import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/catch';
 
@@ -46,6 +47,13 @@ export function encrypt(accountNumber: string){
       const encryptor = new JSEncrypt();
       encryptor.setKey(key);
       return encryptor.encrypt(accountNumber);
+    })
+    .mergeMap(encryptedNumber => {
+      if (encryptedNumber !== false) {
+        return Observable.of(encryptedNumber);
+      }else{
+        return Observable.throw('Error encrypting bank account number');
+      }
     });
 }
 
