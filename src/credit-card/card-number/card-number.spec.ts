@@ -90,6 +90,7 @@ describe('card number', () => {
       expect(cardNumber.validateAll('5240961814538643')).toEqual(true);
       expect(cardNumber.validateAll('5119639413189996')).toEqual(true);
       expect(cardNumber.validateAll('5116410773439691')).toEqual(true);
+      expect(cardNumber.validateAll('2223000048400011')).toEqual(true);
       // Discover
       expect(cardNumber.validateAll('6011111111111117')).toEqual(true);
       expect(cardNumber.validateAll('6011529925138184')).toEqual(true);

@@ -11,7 +11,7 @@ const cardTypes = [
     name: 'MASTERCARD',
     displayName: 'MasterCard',
     lengths: [16],
-    prefixExpression: '5[1-5]'
+    prefixExpression: '5[1-5]|222[1-9]|22[3-9]|2[3-6]|27[01]|2720'
   },
   {
     name: 'AMERICAN_EXPRESS',
@@ -23,13 +23,13 @@ const cardTypes = [
     name: 'DISCOVER',
     displayName: 'Discover',
     lengths: [16],
-    prefixExpression: '((65)|(64[4-9])|(622)|(6011)|(35[2-8]))'
+    prefixExpression: '65|64[4-9]|622|6011|35[2-8]'
   },
   {
     name: 'DINERS_CLUB',
     displayName: 'Diners Club',
     lengths: [14],
-    prefixExpression: '((36)|(30[0-5]))'
+    prefixExpression: '36|30[0-5]'
   }
 ];
 
@@ -53,7 +53,7 @@ export function expectedLength(cardNumber: string){
 
 function getCardType(cardNumber: string) {
   for(const cardType of cardTypes) {
-    const cardExpression = new RegExp('^' + cardType.prefixExpression);
+    const cardExpression = new RegExp('^(' + cardType.prefixExpression + ')');
     if(cardExpression.test(cardNumber)){
       return cardType;
     }
