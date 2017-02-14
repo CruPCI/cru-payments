@@ -7,6 +7,7 @@ describe('card types', () => {
       expect(cardTypes.validateKnownType('4111111111111')).toEqual(true);
       expect(cardTypes.validateKnownType('4111111111111111')).toEqual(true);
       expect(cardTypes.validateKnownType('5111111111111118')).toEqual(true);
+      expect(cardTypes.validateKnownType('2223000048400011')).toEqual(true);
       expect(cardTypes.validateKnownType('6011111111111117')).toEqual(true);
       expect(cardTypes.validateKnownType('341111111111111')).toEqual(true);
       expect(cardTypes.validateKnownType('36111111111111')).toEqual(true);
@@ -60,6 +61,16 @@ describe('card types', () => {
       expect(cardTypes.getCardTypeName('530000000000000000')).toEqual('MasterCard');
       expect(cardTypes.getCardTypeName('540000000000000000')).toEqual('MasterCard');
       expect(cardTypes.getCardTypeName('550000000000000000')).toEqual('MasterCard');
+      expect(cardTypes.getCardTypeName('2221')).toEqual('MasterCard');
+      expect(cardTypes.getCardTypeName('2229')).toEqual('MasterCard');
+      expect(cardTypes.getCardTypeName('223')).toEqual('MasterCard');
+      expect(cardTypes.getCardTypeName('229')).toEqual('MasterCard');
+      expect(cardTypes.getCardTypeName('23')).toEqual('MasterCard');
+      expect(cardTypes.getCardTypeName('26')).toEqual('MasterCard');
+      expect(cardTypes.getCardTypeName('270')).toEqual('MasterCard');
+      expect(cardTypes.getCardTypeName('271')).toEqual('MasterCard');
+      expect(cardTypes.getCardTypeName('2720')).toEqual('MasterCard');
+      expect(cardTypes.getCardTypeName('2223000048400011')).toEqual('MasterCard');
     });
     it('should detect American Express correctly', () => {
       expect(cardTypes.getCardTypeName('34')).toEqual('American Express');
@@ -99,7 +110,7 @@ describe('card types', () => {
     it('should return an empty string for an unknown type', () => {
       expect(cardTypes.getCardTypeName('38')).toEqual('');
       expect(cardTypes.getCardTypeName('111111111')).toEqual('');
-      expect(cardTypes.getCardTypeName('22222')).toEqual('');
+      expect(cardTypes.getCardTypeName('33333')).toEqual('');
     });
   });
 
