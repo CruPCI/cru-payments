@@ -45,6 +45,39 @@ describe('cvv', () => {
       expect(cvv.validateMaxLength(1234567)).toEqual(false);
     });
   });
+  describe('validateCardTypeLength', () => {
+    it('should clean input', () => {
+      spyOn(parsing, 'cleanInput').and.callThrough();
+      cvv.validateCardTypeLength(123, 'Visa');
+      expect(parsing.cleanInput).toHaveBeenCalledWith(123);
+    });
+    it('should return true if cardType is not set', () => {
+      expect(cvv.validateCardTypeLength(123)).toEqual(true);
+    });
+    it('should return true if cvv length is correct for the given card type', () => {
+      expect(cvv.validateCardTypeLength(123, 'Visa')).toEqual(true);
+      expect(cvv.validateCardTypeLength(1234, 'Visa')).toEqual(true);
+      expect(cvv.validateCardTypeLength(123, 'MasterCard')).toEqual(true);
+      expect(cvv.validateCardTypeLength(1234, 'MasterCard')).toEqual(true);
+      expect(cvv.validateCardTypeLength(1234, 'American Express')).toEqual(true);
+      expect(cvv.validateCardTypeLength(123, 'Discover')).toEqual(true);
+      expect(cvv.validateCardTypeLength(1234, 'Discover')).toEqual(true);
+      expect(cvv.validateCardTypeLength(123, 'Diners Club')).toEqual(true);
+      expect(cvv.validateCardTypeLength(1234, 'Diners Club')).toEqual(true);
+    });
+    it('should return false if cvv length is incorrect for the given card type', () => {
+      expect(cvv.validateCardTypeLength(12, 'Visa')).toEqual(false);
+      expect(cvv.validateCardTypeLength(12345, 'Visa')).toEqual(false);
+      expect(cvv.validateCardTypeLength(12, 'MasterCard')).toEqual(false);
+      expect(cvv.validateCardTypeLength(12345, 'MasterCard')).toEqual(false);
+      expect(cvv.validateCardTypeLength(123, 'American Express')).toEqual(false);
+      expect(cvv.validateCardTypeLength(12345, 'American Express')).toEqual(false);
+      expect(cvv.validateCardTypeLength(12, 'Discover')).toEqual(false);
+      expect(cvv.validateCardTypeLength(12345, 'Discover')).toEqual(false);
+      expect(cvv.validateCardTypeLength(12, 'Diners Club')).toEqual(false);
+      expect(cvv.validateCardTypeLength(12345, 'Diners Club')).toEqual(false);
+    });
+  });
   describe('validateAll', () => {
     it('should return true if cvv is valid', () => {
       expect(cvv.validateAll(123)).toEqual(true);

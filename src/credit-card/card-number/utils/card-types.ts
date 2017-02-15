@@ -1,35 +1,35 @@
 import {cleanInput} from '../../../utils/parsing';
 
-const cardTypes = [
+export const cardTypeConsts = [
   {
-    name: 'VISA',
-    displayName: 'Visa',
+    name: 'Visa',
     lengths: [13, 16],
-    prefixExpression: '4'
+    prefixExpression: '4',
+    cvvLengths: [3, 4]
   },
   {
-    name: 'MASTERCARD',
-    displayName: 'MasterCard',
+    name: 'MasterCard',
     lengths: [16],
-    prefixExpression: '5[1-5]|222[1-9]|22[3-9]|2[3-6]|27[01]|2720'
+    prefixExpression: '5[1-5]|222[1-9]|22[3-9]|2[3-6]|27[01]|2720',
+    cvvLengths: [3, 4]
   },
   {
-    name: 'AMERICAN_EXPRESS',
-    displayName: 'American Express',
+    name: 'American Express',
     lengths: [15],
-    prefixExpression: '3[4,7]'
+    prefixExpression: '3[4,7]',
+    cvvLengths: [4]
   },
   {
-    name: 'DISCOVER',
-    displayName: 'Discover',
+    name: 'Discover',
     lengths: [16],
-    prefixExpression: '65|64[4-9]|622|6011|35[2-8]'
+    prefixExpression: '65|64[4-9]|622|6011|35[2-8]',
+    cvvLengths: [3, 4]
   },
   {
-    name: 'DINERS_CLUB',
-    displayName: 'Diners Club',
+    name: 'Diners Club',
     lengths: [14],
-    prefixExpression: '36|30[0-5]'
+    prefixExpression: '36|30[0-5]',
+    cvvLengths: [3, 4]
   }
 ];
 
@@ -43,7 +43,7 @@ export function validateTypeLength(cardNumber: string){
 
 export function getCardTypeName(cardNumber: string){
   const cardType = getCardType(cardNumber);
-  return cardType ? cardType.displayName : '';
+  return cardType ? cardType.name : '';
 }
 
 export function expectedLength(cardNumber: string){
@@ -52,7 +52,7 @@ export function expectedLength(cardNumber: string){
 }
 
 function getCardType(cardNumber: string) {
-  for(const cardType of cardTypes) {
+  for(const cardType of cardTypeConsts) {
     const cardExpression = new RegExp('^(' + cardType.prefixExpression + ')');
     if(cardExpression.test(cardNumber)){
       return cardType;
