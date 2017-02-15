@@ -38,6 +38,7 @@ describe('credit card', () => {
         validate: {
           minLength: jasmine.any(Function),
           maxLength: jasmine.any(Function),
+          cardTypeLength: jasmine.any(Function),
           all: jasmine.any(Function)
         }
       });

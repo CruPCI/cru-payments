@@ -2,7 +2,7 @@ import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/observable/throw';
 import {cleanInput} from '../utils/parsing';
 import * as cardNumberModule from './card-number/card-number';
-import {validateMinLength as cvvValidateMinLength, validateMaxLength as cvvValidateMaxLength, validateAll as cvvValidateAll} from './cvv/cvv';
+import {validateMinLength as cvvValidateMinLength, validateMaxLength as cvvValidateMaxLength, validateCardTypeLength as ccvValidateCardTypeLength, validateAll as cvvValidateAll} from './cvv/cvv';
 import {validateMonth, validateYear} from './expiry-date/expiry-date';
 import {encrypt as creditCardEncrypt} from '../payment-providers/tsys/tsys';
 
@@ -28,6 +28,7 @@ export const cvv = {
   validate: {
     minLength: cvvValidateMinLength,
     maxLength: cvvValidateMaxLength,
+    cardTypeLength: ccvValidateCardTypeLength,
     all: cvvValidateAll
   }
 };
@@ -42,7 +43,7 @@ export const expiryDate = {
 
 export function validate(cardNumber: string|number, cvvInput: string|number, month: string|number, year: string|number){
   return card.validate.all(cardNumber) &&
-    cvv.validate.all(cvvInput) &&
+    cvv.validate.all(cvvInput, card.info.type(cardNumber)) &&
     expiryDate.validate.all(month, year);
 }
 

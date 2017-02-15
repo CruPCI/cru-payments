@@ -77,7 +77,10 @@ Returns true if card cvv has a valid min length
 ##### `cruPayments.creditCard.cvv.validate.maxLength(cvv)`
 Returns true if card cvv has a valid max length
 
-##### `cruPayments.creditCard.cvv.validate.all(cvv)`
+##### `cruPayments.creditCard.cvv.validate.cardTypeLength(cvv, cardType)`
+Returns true if card cvv length matches the allowed lengths for the given card type
+
+##### `cruPayments.creditCard.cvv.validate.all(cvv, cardNumber)`
 Returns true if all of the above cvv validators return true
 
 #### Card Expiry Date
