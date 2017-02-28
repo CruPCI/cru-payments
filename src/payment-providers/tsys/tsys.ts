@@ -149,7 +149,11 @@ export function encrypt(cardNumber: string, cvv: string, month: number, year: nu
         };
 
         // Trigger focusout event so that the TSYS library will attempt encrypting and tokenizing the credit card
-        (<any> window).jqtsep(inputs.cardNumber).trigger('focusout');
+        if((<any> window).jqtsep) {
+          (<any> window).jqtsep(inputs.cardNumber).trigger('focusout');
+        }else {
+          (<any> window).$(inputs.cardNumber).trigger('focusout');
+        }
       });
     })
     // Publish the replay so subscriptions share the same value and don't reinitialize the Observable
