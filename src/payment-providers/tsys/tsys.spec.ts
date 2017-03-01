@@ -243,5 +243,24 @@ describe('tsys', () => {
         this.fireTsepEvent('ErrorEvent');
       });
     });
+
+    it('should work with the old TSYS library and use $ to trigger focusout', (done) => {
+      delete (<any> window).jqtsep;
+
+      this.triggerFn = jasmine.createSpy('trigger');
+      (<any> window).$ = () => ({trigger: this.triggerFn });
+      spyOn((<any> window), '$').and.callThrough();
+
+      tsys.encrypt('1234567890123', '123', 12, 2015)
+        .subscribe(event => {
+          expect(event).toEqual('TokenEvent body');
+          expect(this.triggerFn).toHaveBeenCalledWith('focusout');
+          done();
+        }, () => done.fail('should not have thrown an error'));
+
+      this.putInputsInDivs();
+
+      this.fireTsepEvent('TokenEvent');
+    });
   });
 });
