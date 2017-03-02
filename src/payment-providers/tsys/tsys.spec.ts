@@ -1,114 +1,109 @@
 /* global NodeListOf:false */
 import * as tsys from './tsys';
 
+import {Observable} from 'rxjs/Observable';
+
 describe('tsys', () => {
+  beforeEach(() => {
+    tsys._setupInputs();
+  });
+
+  afterEach(() => {
+    // Remove script tags from previous tests
+    [].forEach.call(document.querySelectorAll('script[src*="tsep"]'), (element: HTMLScriptElement) =>{
+      element.remove();
+    });
+
+    [].forEach.call(
+      document.querySelectorAll('#tsep-cardNumDiv, #tsep-datepickerDiv, #tsep-cvv2Div'),
+      (input: HTMLElement) => input.remove()
+    );
+  });
   describe('init', () => {
     beforeEach(() => {
-      // Remove script tags from previous tests
-      [].forEach.call(document.querySelectorAll('script[src*="tsep"]'), (element: HTMLScriptElement) =>{
-        element.remove();
-      });
-    });
-    it('should remove any existing divs', () => {
-      // Add previous div
-      const div: HTMLElement = document.createElement('div');
-      div.setAttribute('id', 'tsep-cardNumDiv');
-      document.body.appendChild(div);
-
-      tsys.init('staging', 'deviceId', 'manifest');
-      tsys._inputsObservable
-        .subscribe();
-      expect(document.querySelectorAll('#tsep-cardNumDiv').length).toEqual(1);
-    });
-    it('should create an Observable that emits the input elements', (done) => {
       // Mock TSYS inputs
-      const cardInput = document.createElement('input');
-      const dateInput = document.createElement('input');
-      const cvvInput = document.createElement('input');
+      this.cardInput = document.createElement('input');
+      this.dateInput = document.createElement('input');
+      this.cvvInput = document.createElement('input');
 
+      this.fillDivs = () => {
+        document.getElementById('tsep-cardNumDiv').appendChild(this.cardInput);
+        document.getElementById('tsep-datepickerDiv').appendChild(this.dateInput);
+        document.getElementById('tsep-cvv2Div').appendChild(this.cvvInput);
+      };
+    });
+
+    it('should create an Observable that emits the input elements', (done) => {
       tsys.init('staging', 'deviceId', 'manifest');
       tsys._inputsObservable
         .subscribe(inputs => {
           expect(inputs).toEqual({
-            cardNumber: cardInput,
-            expiryDate: dateInput,
-            cvv: cvvInput
+            cardNumber: this.cardInput,
+            expiryDate: this.dateInput,
+            cvv: this.cvvInput
           });
           done();
         });
 
-      // Mock TSYS inputs
-      document.getElementById('tsep-cardNumDiv').appendChild(cardInput);
-      document.getElementById('tsep-datepickerDiv').appendChild(dateInput);
-      document.getElementById('tsep-cvv2Div').appendChild(cvvInput);
-    });
-    it('should add the staging vendor script to page', () => {
-      tsys.init('staging', 'deviceId', 'manifest');
-      tsys._inputsObservable
-        .subscribe();
-
-      const scripts = <NodeListOf<HTMLScriptElement>> document.querySelectorAll('script[src*="tsep"]');
-      expect(scripts.length).toEqual(1);
-      expect(scripts[0].src).toEqual('https://stagegw.transnox.com/transit-tsep-web/jsView/deviceId?manifest');
-    });
-    it('should add the production vendor script to page', () => {
-      tsys.init('production', 'deviceId', 'manifest');
-      tsys._inputsObservable
-        .subscribe();
-
-      const scripts = <NodeListOf<HTMLScriptElement>> document.querySelectorAll('script[src*="tsep"]');
-      expect(scripts.length).toEqual(1);
-      expect(scripts[0].src).toEqual('https://gateway.transit-pass.com/transit-tsep-web/jsView/deviceId?manifest');
-    });
-    it('should add a new vendor script to page each time inputsObservable is subscribed to. This fetches a new public key for each now encryption', () => {
-      tsys.init('staging', 'deviceId', 'manifest');
-      tsys._inputsObservable
-        .subscribe();
-      tsys._inputsObservable
-        .subscribe();
-
-      const scripts = <NodeListOf<HTMLScriptElement>> document.querySelectorAll('script[src*="tsep"]');
-      expect(scripts.length).toEqual(2);
-      expect(scripts[0].src).toEqual('https://stagegw.transnox.com/transit-tsep-web/jsView/deviceId?manifest');
-      expect(scripts[1].src).toEqual('https://stagegw.transnox.com/transit-tsep-web/jsView/deviceId?manifest');
-    });
-    it('should handle an error if TSYS throws an error on load', (done) => {
-      tsys.init('staging', 'deviceId', 'manifest');
-      tsys._inputsObservable
-        .subscribe(null, error => {
-          expect(error).toEqual('some error');
-          done();
-        });
-      (<any> window).tsepHandler('ErrorEvent', 'some error');
+      this.fillDivs();
     });
 
     it('should behave normally if TSYS fires a non ErrorEvent event at or near load time', (done) => {
-      // Mock TSYS inputs
-      const cardInput = document.createElement('input');
-      const dateInput = document.createElement('input');
-      const cvvInput = document.createElement('input');
-
       tsys.init('staging', 'deviceId', 'manifest');
       tsys._inputsObservable
         .subscribe(inputs => {
           expect(inputs).toEqual({
-            cardNumber: cardInput,
-            expiryDate: dateInput,
-            cvv: cvvInput
+            cardNumber: this.cardInput,
+            expiryDate: this.dateInput,
+            cvv: this.cvvInput
           });
           done();
         });
 
       (<any> window).tsepHandler('FieldValidationErrorEvent', 'some error');
 
-      // Mock TSYS inputs
-      document.getElementById('tsep-cardNumDiv').appendChild(cardInput);
-      document.getElementById('tsep-datepickerDiv').appendChild(dateInput);
-      document.getElementById('tsep-cvv2Div').appendChild(cvvInput);
+      this.fillDivs();
     });
   });
+
+  describe('importVendorCode', () => {
+    it('should add the staging vendor script to page', (done) => {
+      tsys.init('staging', 'deviceId', 'manifest');
+      tsys._importVendorCode().subscribe(() => {
+        const scripts = <NodeListOf<HTMLScriptElement>> document.querySelectorAll('script[src*="tsep"]');
+        expect(scripts.length).toEqual(1);
+        expect(scripts[0].src).toEqual('https://stagegw.transnox.com/transit-tsep-web/jsView/deviceId?manifest');
+        done();
+      });
+    });
+
+    it('should add the production vendor script to page', (done) => {
+      tsys.init('production', 'deviceId', 'manifest');
+      tsys._importVendorCode().subscribe(() => {
+        const scripts = <NodeListOf<HTMLScriptElement>> document.querySelectorAll('script[src*="tsep"]');
+        expect(scripts.length).toEqual(1);
+        expect(scripts[0].src).toEqual('https://gateway.transit-pass.com/transit-tsep-web/jsView/deviceId?manifest');
+        done();
+      });
+    });
+    it('should support adding duplicate vendor scripts in order to fetch new keys', (done) => {
+      tsys.init('staging', 'deviceId', 'manifest');
+      tsys._importVendorCode().subscribe();
+      tsys._importVendorCode().subscribe(() => {
+        const scripts = <NodeListOf<HTMLScriptElement>> document.querySelectorAll('script[src*="tsep"]');
+        expect(scripts.length).toEqual(2);
+        expect(scripts[0].src).toEqual('https://stagegw.transnox.com/transit-tsep-web/jsView/deviceId?manifest');
+        expect(scripts[1].src).toEqual('https://stagegw.transnox.com/transit-tsep-web/jsView/deviceId?manifest');
+        done();
+      });
+    });
+  });
+
   describe('encrypt', () => {
     beforeEach(() => {
+      // Mock import vendor code
+      spyOn(tsys, '_importVendorCode').and.returnValue(Observable.of('new key loaded'));
+
       // Mock TSYS inputs
       this.cardInput = document.createElement('input');
       this.dateInput = document.createElement('input');
@@ -116,16 +111,19 @@ describe('tsys', () => {
 
       tsys.init('staging', 'deviceId', 'manifest');
 
-      this.putInputsInDivs = () => {
-        // Mock TSYS inputs
-        document.getElementById('tsep-cardNumDiv').appendChild(this.cardInput);
-        document.getElementById('tsep-datepickerDiv').appendChild(this.dateInput);
-        document.getElementById('tsep-cvv2Div').appendChild(this.cvvInput);
-      };
+      //Setup divs
+      tsys._inputsObservable
+        .subscribe();
 
-      this.fireTsepEvent = (eventType: string) => {
+      // Fill divs with inputs
+      document.getElementById('tsep-cardNumDiv').appendChild(this.cardInput);
+      document.getElementById('tsep-datepickerDiv').appendChild(this.dateInput);
+      document.getElementById('tsep-cvv2Div').appendChild(this.cvvInput);
+
+
+      this.fireTsepEvent = (eventType: string, eventBody: any) => {
         setTimeout(() => {
-          (<any> window).tsepHandler(eventType, eventType + ' body');
+          (<any> window).tsepHandler(eventType, eventBody);
         });
       };
 
@@ -134,6 +132,33 @@ describe('tsys', () => {
       (<any> window).jqtsep = () => ({trigger: this.triggerFn });
       spyOn((<any> window), 'jqtsep').and.callThrough();
     });
+
+    it('should add a new vendor script to page each time encrypt is subscribed to. This fetches a new public key for each now encryption', (done) => {
+      tsys.encrypt('1234567890123', '123', 12, 2015)
+        .subscribe(() => {
+        });
+
+      tsys.encrypt('1234567890123', '123', 12, 2015)
+        .subscribe(() => {
+          expect((<any> tsys._importVendorCode).calls.count()).toEqual(2);
+          done();
+        });
+
+      this.fireTsepEvent('TokenEvent', {status: 'PASS'});
+      this.fireTsepEvent('TokenEvent', {status: 'PASS'});
+    });
+
+    it('should handle an error if TSYS throws an error on load', (done) => {
+      tsys.init('staging', 'deviceId', 'manifest');
+      tsys.encrypt('1234567890123', '123', 12, 2015)
+        .subscribe(null, error => {
+          expect(error).toEqual('some error');
+          done();
+        });
+
+      this.fireTsepEvent('ErrorEvent', 'some error');
+    });
+
     it('should fill the TSYS inputs', (done) => {
       tsys.encrypt('1234567890123', '123', 12, 2015)
         .subscribe(() => {
@@ -143,10 +168,9 @@ describe('tsys', () => {
           done();
         }, () => done.fail('it should not have thrown an error'));
 
-      this.putInputsInDivs();
-
-      this.fireTsepEvent('TokenEvent');
+      this.fireTsepEvent('TokenEvent', {status: 'PASS'});
     });
+
     it('should trigger the focusout event to start the TSYS encryption', (done) => {
       tsys.encrypt('1234567890123', '123', 12, 2015)
         .subscribe(() => {
@@ -155,20 +179,16 @@ describe('tsys', () => {
           done();
         }, () => done.fail('it should not have thrown an error'));
 
-      this.putInputsInDivs();
-
-      this.fireTsepEvent('TokenEvent');
+      this.fireTsepEvent('TokenEvent', {status: 'PASS'});
     });
     it('should handle a successful tokenization', (done) => {
       tsys.encrypt('1234567890123', '123', 12, 2015)
         .subscribe(event => {
-          expect(event).toEqual('TokenEvent body');
+          expect(event).toEqual({status: 'PASS'});
           done();
         }, () => done.fail('should not have thrown an error'));
 
-      this.putInputsInDivs();
-
-      this.fireTsepEvent('TokenEvent');
+      this.fireTsepEvent('TokenEvent', {status: 'PASS'});
     });
     it('should handle a error during tokenization', (done) => {
       tsys.encrypt('1234567890123', '123', 12, 2015)
@@ -178,9 +198,17 @@ describe('tsys', () => {
             done();
           });
 
-      this.putInputsInDivs();
+      this.fireTsepEvent('ErrorEvent', 'ErrorEvent body');
+    });
+    it('should handle a error when TSYS status is not pass', (done) => {
+      tsys.encrypt('1234567890123', '123', 12, 2015)
+        .subscribe(() => done.fail('should have thrown an error'),
+          error => {
+            expect(error).toEqual({status: 'FAILURE'});
+            done();
+          });
 
-      this.fireTsepEvent('ErrorEvent');
+      this.fireTsepEvent('TokenEvent', {status: 'FAILURE'});
     });
     it('should handle a validation error caught by the TSYS library', (done) => {
       tsys.encrypt('1234567890123', '123', 12, 2015)
@@ -190,31 +218,25 @@ describe('tsys', () => {
             done();
           });
 
-      this.putInputsInDivs();
-
-      this.fireTsepEvent('FieldValidationErrorEvent');
+      this.fireTsepEvent('FieldValidationErrorEvent', 'FieldValidationErrorEvent body');
     });
 
     it('should handle a two successful tokenizations in a row', (done) => {
       tsys.encrypt('1234567890123', '123', 12, 2015)
         .subscribe(event => {
-          expect(event).toEqual('TokenEvent body');
+          expect(event).toEqual({status: 'PASS'});
         }, () => done.fail('should not have thrown an error'));
 
-      this.putInputsInDivs();
-
-      this.fireTsepEvent('TokenEvent');
+      this.fireTsepEvent('TokenEvent', {status: 'PASS'});
 
       setTimeout(() => {
         tsys.encrypt('1234567890123', '123', 12, 2015)
           .subscribe(event => {
-            expect(event).toEqual('TokenEvent body');
+            expect(event).toEqual({status: 'PASS'});
             done();
           }, () => done.fail('should not have thrown an error'));
 
-        this.putInputsInDivs();
-
-        this.fireTsepEvent('TokenEvent');
+        this.fireTsepEvent('TokenEvent', {status: 'PASS'});
       });
     });
 
@@ -226,9 +248,7 @@ describe('tsys', () => {
             expect(error).toEqual('ErrorEvent body');
           });
 
-      this.putInputsInDivs();
-
-      this.fireTsepEvent('ErrorEvent');
+      this.fireTsepEvent('ErrorEvent', 'ErrorEvent body');
 
       setTimeout(() => {
         tsys.encrypt('1234567890123', '123', 12, 2015)
@@ -238,9 +258,7 @@ describe('tsys', () => {
               done();
             });
 
-        this.putInputsInDivs();
-
-        this.fireTsepEvent('ErrorEvent');
+        this.fireTsepEvent('ErrorEvent', 'ErrorEvent body');
       });
     });
 
@@ -253,14 +271,12 @@ describe('tsys', () => {
 
       tsys.encrypt('1234567890123', '123', 12, 2015)
         .subscribe(event => {
-          expect(event).toEqual('TokenEvent body');
+          expect(event).toEqual({status: 'PASS'});
           expect(this.triggerFn).toHaveBeenCalledWith('focusout');
           done();
         }, () => done.fail('should not have thrown an error'));
 
-      this.putInputsInDivs();
-
-      this.fireTsepEvent('TokenEvent');
+      this.fireTsepEvent('TokenEvent', {status: 'PASS'});
     });
   });
 });

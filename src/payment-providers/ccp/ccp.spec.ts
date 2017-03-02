@@ -50,7 +50,7 @@ describe('ccp', () => {
           });
     });
     it('should use the key returned by the api', (done) => {
-      (<any> window).fetch.and.callFake(() => Promise.resolve({ ok: true, text: () => '<key from api>' }));
+      (<any> window).fetch.and.callFake(() => Promise.resolve({ ok: true, text: () => Promise.resolve('<key from api>') }));
       ccp.init('staging', '<backup key>');
       ccp._ccpKeyObservable
         .subscribe(key => {
@@ -60,7 +60,7 @@ describe('ccp', () => {
         }, () => done.fail('should not have thrown an error'));
     });
     it('should use the key returned by the production api', (done) => {
-      (<any> window).fetch.and.callFake(() => Promise.resolve({ ok: true, text: () => '<key from api>' }));
+      (<any> window).fetch.and.callFake(() => Promise.resolve({ ok: true, text: () => Promise.resolve('<key from api>') }));
       ccp.init('production', '<backup key>');
       ccp._ccpKeyObservable
         .subscribe(key => {

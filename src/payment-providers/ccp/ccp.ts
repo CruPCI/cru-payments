@@ -23,7 +23,7 @@ export function init(env: string, backupKey?: string){
   ccpKeyObservable = Observable.from((<any> window).fetch(env === 'production' ? prodKeyUri : stagingKeyUri))
     .mergeMap((response: Response) => {
       if (response.ok) {
-        return Observable.of(response.text());
+        return Observable.from(response.text());
       }else{
         return Observable.throw(response.statusText);
       }
