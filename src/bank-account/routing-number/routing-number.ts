@@ -22,8 +22,23 @@ export function validateChecksum(input: string|number = ''){
 }
 
 export function validateAll(input: string|number){
-  const accountNumber = cleanInput(input);
-  return !!accountNumber &&
-    validateLength(accountNumber) &&
-    validateChecksum(accountNumber);
+  const routingNumber = cleanInput(input);
+  return !!routingNumber &&
+    validateLength(routingNumber) &&
+    validateChecksum(routingNumber);
+}
+
+export function errors(input: string|number){
+  const routingNumber = cleanInput(input);
+  let errors: string[] = [];
+  if(!routingNumber){
+    errors.push('Routing number cannot be blank');
+  }
+  if(!validateLength(routingNumber)){
+    errors.push('Routing number must contain 9 digits');
+  }
+  if(!validateChecksum(routingNumber)){
+    errors.push('Routing number is invalid. At least one digit was entered incorrectly.');
+  }
+  return errors;
 }

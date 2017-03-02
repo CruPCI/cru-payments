@@ -16,3 +16,18 @@ export function validateAll(input: string|number){
     validateMinLength(accountNumber) &&
     validateMaxLength(accountNumber);
 }
+
+export function errors(input: string|number){
+  const accountNumber = cleanInput(input);
+  let errors: string[] = [];
+  if(!accountNumber){
+    errors.push('Account number cannot be blank');
+  }
+  if(!validateMinLength(accountNumber)){
+    errors.push('Account number must contain at least 2 digits');
+  }
+  if(!validateMaxLength(accountNumber)){
+    errors.push('Account number cannot contain more than 17 digits');
+  }
+  return errors;
+}

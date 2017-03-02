@@ -14,7 +14,8 @@ export const routingNumber = {
     length: routingNumberModule.validateLength,
     checksum: routingNumberModule.validateChecksum,
     all: routingNumberModule.validateAll
-  }
+  },
+  errors: routingNumberModule.errors
 };
 
 export const accountNumber = {
@@ -22,7 +23,8 @@ export const accountNumber = {
     minLength: accountNumberModule.validateMinLength,
     maxLength: accountNumberModule.validateMaxLength,
     all: accountNumberModule.validateAll
-  }
+  },
+  errors: accountNumberModule.errors
 };
 
 export function validate(routingNumberInput: string|number, accountNumberInput: string|number){

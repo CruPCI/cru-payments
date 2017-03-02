@@ -27,3 +27,21 @@ export function validateAll(input: string|number, cardType?: string){
     validateMaxLength(cvv) &&
     validateCardTypeLength(cvv, cardType);
 }
+
+export function errors(input: string|number, cardType?: string){
+  const cvv = cleanInput(input);
+  let errors: string[] = [];
+  if(!cvv){
+    errors.push('CVV cannot be blank');
+  }
+  if(!validateMinLength(cvv)){
+    errors.push('CVV must contain at least 3 digits');
+  }
+  if(!validateMaxLength(cvv)){
+    errors.push('CVV cannot contain more than 4 digits');
+  }
+  if(!validateCardTypeLength(cvv, cardType)){
+    errors.push('CVV is not valid for this card type');
+  }
+  return errors;
+}

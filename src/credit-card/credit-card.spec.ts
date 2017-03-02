@@ -40,7 +40,8 @@ describe('credit card', () => {
           maxLength: jasmine.any(Function),
           cardTypeLength: jasmine.any(Function),
           all: jasmine.any(Function)
-        }
+        },
+        errors: jasmine.any(Function)
       });
     });
   });
@@ -52,7 +53,8 @@ describe('credit card', () => {
           month: jasmine.any(Function),
           year: jasmine.any(Function),
           all: jasmine.any(Function)
-        }
+        },
+        errors: jasmine.any(Function)
       });
     });
   });

@@ -139,6 +139,13 @@ describe('card number', () => {
     });
   });
   describe('errors', () => {
+    it('should return errors for an empty card number', () => {
+      expect(cardNumber.errors('')).toEqual([
+        'Card number cannot be blank',
+        'Card number must contain at least 13 digits',
+        'Card type is not accepted by this system'
+      ]);
+    });
     it('should return errors for a card without enough digits', () => {
       expect(cardNumber.errors('123')).toEqual([
         'Card number must contain at least 13 digits',

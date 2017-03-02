@@ -19,7 +19,8 @@ describe('bank account', () => {
           length: jasmine.any(Function),
           checksum: jasmine.any(Function),
           all: jasmine.any(Function)
-        }
+        },
+        errors: jasmine.any(Function)
       });
     });
   });
@@ -31,7 +32,8 @@ describe('bank account', () => {
           minLength: jasmine.any(Function),
           maxLength: jasmine.any(Function),
           all: jasmine.any(Function)
-        }
+        },
+        errors: jasmine.any(Function)
       });
     });
   });

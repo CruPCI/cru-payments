@@ -39,7 +39,10 @@ export function validateAll(input: string|number){
 
 export function errors(input: string|number){
   const cardNumber = cleanInput(input);
-  let errors = [];
+  let errors: string[] = [];
+  if(!cardNumber){
+    errors.push('Card number cannot be blank');
+  }
   if(!validateMinLength(cardNumber)){
     errors.push('Card number must contain at least 13 digits');
   }

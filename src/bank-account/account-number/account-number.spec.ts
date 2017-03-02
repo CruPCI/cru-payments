@@ -43,4 +43,25 @@ describe('account number', () => {
       expect(accountNumber.validateMaxLength('12345678901234567890')).toEqual(false);
     });
   });
+  describe('errors', () => {
+    it('should return errors for an empty account number', () => {
+      expect(accountNumber.errors('')).toEqual([
+        'Account number cannot be blank',
+        'Account number must contain at least 2 digits'
+      ]);
+    });
+    it('should return errors for a account number without enough digits', () => {
+      expect(accountNumber.errors('1')).toEqual([
+        'Account number must contain at least 2 digits'
+      ]);
+    });
+    it('should return errors for a account number with too many digits', () => {
+      expect(accountNumber.errors('123456789012345678')).toEqual([
+        'Account number cannot contain more than 17 digits'
+      ]);
+    });
+    it('should return an empty array for a valid account number', () => {
+      expect(accountNumber.errors('1234567890')).toEqual([]);
+    });
+  });
 });
