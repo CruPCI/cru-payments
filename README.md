@@ -19,6 +19,11 @@ Note: If you only need to accept one type of payment, use one of the specific bu
 #### Use with a module loader
 1. `import cruPayments from 'cru-payments/dist/cru-payments';`
 
+#### Use with Internet Explorer
+IE 10 requires the [MutationObserver polyfill](https://github.com/megawac/MutationObserver.js) to be included before cru-payments (Required for credit card payments only)
+Credit card payments do not work in IE 9 or below
+Bank account payments do not work in IE 8 or below
+
 ### Build and use locally
 1. `yarn` or `npm install`
 2. `yarn run build` or `npm run build`

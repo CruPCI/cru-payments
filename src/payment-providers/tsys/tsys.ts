@@ -12,6 +12,8 @@ import 'rxjs/add/operator/publishReplay';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/toPromise';
 
+declare let exports : any;
+
 /* eslint-disable no-undef */
 interface InputInfo {
   id: string;
@@ -42,14 +44,21 @@ const tsepUri = {
 let inputsObservable: Observable<any>;
 let previousEncryptObservable: Observable<any> = Observable.of('initial');
 
-export function init(env: string, deviceId: string, manifest: string){
-  // Return Observable that will emit an array of inputs to be used for TSYS encryption
+let env: string, deviceId: string, manifest: string;
+
+setupInputs(); // Add divs and setup watch for inputs on script load
+
+export function init(_env: string, _deviceId: string, _manifest: string){
+  env = _env;
+  deviceId = _deviceId;
+  manifest = _manifest;
+}
+
+function setupInputs(){
+  // creates Observable that will emit an array of inputs to be used for TSYS encryption
   inputsObservable = Observable.of(inputs)
     .mergeMap(inputs => {
-      // Since the TSYS library only lets us use the public key once, we need to delete the old divs and inputs in preparation for reloading the TSYS library
-      removeOldDivs();
-
-      const initializedInputs = inputs.map(input => {
+      return inputs.map(input => {
         // Add hidden divs to the page for TSYS to fill with their inputs
         const div = addDiv(input.id);
 
@@ -72,10 +81,6 @@ export function init(env: string, deviceId: string, manifest: string){
           mutationObserver.observe(div, { childList: true });
         });
       });
-
-      importVendorCode(env, deviceId, manifest);
-
-      return initializedInputs;
     })
     .mergeAll()
     .toArray()
@@ -85,16 +90,24 @@ export function init(env: string, deviceId: string, manifest: string){
         output[input.name] = input.element;
       });
       return output;
-    });
+    })
+    // Publish the replay so subscriptions share the same value and don't reinitialize the Observable
+    .publishReplay().refCount();
 }
 
-function importVendorCode(env: string, deviceId: string, manifest: string){
-  const fileRef: HTMLScriptElement = document.createElement("script");
-  fileRef.setAttribute("type", "text/javascript");
-  const uri: string = env === 'production' ? tsepUri.production : tsepUri.staging;
-  fileRef.setAttribute("src", `${uri}/${deviceId}?${manifest}`);
-  fileRef.onload = () => dispatchEvent(new Event('load')); // Make TSYS's error handling run when the page has already loaded
-  document.body.appendChild(fileRef);
+function importVendorCode(){
+  // Return Observable that completes when the code has been loaded
+  return new Observable((observer: Observer<any>) => {
+    const fileRef: HTMLScriptElement = document.createElement("script");
+    fileRef.setAttribute("type", "text/javascript");
+    const uri: string = env === 'production' ? tsepUri.production : tsepUri.staging;
+    fileRef.setAttribute("src", `${uri}/${deviceId}?${manifest}`);
+    fileRef.onload = () => {
+      observer.next('new key loaded');
+      observer.complete();
+    };
+    document.body.appendChild(fileRef);
+  });
 }
 
 function addDiv(id: string){
@@ -105,21 +118,14 @@ function addDiv(id: string){
   return div;
 }
 
-function removeOldDivs(){
-  for(let input of inputs){
-    const div: HTMLElement = document.getElementById(input.id);
-    if(div){
-      div.remove();
-    }
-  }
-}
-
 export function encrypt(cardNumber: string, cvv: string, month: number, year: number){
   // Map from previous observable to wait for the previous encryption to emit a value
   return previousEncryptObservable = previousEncryptObservable
     .catch(() => Observable.of('single item')) // convert errors to next emissions so the next observable waits correctly
-    // adding inputsObservable to the stream will reproduce it's value and reload the TSYS library to get a new public key
-    .mergeMap(() => inputsObservable)
+    .mergeMap(() => {
+      return exports._importVendorCode(); // Re-import vendor code to retrieve a new public key from TSYS. Use reference on exports obj so it can be mocked
+    })
+    .mergeMap(() => inputsObservable) // After waiting for previous observables to complete we get the TSYS inputs to fill with card details
     .mergeMap(inputs => {
       let monthString = String(month);
       monthString = monthString.length === 1 ? '0' + monthString : monthString;
@@ -129,7 +135,7 @@ export function encrypt(cardNumber: string, cvv: string, month: number, year: nu
       inputs.cvv.value = cvv;
       inputs.expiryDate.value = monthString + '/' + String(year);
 
-      // Emit response from TSYS encryption
+      // Emit response from TSYS tokenization
       return new Observable<any>((observer: Observer<any>) => {
         (<any> window).tsepHandler = (eventType: string, event: any) => {
           switch(eventType){
@@ -138,7 +144,11 @@ export function encrypt(cardNumber: string, cvv: string, month: number, year: nu
               observer.complete();
               break;
             case 'TokenEvent':
-              observer.next(event);
+              if(event && event.status === 'PASS'){
+                observer.next(event);
+              }else{
+                observer.error(event);
+              }
               observer.complete();
               break;
             case 'ErrorEvent':
@@ -162,5 +172,7 @@ export function encrypt(cardNumber: string, cvv: string, month: number, year: nu
 
 // For testing
 export {
-  inputsObservable as _inputsObservable
+  inputsObservable as _inputsObservable,
+  importVendorCode as _importVendorCode,
+  setupInputs as _setupInputs
 };
