@@ -2,8 +2,8 @@ import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/observable/throw';
 import {cleanInput} from '../utils/parsing';
 import * as cardNumberModule from './card-number/card-number';
-import {validateMinLength as cvvValidateMinLength, validateMaxLength as cvvValidateMaxLength, validateCardTypeLength as ccvValidateCardTypeLength, validateAll as cvvValidateAll} from './cvv/cvv';
-import {validateMonth, validateYear} from './expiry-date/expiry-date';
+import {validateMinLength as cvvValidateMinLength, validateMaxLength as cvvValidateMaxLength, validateCardTypeLength as ccvValidateCardTypeLength, validateAll as cvvValidateAll, errors as cvvErrors} from './cvv/cvv';
+import {validateMonth, validateYear, errors as expiryDateErrors} from './expiry-date/expiry-date';
 import {encrypt as creditCardEncrypt} from '../payment-providers/tsys/tsys';
 
 export {init} from '../payment-providers/tsys/tsys';
@@ -17,7 +17,7 @@ export const card = {
     checksum: cardNumberModule.validateChecksum,
     all: cardNumberModule.validateAll
   },
-  errors:cardNumberModule.errors,
+  errors: cardNumberModule.errors,
   info: {
     type: cardNumberModule.getCardType,
     expectedLengthForType: cardNumberModule.expectedLengthForType
@@ -30,7 +30,8 @@ export const cvv = {
     maxLength: cvvValidateMaxLength,
     cardTypeLength: ccvValidateCardTypeLength,
     all: cvvValidateAll
-  }
+  },
+  errors: cvvErrors
 };
 
 export const expiryDate = {
@@ -38,7 +39,8 @@ export const expiryDate = {
     month: validateMonth,
     year: validateYear,
     all: validateMonth
-  }
+  },
+  errors: expiryDateErrors
 };
 
 export function validate(cardNumber: string|number, cvvInput: string|number, month: string|number, year: string|number){

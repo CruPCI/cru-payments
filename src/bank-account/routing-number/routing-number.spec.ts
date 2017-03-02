@@ -87,4 +87,27 @@ describe('routing number', () => {
       expect(routingNumber.validateAll(1234567890123456)).toEqual(false);
     });
   });
+  describe('errors', () => {
+    it('should return errors for an empty routing number', () => {
+      expect(routingNumber.errors('')).toEqual([
+        'Routing number cannot be blank',
+        'Routing number must contain 9 digits',
+        'Routing number is invalid. At least one digit was entered incorrectly.'
+      ]);
+    });
+    it('should return errors for a routing number without the correct number of digits', () => {
+      expect(routingNumber.errors('12345678')).toEqual([
+        'Routing number must contain 9 digits',
+        'Routing number is invalid. At least one digit was entered incorrectly.'
+      ]);
+    });
+    it('should return errors for a routing number with an invalid checksum', () => {
+      expect(routingNumber.errors('123456789')).toEqual([
+        'Routing number is invalid. At least one digit was entered incorrectly.'
+      ]);
+    });
+    it('should return an empty array for a valid routing number', () => {
+      expect(routingNumber.errors('021000021')).toEqual([]);
+    });
+  });
 });

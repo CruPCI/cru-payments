@@ -100,4 +100,30 @@ describe('cvv', () => {
       expect(cvv.validateAll(1234567)).toEqual(false);
     });
   });
+  describe('errors', () => {
+    it('should return errors for an empty cvv', () => {
+      expect(cvv.errors('')).toEqual([
+        'CVV cannot be blank',
+        'CVV must contain at least 3 digits'
+      ]);
+    });
+    it('should return errors for a cvv without enough digits', () => {
+      expect(cvv.errors('12')).toEqual([
+        'CVV must contain at least 3 digits'
+      ]);
+    });
+    it('should return errors for a cvv with too many digits', () => {
+      expect(cvv.errors('12345')).toEqual([
+        'CVV cannot contain more than 4 digits'
+      ]);
+    });
+    it('should return errors for a cvv that is invalid for a card type', () => {
+      expect(cvv.errors('123', 'American Express')).toEqual([
+        'CVV is not valid for this card type'
+      ]);
+    });
+    it('should return an empty array for a valid cvv', () => {
+      expect(cvv.errors('123', 'MasterCard')).toEqual([]);
+    });
+  });
 });

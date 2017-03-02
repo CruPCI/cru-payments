@@ -64,7 +64,7 @@ Returns true if the card number's checksum is valid
 Returns true if all of the above card validators return true
 
 ##### `cruPayments.creditCard.card.errors(cardNumber)`
-Returns an array of error message strings. For each invalid validator above (excluding `all`, a string containing an error message for that validator will be added in the above order.
+Returns an array of error message strings. For each invalid validator above (excluding `all`), a string containing an error message for that validator will be added in the above order.
 
 ##### `cruPayments.creditCard.card.info.type(cardNumber)`
 Returns `'Visa'`, `'MasterCard'`, `'American Express'`, `'Discover'`, `'Diners Club'`, or `''` (if the type is unknown)
@@ -87,6 +87,9 @@ Returns true if card cvv length matches the allowed lengths for the given card t
 ##### `cruPayments.creditCard.cvv.validate.all(cvv, cardNumber)`
 Returns true if all of the above cvv validators return true
 
+##### `cruPayments.creditCard.cvv.errors(cvv, cardType)`
+Returns an array of error message strings. For each invalid validator above (excluding `all`), a string containing an error message for that validator will be added in the above order.
+
 #### Card Expiry Date
 
 ##### `cruPayments.creditCard.expiryDate.validate.month(month, year)`
@@ -97,6 +100,9 @@ Returns true if the year is not in the past
 
 ##### `cruPayments.creditCard.expiryDate.validate.all(month, year)`
 Alias for `cruPayments.creditCard.expiryDate.validate.month`
+
+##### `cruPayments.creditCard.expiryDate.errors(month, year)`
+Returns an array of error message strings. For each invalid validator above, a string containing an error message for that validator will be added in the above order.
 
 
 ### Bank Account
@@ -123,6 +129,9 @@ Returns true if routing number has a valid checksum
 ##### `cruPayments.bankAccount.routingNumber.validate.all(routingNumber)`
 Returns true if all of the above routing number validators return true
 
+##### `cruPayments.bankAccount.routingNumber.errors(routingNumber)`
+Returns an array of error message strings. For each invalid validator above (excluding `all`), a string containing an error message for that validator will be added in the above order.
+
 #### Account Number
 
 ##### `cruPayments.bankAccount.accountNumber.validate.minLength(accountNumber)`
@@ -133,6 +142,9 @@ Returns true if account number has a valid max length
 
 ##### `cruPayments.bankAccount.accountNumber.validate.all(accountNumber)`
 Returns true if all of the above account number validators return true
+
+##### `cruPayments.bankAccount.accountNumber.errors(accountNumber)`
+Returns an array of error message strings. For each invalid validator above (excluding `all`), a string containing an error message for that validator will be added in the above order.
 
 
 ## Development
