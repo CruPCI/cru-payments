@@ -70,6 +70,7 @@ function fetchTsysData(){
         };
 
         try {
+          // Execute TSYS code in function. Add return values to get data that is not publicly advertised by TSYS. Call onload to run TSYS error handling if unsuccessful.
           const tsysData: TsysData = new Function('tsepHandler', `${response}
           try{
             return { url: getUrl(), key: getKey(), keyId: getKeyId() };
@@ -106,6 +107,7 @@ export function encrypt(cardNumber: string, cvv: string, month: number, year: nu
       monthString = monthString.length === 1 ? '0' + monthString : monthString;
       const expiryDate = monthString + '/' + String(year);
 
+      // Encryption method not publicly advertised by TSYS. Extracted from tsep.js.
       const encryptor = new JSEncrypt();
       encryptor.setKey(tsysData.key);
       const encryptedNumber = encryptor.encrypt(cardNumber);
@@ -113,6 +115,7 @@ export function encrypt(cardNumber: string, cvv: string, month: number, year: nu
         return Observable.throw({ message: 'Encryption error', data: 'Could not encrypt the card number with the key provided by TSYS' });
       }
 
+      // Request format not publicly advertised by TSYS. /generateTsepToken url fragment, method, and request body format extracted from tsep.js.
       return exports._makeRequest(
         tsysData.url + '/generateTsepToken',
         {
