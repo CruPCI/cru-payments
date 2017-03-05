@@ -1,71 +1,80 @@
 import * as ccp from './ccp';
 
-import {Promise} from 'es6-promise';
+import {once as mockOnce} from 'fetch-mock';
 
 describe('ccp', () => {
   describe('init', () => {
-    beforeEach(() => {
-      spyOn((<any> window), 'fetch');
-    });
     it('should use the backup key provided if there\'s a network error while fetching the key', (done) => {
-      (<any> window).fetch.and.callFake(() => Promise.reject('network error'));
+      mockOnce(
+        'https://ccpstaging.ccci.org/api/v1/rest/client-encryption-keys/current',
+        { throws: new TypeError('Failed to fetch') }
+      );
       ccp.init('staging', '<backup key>');
       ccp._ccpKeyObservable
         .subscribe(key => {
           expect(key).toEqual('<backup key>');
-          expect((<any> window).fetch).toHaveBeenCalledWith('https://ccpstaging.ccci.org/api/v1/rest/client-encryption-keys/current');
           done();
         }, () => done.fail('should not have thrown an error'));
     });
     it('should use the backup key provided if the api returns a non-ok status code while fetching the key', (done) => {
-      (<any> window).fetch.and.callFake(() => Promise.resolve({ ok: false }));
+      mockOnce(
+        'https://ccpstaging.ccci.org/api/v1/rest/client-encryption-keys/current',
+        500
+      );
       ccp.init('staging', '<backup key>');
       ccp._ccpKeyObservable
         .subscribe(key => {
           expect(key).toEqual('<backup key>');
-          expect((<any> window).fetch).toHaveBeenCalledWith('https://ccpstaging.ccci.org/api/v1/rest/client-encryption-keys/current');
           done();
         }, () => done.fail('should not have thrown an error'));
     });
     it('should throw an error if no backup key was provided and there was a network error fetching the key from the api', (done) => {
-      (<any> window).fetch.and.callFake(() => Promise.reject('network error'));
+      mockOnce(
+        'https://ccpstaging.ccci.org/api/v1/rest/client-encryption-keys/current',
+        { throws: new TypeError('Failed to fetch') }
+      );
       ccp.init('staging');
       ccp._ccpKeyObservable
         .subscribe(() => done.fail('should not have thrown an error'),
           error => {
-            expect(error).toEqual('There was an error retrieving the key from CCP and no backup key was provided: network error');
-            expect((<any> window).fetch).toHaveBeenCalledWith('https://ccpstaging.ccci.org/api/v1/rest/client-encryption-keys/current');
+            expect(error).toEqual('There was an error retrieving the key from CCP and no backup key was provided: TypeError: Failed to fetch');
             done();
           });
     });
-    it('should throw an error if no backup key was provided and there was an error fetching the key from the api', (done) => {
-      (<any> window).fetch.and.callFake(() => Promise.resolve({ ok: false, statusText: 'Unauthorized' }));
+    it('should throw an error if no backup key was provided and there was a server error fetching the key from the api', (done) => {
+      mockOnce(
+        'https://ccpstaging.ccci.org/api/v1/rest/client-encryption-keys/current',
+        500
+      );
       ccp.init('staging');
       ccp._ccpKeyObservable
         .subscribe(() => done.fail('should not have thrown an error'),
           error => {
-            expect(error).toEqual('There was an error retrieving the key from CCP and no backup key was provided: Unauthorized');
-            expect((<any> window).fetch).toHaveBeenCalledWith('https://ccpstaging.ccci.org/api/v1/rest/client-encryption-keys/current');
+            expect(error).toEqual('There was an error retrieving the key from CCP and no backup key was provided: Internal Server Error');
             done();
           });
     });
     it('should use the key returned by the api', (done) => {
-      (<any> window).fetch.and.callFake(() => Promise.resolve({ ok: true, text: () => Promise.resolve('<key from api>') }));
+      mockOnce(
+        'https://ccpstaging.ccci.org/api/v1/rest/client-encryption-keys/current',
+        '<key from api>'
+      );
       ccp.init('staging', '<backup key>');
       ccp._ccpKeyObservable
         .subscribe(key => {
           expect(key).toEqual('<key from api>');
-          expect((<any> window).fetch).toHaveBeenCalledWith('https://ccpstaging.ccci.org/api/v1/rest/client-encryption-keys/current');
           done();
         }, () => done.fail('should not have thrown an error'));
     });
     it('should use the key returned by the production api', (done) => {
-      (<any> window).fetch.and.callFake(() => Promise.resolve({ ok: true, text: () => Promise.resolve('<key from api>') }));
+      mockOnce(
+        'https://ccp.ccci.org/api/v1/rest/client-encryption-keys/current',
+        '<key from api>'
+      );
       ccp.init('production', '<backup key>');
       ccp._ccpKeyObservable
         .subscribe(key => {
           expect(key).toEqual('<key from api>');
-          expect((<any> window).fetch).toHaveBeenCalledWith('https://ccp.ccci.org/api/v1/rest/client-encryption-keys/current');
           done();
         }, () => done.fail('should not have thrown an error'));
     });
@@ -73,7 +82,10 @@ describe('ccp', () => {
   describe('encrypt', () => {
     beforeEach(() => {
       // Setup ccp to use provided backup key
-      spyOn((<any> window), 'fetch').and.callFake(() => Promise.reject('network error'));
+      mockOnce(
+        'https://ccpstaging.ccci.org/api/v1/rest/client-encryption-keys/current',
+        500
+      );
       this.validKey = `-----BEGIN PUBLIC KEY-----
 MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCqGKukO1De7zhZj6+H0qtjTkVxwTCpvKe4eCZ0
 FPqri0cb2JZfXJ/DgYSF6vUpwmJG8wVQZKjeGcjDOL5UlsuusFncCzWBQ7RKNUSesmQRMSGkVb1/
