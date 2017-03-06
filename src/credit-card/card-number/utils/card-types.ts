@@ -5,13 +5,13 @@ export const cardTypeConsts = [
     name: 'Visa',
     lengths: [13, 16],
     prefixExpression: '4',
-    cvvLengths: [3, 4]
+    cvvLengths: [3]
   },
   {
     name: 'MasterCard',
     lengths: [16],
     prefixExpression: '5[1-5]|222[1-9]|22[3-9]|2[3-6]|27[01]|2720',
-    cvvLengths: [3, 4]
+    cvvLengths: [3]
   },
   {
     name: 'American Express',
@@ -23,13 +23,13 @@ export const cardTypeConsts = [
     name: 'Discover',
     lengths: [16],
     prefixExpression: '65|64[4-9]|622|6011|35[2-8]',
-    cvvLengths: [3, 4]
+    cvvLengths: [3]
   },
   {
     name: 'Diners Club',
     lengths: [14],
     prefixExpression: '36|30[0-5]',
-    cvvLengths: [3, 4]
+    cvvLengths: [3]
   }
 ];
 
