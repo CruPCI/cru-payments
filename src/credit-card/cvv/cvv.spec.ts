@@ -90,9 +90,8 @@ describe('cvv', () => {
       expect(cvv.validateCardTypeLength(1234, 'American Express')).toEqual(true);
       expect(cvv.validateCardTypeLength(123, 'Visa')).toEqual(true);
     });
-    it('should return false if if cvv is invalid', () => {
+    it('should return false if cvv is invalid', () => {
       expect(cvv.validateAll(undefined)).toEqual(false);
-      expect(cvv.validateAll(null)).toEqual(false);
       expect(cvv.validateAll('')).toEqual(false);
       expect(cvv.validateAll(1)).toEqual(false);
       expect(cvv.validateAll(12)).toEqual(false);
@@ -129,6 +128,9 @@ describe('cvv', () => {
     });
     it('should return an empty array for a valid cvv', () => {
       expect(cvv.errors('123', 'MasterCard')).toEqual([]);
+    });
+    it('should return true if cvv is null which indicates that the cvv is optional', () => {
+      expect(cvv.validateAll(null)).toEqual(true);
     });
   });
 });

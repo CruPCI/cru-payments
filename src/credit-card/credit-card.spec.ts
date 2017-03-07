@@ -108,6 +108,15 @@ describe('credit card', () => {
           done.fail('Observable should not have thrown an error');
         });
     });
+    it('should allow a null cvv which indicates that the cvv is optional', (done) => {
+      creditCard.encrypt('4111111111111111', null, 4, 2015)
+        .subscribe(response => {
+          expect(response).toEqual('<tsys card token>');
+          done();
+        }, () => {
+          done.fail('Observable should not have thrown an error');
+        });
+    });
     it('should return an errored Observable if encryption was unsuccessful', (done) => {
       (<jasmine.Spy> tsys.encrypt).and.returnValue(Observable.throw('some error'));
       creditCard.encrypt('4111111111111111', '123', 4, 2015)
