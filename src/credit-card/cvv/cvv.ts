@@ -21,6 +21,9 @@ export function validateCardTypeLength(input: string|number, cardType?: string){
 }
 
 export function validateAll(input: string|number, cardType?: string){
+  if(input === null){ // allow CVV to be optional if it is null
+    return true;
+  }
   const cvv = cleanInput(input);
   return !!cvv &&
     validateMinLength(cvv) &&

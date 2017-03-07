@@ -53,5 +53,6 @@ export function encrypt(cardNumber: string|number, cvv: string|number, month: st
   if(!validate(cardNumber, cvv, month, year)){
     return Observable.throw('Credit card details invalid');
   }
-  return creditCardEncrypt(cleanInput(cardNumber), cleanInput(cvv), Number(cleanInput(month)), Number(cleanInput(year)));
+  // allow CVV to be optional if it is null
+  return creditCardEncrypt(cleanInput(cardNumber), cvv === null ? null : cleanInput(cvv), Number(cleanInput(month)), Number(cleanInput(year)));
 }
