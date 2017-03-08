@@ -16,7 +16,7 @@ export const cardTypeConsts = [
   {
     name: 'American Express',
     lengths: [15],
-    prefixExpression: '3[4,7]',
+    prefixExpression: '3[47]',
     cvvLengths: [4]
   },
   {
@@ -28,7 +28,7 @@ export const cardTypeConsts = [
   {
     name: 'Diners Club',
     lengths: [14],
-    prefixExpression: '36|30[0-5]',
+    prefixExpression: '36|38|30[0-5]',
     cvvLengths: [3]
   }
 ];

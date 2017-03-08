@@ -20,13 +20,13 @@ describe('card types', () => {
       expect(cardTypes.validateKnownType('601111111111111')).toEqual(true);
       expect(cardTypes.validateKnownType('34111111111111')).toEqual(true);
       expect(cardTypes.validateKnownType('3611111111111')).toEqual(true);
+      expect(cardTypes.validateKnownType('38')).toEqual(true);
     });
     it('should return false for unknown types', () => {
       expect(cardTypes.validateKnownType('1')).toEqual(false);
       expect(cardTypes.validateKnownType('1111111111111111')).toEqual(false);
       expect(cardTypes.validateKnownType('50')).toEqual(false);
       expect(cardTypes.validateKnownType('57')).toEqual(false);
-      expect(cardTypes.validateKnownType('38')).toEqual(false);
     });
   });
   describe('validateTypeLength', () => {
@@ -99,6 +99,7 @@ describe('card types', () => {
     });
     it('should detect Diners Club correctly', () => {
       expect(cardTypes.getCardTypeName('36')).toEqual('Diners Club');
+      expect(cardTypes.getCardTypeName('38')).toEqual('Diners Club');
       expect(cardTypes.getCardTypeName('300')).toEqual('Diners Club');
       expect(cardTypes.getCardTypeName('301')).toEqual('Diners Club');
       expect(cardTypes.getCardTypeName('302')).toEqual('Diners Club');
@@ -108,7 +109,7 @@ describe('card types', () => {
       expect(cardTypes.getCardTypeName('36000000000000')).toEqual('Diners Club');
     });
     it('should return an empty string for an unknown type', () => {
-      expect(cardTypes.getCardTypeName('38')).toEqual('');
+      expect(cardTypes.getCardTypeName('39')).toEqual('');
       expect(cardTypes.getCardTypeName('111111111')).toEqual('');
       expect(cardTypes.getCardTypeName('33333')).toEqual('');
     });
@@ -122,7 +123,7 @@ describe('card types', () => {
     });
     it('should return undefined for an unknown type', () => {
       expect(cardTypes.expectedLength('11')).toEqual(undefined);
-      expect(cardTypes.expectedLength('38')).toEqual(undefined);
+      expect(cardTypes.expectedLength('39')).toEqual(undefined);
     });
   });
 });
