@@ -152,6 +152,12 @@ describe('tsys', () => {
     });
   });
 
+  describe('removeAppendChild', () => {
+    it('it should remove appendChild calls', () => {
+      expect(tsys._removeAppendChild(`var fileref=document.createElement("script");fileref.setAttribute("type","text/javascript");fileref.setAttribute("src", "https://stagegw.transnox.com/transit-tsep-web/resources/jsencrypt.js");document.getElementsByTagName("head")[0].appendChild(fileref);var fileref=document.createElement("script");fileref.setAttribute("type","text/javascript");fileref.setAttribute("src", "https://stagegw.transnox.com/transit-tsep-web/resources/tsep.js");document.getElementsByTagName("head")[0].appendChild(fileref);function getKey(){return '-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDV1MDP6OJRHpaf8QvLwchZe2fpmQEhr7GHzypHov3504w/cNxEI5+F4xb70PwtZ+AvfAMg6h9SHnaKf4TrbUepOyAb5FIYXPgidqezV0hxWSnK6L44JOmS/fJDmD8JOl4KmWKbfsGio+qVNOQ0M96NxTWQbM5Bsd7r/5NXDleJrQIDAQAB-----END PUBLIC KEY-----'; } function getKeyId(){return 'p6ngr1edsfdginitgef9hpalbn'} function getDeviceId(){return '88812128320102'} function getManifest(){return '486139234ec6da677cab682f15c1dc6a7901251fafe34ea165a367eab1cfa9bbba07218b03754e61782dd01782674358db91cf274df96d7c5ac2280b03351d0f57616d7e'} function getUrl(){return 'https://stagegw.transnox.com/transit-tsep-web'};`)).toEqual(`var fileref=document.createElement("script");fileref.setAttribute("type","text/javascript");fileref.setAttribute("src", "https://stagegw.transnox.com/transit-tsep-web/resources/jsencrypt.js");var fileref=document.createElement("script");fileref.setAttribute("type","text/javascript");fileref.setAttribute("src", "https://stagegw.transnox.com/transit-tsep-web/resources/tsep.js");function getKey(){return '-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDV1MDP6OJRHpaf8QvLwchZe2fpmQEhr7GHzypHov3504w/cNxEI5+F4xb70PwtZ+AvfAMg6h9SHnaKf4TrbUepOyAb5FIYXPgidqezV0hxWSnK6L44JOmS/fJDmD8JOl4KmWKbfsGio+qVNOQ0M96NxTWQbM5Bsd7r/5NXDleJrQIDAQAB-----END PUBLIC KEY-----'; } function getKeyId(){return 'p6ngr1edsfdginitgef9hpalbn'} function getDeviceId(){return '88812128320102'} function getManifest(){return '486139234ec6da677cab682f15c1dc6a7901251fafe34ea165a367eab1cfa9bbba07218b03754e61782dd01782674358db91cf274df96d7c5ac2280b03351d0f57616d7e'} function getUrl(){return 'https://stagegw.transnox.com/transit-tsep-web'};`);
+    });
+  });
+
   describe('encrypt', () => {
     beforeEach(() => {
       this.validKey = '-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCH+HoBX8drfBn88Z49gYnK7Z9FVbbBg76lXHfoEUSPHLuzQ9ws4fR3PzDcKO3VIb6/9g3VBfFvMLrdimAGRwqmm4kk/JnnDFWF/HBVmncRTtDkNPuEN15+XJSB8RcvUVQ7s8gkutCU/w2ZXzI5+7XpEyX08Ao7f2IKuncBQmDQJwIDAQAB-----END PUBLIC KEY-----';
@@ -248,10 +254,10 @@ describe('tsys', () => {
 
       tsys.encrypt('1234567890123', '123', 12, 2015)
         .subscribe(() => {},
-        error => {
-          expect(error).toEqual({ message: 'Encryption error', data: 'Could not encrypt the card number with the key provided by TSYS' });
-          done();
-        });
+          error => {
+            expect(error).toEqual({ message: 'Encryption error', data: 'Could not encrypt the card number with the key provided by TSYS' });
+            done();
+          });
     });
 
     it('should handle a error when TSYS status is not pass', (done) => {
