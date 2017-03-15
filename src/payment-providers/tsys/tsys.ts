@@ -71,7 +71,7 @@ function fetchTsysData(){
 
         try {
           // Execute TSYS code in function. Add return values to get data that is not publicly advertised by TSYS. Call onload to run TSYS error handling if unsuccessful.
-          const tsysData: TsysData = new Function('tsepHandler', `${response}
+          const tsysData: TsysData = new Function('tsepHandler', `${removeAppendChild(response)}
           try{
             return { url: getUrl(), key: getKey(), keyId: getKeyId() };
           } catch(e){}
@@ -91,6 +91,10 @@ function fetchTsysData(){
         observer.complete();
       });
     });
+}
+
+function removeAppendChild(code: string){
+  return code.replace(/[^;]*appendChild.*?;/g, ''); // Prevent script imports from being added to the DOM
 }
 
 export function encrypt(cardNumber: string, cvv: string, month: number, year: number): Observable<any> {
@@ -151,5 +155,6 @@ export {
   deviceId as _deviceId,
   manifest as _manifest,
   makeRequest as _makeRequest,
-  fetchTsysData as _fetchTsysData
+  fetchTsysData as _fetchTsysData,
+  removeAppendChild as _removeAppendChild
 };
