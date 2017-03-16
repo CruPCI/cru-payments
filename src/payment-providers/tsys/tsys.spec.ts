@@ -1,7 +1,7 @@
 import * as tsys from './tsys';
 
 import {Observable} from 'rxjs/Observable';
-import {once as mockOnce} from 'fetch-mock';
+import * as fetchMock from 'fetch-mock';
 
 /* eslint-disable no-undef */
 interface TsysError {
@@ -11,6 +11,14 @@ interface TsysError {
 /* eslint-enable no-undef */
 
 describe('tsys', () => {
+  beforeEach(() => {
+    jasmine.clock().install();
+    jasmine.clock().mockDate(new Date(2015, 3, 1)); // Apr 01 2015
+  });
+  afterEach(() => {
+    jasmine.clock().uninstall();
+  });
+
   describe('init', () => {
     it('should set config variables', () => {
       tsys.init('staging', 'deviceId', 'manifest');
@@ -22,7 +30,7 @@ describe('tsys', () => {
 
   describe('makeRequest', () => {
     it('should handle a json response', (done) => {
-      mockOnce(
+      fetchMock.once(
         '<some url>',
         { key: 'value' }
       );
@@ -33,7 +41,7 @@ describe('tsys', () => {
         });
     });
     it('should handle a text response', (done) => {
-      mockOnce(
+      fetchMock.once(
         '<some url>',
         'some string'
       );
@@ -44,7 +52,7 @@ describe('tsys', () => {
         });
     });
     it('should handle a server error', (done) => {
-      mockOnce(
+      fetchMock.once(
         '<some url>',
         new Response('some error', { status: 500, statusText: 'Internal Server Error' })
       );
@@ -56,7 +64,7 @@ describe('tsys', () => {
           });
     });
     it('should handle a network error', (done) => {
-      mockOnce(
+      fetchMock.once(
         '<some url>',
         { throws: new TypeError('Failed to fetch') }
       );
@@ -266,6 +274,57 @@ describe('tsys', () => {
         .subscribe(() => {},
           error => {
             expect(error).toEqual({ message: 'Tokenization error', data: { status: 'FAILURE' } });
+            done();
+          });
+    });
+  });
+
+  describe('perform live test', () => {
+    it('should successfully receive a token from TSYS', (done) => {
+      (<any> fetchMock)._unMock();
+      (<any> window).fetch('https://give-stage2.cru.org/cortex/tsys/manifest')
+        .then((response: Response) => {
+          if (!response.ok) {
+            throw 'Error fetching deviceId and manifest from EP';
+          }
+          return response.json();
+        })
+        .then((tsysData: { deviceId: string, manifest: string }) => {
+          tsys.init('staging', tsysData.deviceId, tsysData.manifest);
+          tsys.encrypt('4111111111111111', '123', 12, new Date().getFullYear() + 1)
+            .subscribe(response => {
+                expect(response).toEqual({
+                  responseCode: 'A0000',
+                  status: 'PASS',
+                  message: 'Success',
+                  expirationDate: '12/2016',
+                  cvv2: '123',
+                  tsepToken: jasmine.stringMatching(/^[A-Za-z0-9]{16}$/),
+                  maskedCardNumber: '1111',
+                  cardType: 'V',
+                  transactionID: jasmine.stringMatching(/^\d{7,8}$/)
+                });
+                done();
+              },
+              error => {
+                done.fail(error);
+              });
+        })
+        .catch((error: any) => done.fail(error));
+    });
+    it('should receive an error message from TSYS', (done) => {
+      (<any> fetchMock)._unMock();
+      tsys.init('staging', 'test', 'testingErrorMessage');
+      tsys.encrypt('4111111111111111', '123', 12, new Date().getFullYear() + 1)
+        .subscribe(() => {
+            done.fail('Should not have succeeded');
+          },
+          error => {
+            expect(error).toEqual({ message: 'TSYS load error', data: {
+              responseCode: 'TSEPERR911',
+              status: 'FAIL',
+              message: 'Authentication Failed' }
+            });
             done();
           });
     });
