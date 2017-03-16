@@ -12,7 +12,15 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['PhantomJS'],
+    browsers: ['PhantomJS-customReferrer'],
+    customLaunchers: {
+      'PhantomJS-customReferrer': {
+        base: 'PhantomJS',
+        options: {
+          customHeaders: { Referer: process.env.TSYS_REFERRER }
+        }
+      }
+    },
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
