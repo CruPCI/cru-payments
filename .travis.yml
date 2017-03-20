@@ -26,6 +26,7 @@ deploy:
   skip_cleanup: true
 notifications:
   hipchat:
+    on_success: change
     rooms:
       secure: Rfy9hfbS87Xp0JG6x33+JCPp9VSZoLYyRhcsPkKKIreO6WpM8eXtvS3Jn6f8Xyi/ZNPpJ0/M3lwz2Gr0HI2uWpbvsxgknBHwO5RFjZ3HnDzf2pQH7oep56+a3ps0QDY6blERdcB9OUw/SAeEkjPx+D5NSqRl/452/Lk7oybgF708u0szbBcQvol/mxE3bsBhHsJJFXRKn2J58TIImwbor3VZKWLnlRQMGrC3+l5j+AHQrl5L2MvCJHtqLAmt7ysW+vWXV6ABOcAyUO2PcJ7ripXXTXv0gYNBYfqcNH1VveN6nO7mTst63CZCOiHPU4zLb/FrPO0zcx8VMjh5qdIrfV/qbDUGQnxabfX3LxKtbhacbh0YHjk73XO82PTPRW6AtIStguhXi6f3Y0l0Ybm8d16ZYZlQWSE3wTRHr2TcB5nOVa6ZKgCS+4T77fGT5sizHTYN5mJUx2BLuoYAGcwNddAJdnQulcSEs8SFbl5fXBDtGTRkzh+ffo0F3CLmVgAKhB2HwfvgK8MonowSbng9AVZP0+OObHV+JWWmEext1Jd3lZn/pw399rm4AHaKx5WicV+wjFP53LckuX1scEzHIqwesunROjaIvViRkiZy1Ld1+5RPGrmOjkvUuhBdqfElheDlQ+GVG0PY/A87OZP0AYiaZ20rJZXOSbtbK1rQ8wU=
     on_success: change
