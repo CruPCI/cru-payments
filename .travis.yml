@@ -32,3 +32,5 @@ notifications:
     template:
       - '<a href="%{build_url}">%{repository_slug}#%{build_number} - %{branch}</a> %{message} Commit by %{author}: <a href="%{compare_url}">%{commit_subject}</a>'
     format: html
+    on_pull_requests: false
+    notify: true
