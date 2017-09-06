@@ -28,6 +28,50 @@ Bank account payments do not work in IE 8 or below
 2. `yarn run build` or `npm run build`
 3. Use `dist/cru-payments.js` in your app
 
+## Example
+
+### With observable
+```js
+import cruPayments from 'cru-payments/dist/cru-payments';
+
+cruPayments.creditCard.init('production', '00000000000000', '00000000000000000000');
+cruPayments.creditCard.encrypt('4111111111111111', '123', '03', '2020')
+    .subscribe(tokenObj => {
+        console.log({
+            tokenizedCardNumber: tokenObj.tsepToken,
+            lastFourDigits: tokenObj.maskedCardNumber,
+            expirationDate: tokenObj.expirationDate,
+            cvv: tokenObj.cvv2,
+            cardType: tokenObj.cardType,
+            transactionId: tokenObj.transactionID,
+        });
+    }, error => {
+        console.log('Error tokenizing credit card', error);
+    });
+```
+### Converting to promise
+```js
+import cruPayments from 'cru-payments/dist/cru-payments';
+
+cruPayments.creditCard.init('production', '00000000000000', '00000000000000000000');
+cruPayments.creditCard.encrypt('4111111111111111', '123', '03', '2020')
+    .toPromise() // Relies on browser's native promise implementation by default. Will throw error on older browsers.
+    .then(tokenObj => {
+        console.log({
+            tokenizedCardNumber: tokenObj.tsepToken,
+            lastFourDigits: tokenObj.maskedCardNumber,
+            expirationDate: tokenObj.expirationDate,
+            cvv: tokenObj.cvv2,
+            cardType: tokenObj.cardType,
+            transactionId: tokenObj.transactionID,
+        });
+    }, error => {
+        console.log('Error tokenizing credit card', error);
+    });
+```
+
+You can pass a valid ES2015 compatible promise to `.toPromise(PromiseConstructor)` to prevent it from failing on browsers without promise implementations. Passing Angular's `$q` works. Providing a polyfill would also work. See: http://reactivex.io/rxjs/class/es6/Observable.js~Observable.html#instance-method-toPromise
+
 ## API Usage
 
 ### Credit Card
