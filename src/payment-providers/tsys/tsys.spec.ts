@@ -311,7 +311,7 @@ describe('tsys', () => {
               });
         })
         .catch((error: any) => done.fail(error));
-    });
+    }, 10000); // Give TSYS 10s to respond
     it('should receive an error message from TSYS', (done) => {
       (<any> fetchMock)._unMock();
       tsys.init('staging', 'test', 'testingErrorMessage');
@@ -327,6 +327,6 @@ describe('tsys', () => {
             });
             done();
           });
-    });
+    }, 10000); // Give TSYS 10s to respond
   });
 });
