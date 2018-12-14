@@ -1,6 +1,8 @@
 const path = require('path');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
+  .BundleAnalyzerPlugin;
 
-module.exports = {
+module.exports = (env = {}) => ({
   entry: {
     'cru-payments': './src/index.ts',
     'cru-payments-ba': './src/bank-account/bank-account.ts',
@@ -12,6 +14,7 @@ module.exports = {
     library: 'cruPayments',
     libraryTarget: 'umd',
   },
+  plugins: env.analyze ? [new BundleAnalyzerPlugin()] : [],
   module: {
     rules: [
       // all files with a `.ts` extension but not `.spec.ts` will be handled by `ts-loader`
@@ -26,4 +29,4 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.js'],
   },
-};
+});

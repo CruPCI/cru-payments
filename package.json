@@ -6,6 +6,7 @@
   "scripts": {
     "start": "webpack-dev-server",
     "build": "webpack -p",
+    "build:analyze": "webpack -p --env.analyze",
     "lint": "eslint 'src/**'",
     "test": "karma start",
     "prepublish": "npm run build",
@@ -55,6 +56,7 @@
     "typescript": "^3.2.2",
     "typescript-eslint-parser": "^21.0.2",
     "webpack": "^4.27.1",
+    "webpack-bundle-analyzer": "^3.0.3",
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "^3.1.10"
   },
