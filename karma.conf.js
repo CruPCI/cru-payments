@@ -1,4 +1,18 @@
-// Karma configuration
+const path = require('path');
+const webpackConfig = require('./webpack.config.js')();
+
+delete webpackConfig.entry;
+delete webpackConfig.plugins;
+delete webpackConfig.devServer;
+webpackConfig.devtool = 'inline-source-map';
+webpackConfig.module.rules.push({
+  test: /^(?!.*\.(spec|fixture)\.js$).*\.js$/,
+  include: path.resolve('src/'),
+  loader: 'istanbul-instrumenter-loader',
+  query: {
+    esModules: true,
+  },
+});
 
 module.exports = function(config) {
   config.set({
@@ -7,16 +21,20 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine', 'karma-typescript'],
+    frameworks: ['jasmine'],
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['PhantomJS-customReferrer'],
+    browsers: ['Chrome-customReferrer'],
     customLaunchers: {
-      'PhantomJS-customReferrer': {
-        base: 'PhantomJS',
+      'Chrome-customReferrer': {
+        base: 'Chrome',
         options: {
-          customHeaders: { Referer: process.env.TSYS_REFERRER },
+          customHeaders: {
+            Referer:
+              'https://sites-stage.familylife.com/fldonate/' ||
+              process.env.TSYS_REFERRER,
+          },
         },
       },
     },
@@ -24,7 +42,7 @@ module.exports = function(config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['mocha', 'karma-typescript'],
+    reporters: ['mocha', 'coverage-istanbul'],
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
@@ -35,7 +53,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
 
-    files: ['src/**/*.ts'],
+    files: [{ pattern: 'src/all-tests.spec.js', watched: false }],
 
     // level of logging
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
@@ -44,18 +62,14 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      '**/*.ts': ['karma-typescript'],
+      'src/all-tests.spec.js': ['webpack', 'sourcemap'],
     },
 
-    karmaTypescriptConfig: {
-      tsconfig: './tsconfig.json',
-      reports: {
-        html: 'coverage',
-        lcovonly: {
-          directory: 'coverage',
-          filename: 'lcov.info',
-        },
-      },
+    webpack: webpackConfig,
+
+    coverageIstanbulReporter: {
+      reports: ['lcov'],
+      fixWebpackSourcePaths: true,
     },
   });
 };

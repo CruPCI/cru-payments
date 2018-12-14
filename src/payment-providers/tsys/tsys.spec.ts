@@ -2,14 +2,16 @@ import * as tsys from './tsys';
 
 import * as fetchMock from 'fetch-mock';
 
-/* eslint-disable no-undef */
 interface TsysError {
   message: string;
   data: any;
 }
-/* eslint-enable no-undef */
 
 describe('tsys', () => {
+  afterEach(() => {
+    fetchMock.restore();
+  });
+
   beforeEach(() => {
     jasmine.clock().install();
     jasmine.clock().mockDate(new Date(2015, 3, 1)); // Apr 01 2015
@@ -372,7 +374,7 @@ describe('tsys', () => {
 
   describe('perform live test', () => {
     it('should successfully receive a token from TSYS', done => {
-      (<any>fetchMock)._unMock();
+      // (<any>fetchMock)._unMock();
       (<any>window)
         .fetch('https://give-stage2.cru.org/cortex/tsys/manifest')
         .then((response: Response) => {
@@ -413,7 +415,7 @@ describe('tsys', () => {
         .catch((error: any) => done.fail(error));
     }, 10000); // Give TSYS 10s to respond
     it('should receive an error message from TSYS', done => {
-      (<any>fetchMock)._unMock();
+      // (<any>fetchMock)._unMock();
       tsys.init('staging', 'test', 'testingErrorMessage');
       tsys
         .encrypt('4111111111111111', '123', 12, new Date().getFullYear() + 1)

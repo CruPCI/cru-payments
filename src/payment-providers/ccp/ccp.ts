@@ -7,24 +7,26 @@ const stagingKeyUri =
 
 let ccpKeyPromise: Promise<string>;
 
-export async function init(env: string, backupKey?: string) {
-  let response;
+export function init(env: string, backupKey?: string) {
+  return (ccpKeyPromise = (async () => {
+    let response;
 
-  try {
-    response = await fetch(env === 'production' ? prodKeyUri : stagingKeyUri);
-  } catch (error) {
-    if (backupKey) {
-      return backupKey;
-    } else {
-      throw `There was an error retrieving the key from CCP and no backup key was provided: ${error}`;
+    try {
+      response = await fetch(env === 'production' ? prodKeyUri : stagingKeyUri);
+    } catch (error) {
+      if (backupKey) {
+        return backupKey;
+      } else {
+        throw `There was an error retrieving the key from CCP and no backup key was provided: ${error}`;
+      }
     }
-  }
 
-  if (response.ok) {
-    return await (ccpKeyPromise = response.text());
-  } else {
-    throw response.statusText;
-  }
+    if (response.ok) {
+      return await response.text();
+    } else {
+      throw response.statusText;
+    }
+  })());
 }
 
 export async function encrypt(accountNumber: string) {
@@ -50,4 +52,4 @@ function clear() {
 }
 
 // For testing
-export { ccpKeyPromise as _ccpKeyObservable, clear as _clear };
+export { ccpKeyPromise as _ccpKeyPromise, clear as _clear };

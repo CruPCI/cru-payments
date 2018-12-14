@@ -96,10 +96,10 @@ describe('credit card', () => {
     afterEach(function() {
       jasmine.clock().uninstall();
     });
-    it('should return an errored Observable if something is invalid', done => {
+    it('should return an errored Promise if something is invalid', done => {
       creditCard.encrypt('4111111111111112', '123', 4, 2015).then(
         () => {
-          done.fail('Observable should have thrown an error');
+          done.fail('Promise should have thrown an error');
         },
         error => {
           expect(error).toEqual('Credit card details invalid');
@@ -114,7 +114,7 @@ describe('credit card', () => {
           done();
         },
         () => {
-          done.fail('Observable should not have thrown an error');
+          done.fail('Promise should not have thrown an error');
         },
       );
     });
@@ -125,15 +125,15 @@ describe('credit card', () => {
           done();
         },
         () => {
-          done.fail('Observable should not have thrown an error');
+          done.fail('Promise should not have thrown an error');
         },
       );
     });
-    it('should return an errored Observable if encryption was unsuccessful', done => {
+    it('should return an errored Promise if encryption was unsuccessful', done => {
       (<jasmine.Spy>tsys.encrypt).and.returnValue(Promise.reject('some error'));
       creditCard.encrypt('4111111111111111', '123', 4, 2015).then(
         () => {
-          done.fail('Observable should have thrown an error');
+          done.fail('Promise should have thrown an error');
         },
         error => {
           expect(error).toEqual('some error');

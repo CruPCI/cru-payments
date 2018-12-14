@@ -58,7 +58,7 @@ describe('bank account', () => {
     it('should return an error if something is invalid', done => {
       bankAccount.encrypt('1').then(
         () => {
-          done.fail('Observable should have thrown an error');
+          done.fail('Promise should have thrown an error');
         },
         error => {
           expect(error).toEqual('Bank account number invalid');
@@ -73,15 +73,15 @@ describe('bank account', () => {
           done();
         },
         () => {
-          done.fail('Observable should not have thrown an error');
+          done.fail('Promise should not have thrown an error');
         },
       );
     });
-    it('should return an errored Observable if encryption was unsuccessful', done => {
+    it('should return an errored Promise if encryption was unsuccessful', done => {
       (<jasmine.Spy>ccp.encrypt).and.returnValue(Promise.reject('some error'));
       bankAccount.encrypt('123456').then(
         () => {
-          done.fail('Observable should have thrown an error');
+          done.fail('Promise should have thrown an error');
         },
         error => {
           expect(error).toEqual('some error');
