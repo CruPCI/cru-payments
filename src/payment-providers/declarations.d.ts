@@ -3,13 +3,12 @@
 declare module 'jsencrypt' {
   interface JSEncryptPrototype {
     setKey(key: string): void;
-    encrypt(value: string): string|boolean;
+    encrypt(value: string): string | boolean;
   }
   const JSEncrypt: {
     new (): JSEncryptPrototype;
   };
 }
-
 
 interface Symbol {
   toString(): string;
@@ -18,7 +17,7 @@ interface Symbol {
 
 interface SymbolConstructor {
   prototype: Symbol;
-  (description?: string|number): symbol;
+  (description?: string | number): symbol;
   for(key: string): symbol;
   keyFor(sym: symbol): string;
 }
@@ -39,7 +38,7 @@ interface SymbolConstructor {
 }
 
 interface Symbol {
-  [Symbol.toStringTag]: "Symbol";
+  [Symbol.toStringTag]: 'Symbol';
 }
 
 interface SymbolConstructor {

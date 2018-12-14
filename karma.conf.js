@@ -2,7 +2,6 @@
 
 module.exports = function(config) {
   config.set({
-
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '.',
 
@@ -17,15 +16,15 @@ module.exports = function(config) {
       'PhantomJS-customReferrer': {
         base: 'PhantomJS',
         options: {
-          customHeaders: { Referer: process.env.TSYS_REFERRER }
-        }
-      }
+          customHeaders: { Referer: process.env.TSYS_REFERRER },
+        },
+      },
     },
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['mocha', "karma-typescript"],
+    reporters: ['mocha', 'karma-typescript'],
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
@@ -36,9 +35,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
 
-    files: [
-      'src/**/*.ts'
-    ],
+    files: ['src/**/*.ts'],
 
     // level of logging
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
@@ -47,17 +44,17 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      "**/*.ts": ["karma-typescript"]
+      '**/*.ts': ['karma-typescript'],
     },
 
     karmaTypescriptConfig: {
       reports: {
-        'html': 'coverage',
-        'lcovonly': {
-          "directory": "coverage",
-          "filename": "lcov.info"
-        }
-      }
-    }
+        html: 'coverage',
+        lcovonly: {
+          directory: 'coverage',
+          filename: 'lcov.info',
+        },
+      },
+    },
   });
 };

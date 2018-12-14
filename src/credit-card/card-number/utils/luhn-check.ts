@@ -9,5 +9,5 @@ export function luhnCheck(cardNumber: string) {
     const digit = parseInt(cardNumber.charAt(i), 10);
     counter += (odd = !odd) ? digit : luhnArray[digit];
   }
-  return (counter % 10 === 0);
+  return counter % 10 === 0;
 }

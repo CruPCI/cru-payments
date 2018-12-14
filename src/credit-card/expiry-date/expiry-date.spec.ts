@@ -1,4 +1,4 @@
-import {validateMonth, validateYear, errors} from './expiry-date';
+import { validateMonth, validateYear, errors } from './expiry-date';
 
 describe('expiry date', () => {
   beforeEach(function() {
@@ -65,29 +65,25 @@ describe('expiry date', () => {
     it('should return errors for an empty month and year', () => {
       expect(errors('', '')).toEqual([
         'Month cannot be blank',
-        'Year cannot be blank'
+        'Year cannot be blank',
       ]);
     });
     it('should return errors for an empty month', () => {
-      expect(errors('', '2015')).toEqual([
-        'Month cannot be blank'
-      ]);
+      expect(errors('', '2015')).toEqual(['Month cannot be blank']);
     });
     it('should return errors for an empty year', () => {
       expect(errors('5', '')).toEqual([
         'Year cannot be blank',
-        'Month cannot be in the past'
+        'Month cannot be in the past',
       ]);
     });
     it('should return errors for an invalid month', () => {
-      expect(errors('3', '2015')).toEqual([
-        'Month cannot be in the past'
-      ]);
+      expect(errors('3', '2015')).toEqual(['Month cannot be in the past']);
     });
     it('should return errors for an invalid year', () => {
       expect(errors('6', '2014')).toEqual([
         'Year cannot be in the past',
-        'Month cannot be in the past'
+        'Month cannot be in the past',
       ]);
     });
     it('should return an empty array for a valid month and year', () => {

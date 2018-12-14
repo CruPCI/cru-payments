@@ -1,4 +1,4 @@
-import {luhnCheck} from './luhn-check';
+import { luhnCheck } from './luhn-check';
 
 describe('luhnCheck', () => {
   it('should return true for valid numbers', () => {

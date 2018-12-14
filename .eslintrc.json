@@ -10,8 +10,7 @@
   },
   "ecmaFeatures": {},
   "extends": ["plugin:jasmine/recommended"],
-  "globals": {
-  },
+  "globals": {},
   "rules": {
     "no-alert": "error",
     "no-array-constructor": "off",
