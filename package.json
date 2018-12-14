@@ -8,7 +8,9 @@
     "build": "webpack -p",
     "lint": "eslint 'src/**'",
     "test": "karma start",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "prettier:check": "prettier '{src/**/*.{ts,js,json},./*.{ts,js,json,yml}}' --list-different",
+    "prettier:write": "prettier '{src/**/*.{ts,js,json},./*.{ts,js,json,yml}}' --write"
   },
   "repository": {
     "type": "git",
@@ -39,6 +41,7 @@
     "eslint": "^5.10.0",
     "eslint-plugin-jasmine": "^2.10.1",
     "fetch-mock": "^7.2.5",
+    "husky": "^1.2.1",
     "jasmine-core": "^3.3.0",
     "karma": "^3.1.3",
     "karma-chrome-launcher": "^2.2.0",
@@ -46,11 +49,18 @@
     "karma-mocha-reporter": "^2.2.5",
     "karma-phantomjs-launcher": "^1.0.4",
     "karma-typescript": "^3.0.13",
+    "prettier": "^1.15.3",
+    "pretty-quick": "^1.8.0",
     "ts-loader": "^5.3.1",
     "typescript": "^3.2.2",
     "typescript-eslint-parser": "^21.0.2",
     "webpack": "^4.27.1",
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "^3.1.10"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
   }
 }
