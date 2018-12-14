@@ -1,5 +1,3 @@
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/throw';
 import { cleanInput } from '../utils/parsing';
 
 import * as routingNumberModule from './routing-number/routing-number';
@@ -36,9 +34,9 @@ export function validate(
   );
 }
 
-export function encrypt(accountNumberInput: string | number) {
+export async function encrypt(accountNumberInput: string | number) {
   if (!accountNumber.validate.all(accountNumberInput)) {
-    return Observable.throw('Bank account number invalid');
+    throw 'Bank account number invalid';
   }
-  return bankAccountEncrypt(cleanInput(accountNumberInput));
+  return await bankAccountEncrypt(cleanInput(accountNumberInput));
 }

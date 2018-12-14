@@ -2,7 +2,8 @@
   "compilerOptions": {
     "module": "commonjs",
     "moduleResolution": "node",
-    "target": "es5",
+    "target": "es6",
+    "lib": ["es6", "dom"],
     "noImplicitAny": true,
     "sourceMap": true
   }

@@ -1,8 +1,5 @@
 import * as bankAccount from './bank-account';
 import * as ccp from '../payment-providers/ccp/ccp';
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/of';
-import 'rxjs/add/observable/throw';
 
 describe('bank account', () => {
   describe('init', () => {
@@ -55,11 +52,11 @@ describe('bank account', () => {
   describe('encrypt', () => {
     beforeEach(function() {
       spyOn(ccp, 'encrypt').and.returnValue(
-        Observable.of('<encrypted account number>'),
+        Promise.resolve('<encrypted account number>'),
       );
     });
     it('should return an error if something is invalid', done => {
-      bankAccount.encrypt('1').subscribe(
+      bankAccount.encrypt('1').then(
         () => {
           done.fail('Observable should have thrown an error');
         },
@@ -70,7 +67,7 @@ describe('bank account', () => {
       );
     });
     it('should return a token if encryption was successful', done => {
-      bankAccount.encrypt('1234567890').subscribe(
+      bankAccount.encrypt('1234567890').then(
         response => {
           expect(response).toEqual('<encrypted account number>');
           done();
@@ -81,10 +78,8 @@ describe('bank account', () => {
       );
     });
     it('should return an errored Observable if encryption was unsuccessful', done => {
-      (<jasmine.Spy>ccp.encrypt).and.returnValue(
-        Observable.throw('some error'),
-      );
-      bankAccount.encrypt('123456').subscribe(
+      (<jasmine.Spy>ccp.encrypt).and.returnValue(Promise.reject('some error'));
+      bankAccount.encrypt('123456').then(
         () => {
           done.fail('Observable should have thrown an error');
         },

@@ -10,7 +10,7 @@ describe('ccp', () => {
         { throws: new TypeError('Failed to fetch') },
       );
       ccp.init('staging', '<backup key>');
-      ccp._ccpKeyObservable.subscribe(
+      ccp._ccpKeyObservable.then(
         key => {
           expect(key).toEqual('<backup key>');
           done();
@@ -24,7 +24,7 @@ describe('ccp', () => {
         500,
       );
       ccp.init('staging', '<backup key>');
-      ccp._ccpKeyObservable.subscribe(
+      ccp._ccpKeyObservable.then(
         key => {
           expect(key).toEqual('<backup key>');
           done();
@@ -38,7 +38,7 @@ describe('ccp', () => {
         { throws: new TypeError('Failed to fetch') },
       );
       ccp.init('staging');
-      ccp._ccpKeyObservable.subscribe(
+      ccp._ccpKeyObservable.then(
         () => done.fail('should not have thrown an error'),
         error => {
           expect(error).toEqual(
@@ -54,7 +54,7 @@ describe('ccp', () => {
         500,
       );
       ccp.init('staging');
-      ccp._ccpKeyObservable.subscribe(
+      ccp._ccpKeyObservable.then(
         () => done.fail('should not have thrown an error'),
         error => {
           expect(error).toEqual(
@@ -70,7 +70,7 @@ describe('ccp', () => {
         '<key from api>',
       );
       ccp.init('staging', '<backup key>');
-      ccp._ccpKeyObservable.subscribe(
+      ccp._ccpKeyObservable.then(
         key => {
           expect(key).toEqual('<key from api>');
           done();
@@ -84,7 +84,7 @@ describe('ccp', () => {
         '<key from api>',
       );
       ccp.init('production', '<backup key>');
-      ccp._ccpKeyObservable.subscribe(
+      ccp._ccpKeyObservable.then(
         key => {
           expect(key).toEqual('<key from api>');
           done();
@@ -108,7 +108,7 @@ FPqri0cb2JZfXJ/DgYSF6vUpwmJG8wVQZKjeGcjDOL5UlsuusFncCzWBQ7RKNUSesmQRMSGkVb1/
     });
     it('should throw an error if init has not been called', done => {
       ccp._clear();
-      ccp.encrypt('1234567890123456').subscribe(
+      ccp.encrypt('1234567890123456').then(
         () => done.fail('should have thrown an error'),
         error => {
           expect(error).toEqual('init must be called first');
@@ -118,7 +118,7 @@ FPqri0cb2JZfXJ/DgYSF6vUpwmJG8wVQZKjeGcjDOL5UlsuusFncCzWBQ7RKNUSesmQRMSGkVb1/
     });
     it('should throw an error if the key is invalid', done => {
       ccp.init('staging', '<backup key>');
-      ccp.encrypt('1234567890123456').subscribe(
+      ccp.encrypt('1234567890123456').then(
         () => {
           done.fail('should have thrown an error');
         },
@@ -130,7 +130,7 @@ FPqri0cb2JZfXJ/DgYSF6vUpwmJG8wVQZKjeGcjDOL5UlsuusFncCzWBQ7RKNUSesmQRMSGkVb1/
     });
     it('should return the encrypted account number', done => {
       ccp.init('staging', this.validKey);
-      ccp.encrypt('1234567890123456').subscribe(
+      ccp.encrypt('1234567890123456').then(
         value => {
           expect((<string>value).length).toBeGreaterThan(50);
           done();

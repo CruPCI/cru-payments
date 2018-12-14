@@ -1,5 +1,3 @@
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/throw';
 import { cleanInput } from '../utils/parsing';
 import * as cardNumberModule from './card-number/card-number';
 import {
@@ -66,17 +64,17 @@ export function validate(
   );
 }
 
-export function encrypt(
+export async function encrypt(
   cardNumber: string | number,
   cvv: string | number,
   month: string | number,
   year: string | number,
 ) {
   if (!validate(cardNumber, cvv, month, year)) {
-    return Observable.throw('Credit card details invalid');
+    throw 'Credit card details invalid';
   }
   // allow CVV to be optional if it is null
-  return creditCardEncrypt(
+  return await creditCardEncrypt(
     cleanInput(cardNumber),
     cvv === null ? null : cleanInput(cvv),
     Number(cleanInput(month)),

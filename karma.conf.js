@@ -48,6 +48,7 @@ module.exports = function(config) {
     },
 
     karmaTypescriptConfig: {
+      tsconfig: './tsconfig.json',
       reports: {
         html: 'coverage',
         lcovonly: {

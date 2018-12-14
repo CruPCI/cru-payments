@@ -1,6 +1,5 @@
 import * as tsys from './tsys';
 
-import { Observable } from 'rxjs/Observable';
 import * as fetchMock from 'fetch-mock';
 
 /* eslint-disable no-undef */
@@ -38,7 +37,7 @@ describe('tsys', () => {
           (request: Request) => request.json(),
           'testing fetch',
         )
-        .subscribe((data: any) => {
+        .then((data: any) => {
           expect(data.key).toEqual('value');
           done();
         });
@@ -52,7 +51,7 @@ describe('tsys', () => {
           (request: Request) => request.text(),
           'testing fetch',
         )
-        .subscribe((data: string) => {
+        .then((data: string) => {
           expect(data).toEqual('some string');
           done();
         });
@@ -72,7 +71,7 @@ describe('tsys', () => {
           (request: Request) => request.text(),
           'testing fetch',
         )
-        .subscribe(
+        .then(
           () => done.fail(),
           (error: TsysError) => {
             expect(error).toEqual({
@@ -98,7 +97,7 @@ describe('tsys', () => {
           (request: Request) => request.text(),
           'testing fetch',
         )
-        .subscribe(
+        .then(
           () => done.fail(),
           (error: TsysError) => {
             expect(error).toEqual({
@@ -117,11 +116,11 @@ describe('tsys', () => {
     });
     it('should get the staging url, key, and keyId for tokenization', done => {
       spyOn(tsys, '_makeRequest').and.returnValue(
-        Observable.of(
+        Promise.resolve(
           "function getKey() { return '<key>'; } function getKeyId() { return '<keyId>' } function getUrl() { return '<url>' }",
         ),
       );
-      tsys._fetchTsysData().subscribe((data: tsys.TsysData) => {
+      tsys._fetchTsysData().then((data: tsys.TsysData) => {
         expect(tsys._makeRequest).toHaveBeenCalledWith(
           'https://stagegw.transnox.com/transit-tsep-web/jsView/deviceId?manifest',
           {},
@@ -139,12 +138,12 @@ describe('tsys', () => {
 
     it('should get the production url, key, and keyId for tokenization', done => {
       spyOn(tsys, '_makeRequest').and.returnValue(
-        Observable.of(
+        Promise.resolve(
           "function getKey() { return '<key>'; } function getKeyId() { return '<keyId>' } function getUrl() { return '<url>' }",
         ),
       );
       tsys.init('production', 'deviceId', 'manifest');
-      tsys._fetchTsysData().subscribe((data: tsys.TsysData) => {
+      tsys._fetchTsysData().then((data: tsys.TsysData) => {
         expect(tsys._makeRequest).toHaveBeenCalledWith(
           'https://gateway.transit-pass.com/transit-tsep-web/jsView/deviceId?manifest',
           {},
@@ -161,8 +160,8 @@ describe('tsys', () => {
     });
 
     it('should handle an error parsing the TSYS code', done => {
-      spyOn(tsys, '_makeRequest').and.returnValue(Observable.of('@'));
-      tsys._fetchTsysData().subscribe(
+      spyOn(tsys, '_makeRequest').and.returnValue(Promise.resolve('@'));
+      tsys._fetchTsysData().then(
         () => {},
         (error: TsysError) => {
           expect(error).toEqual({
@@ -175,8 +174,8 @@ describe('tsys', () => {
     });
 
     it('should handle a missing function', done => {
-      spyOn(tsys, '_makeRequest').and.returnValue(Observable.of(''));
-      tsys._fetchTsysData().subscribe(
+      spyOn(tsys, '_makeRequest').and.returnValue(Promise.resolve(''));
+      tsys._fetchTsysData().then(
         () => {},
         (error: TsysError) => {
           expect(error).toEqual({
@@ -191,11 +190,11 @@ describe('tsys', () => {
 
     it('should handle a error passed by the TSYS library', done => {
       spyOn(tsys, '_makeRequest').and.returnValue(
-        Observable.of(
+        Promise.resolve(
           'window.onload = function () {var eEvent = new Object();eEvent.responseCode="TSEPERR911";eEvent.status="FAIL";eEvent.message="Authentication Failed"; try{tsepHandler("ErrorEvent", eEvent);}catch(e){}};',
         ),
       );
-      tsys._fetchTsysData().subscribe(
+      tsys._fetchTsysData().then(
         () => {},
         (error: TsysError) => {
           expect(error).toEqual({
@@ -230,7 +229,7 @@ describe('tsys', () => {
         '-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCH+HoBX8drfBn88Z49gYnK7Z9FVbbBg76lXHfoEUSPHLuzQ9ws4fR3PzDcKO3VIb6/9g3VBfFvMLrdimAGRwqmm4kk/JnnDFWF/HBVmncRTtDkNPuEN15+XJSB8RcvUVQ7s8gkutCU/w2ZXzI5+7XpEyX08Ao7f2IKuncBQmDQJwIDAQAB-----END PUBLIC KEY-----';
 
       spyOn(tsys, '_fetchTsysData').and.returnValue(
-        Observable.of({
+        Promise.resolve({
           url: '<url>',
           key: this.validKey,
           keyId: '<keyId>',
@@ -241,7 +240,7 @@ describe('tsys', () => {
 
     it('should throw an error if deviceId was not set', done => {
       tsys.init('staging', '', 'manifest');
-      tsys.encrypt('1234567890123', '123', 12, 2015).subscribe(
+      tsys.encrypt('1234567890123', '123', 12, 2015).then(
         () => {},
         error => {
           expect(error).toEqual({
@@ -255,7 +254,7 @@ describe('tsys', () => {
 
     it('should throw an error if manifest was not set', done => {
       tsys.init('staging', 'deviceId', '');
-      tsys.encrypt('1234567890123', '123', 12, 2015).subscribe(
+      tsys.encrypt('1234567890123', '123', 12, 2015).then(
         () => {},
         error => {
           expect(error).toEqual({
@@ -279,8 +278,8 @@ describe('tsys', () => {
         transactionID: '6417599',
         tsepToken: 'aNWEmSu7RRF1000',
       };
-      spyOn(tsys, '_makeRequest').and.returnValue(Observable.of(tokenObj));
-      tsys.encrypt('1234567890123', '123', 12, 2015).subscribe(
+      spyOn(tsys, '_makeRequest').and.returnValue(Promise.resolve(tokenObj));
+      tsys.encrypt('1234567890123', '123', 12, 2015).then(
         data => {
           expect(tsys._makeRequest).toHaveBeenCalledWith(
             '<url>/generateTsepToken',
@@ -306,9 +305,9 @@ describe('tsys', () => {
 
     it('should convert month to a string', done => {
       spyOn(tsys, '_makeRequest').and.returnValue(
-        Observable.of({ status: 'PASS' }),
+        Promise.resolve({ status: 'PASS' }),
       );
-      tsys.encrypt('1234567890123', '123', 1, 2015).subscribe(
+      tsys.encrypt('1234567890123', '123', 1, 2015).then(
         data => {
           expect(tsys._makeRequest).toHaveBeenCalledWith(
             '<url>/generateTsepToken',
@@ -334,14 +333,14 @@ describe('tsys', () => {
 
     it('should handle an invalid key', done => {
       (<jasmine.Spy>tsys._fetchTsysData).and.returnValue(
-        Observable.of({
+        Promise.resolve({
           url: '<url>',
           key: '<key>',
           keyId: '<keyId>',
         }),
       );
 
-      tsys.encrypt('1234567890123', '123', 12, 2015).subscribe(
+      tsys.encrypt('1234567890123', '123', 12, 2015).then(
         () => {},
         error => {
           expect(error).toEqual({
@@ -356,9 +355,9 @@ describe('tsys', () => {
 
     it('should handle a error when TSYS status is not pass', done => {
       spyOn(tsys, '_makeRequest').and.returnValue(
-        Observable.of({ status: 'FAILURE' }),
+        Promise.resolve({ status: 'FAILURE' }),
       );
-      tsys.encrypt('1234567890123', '123', 12, 2015).subscribe(
+      tsys.encrypt('1234567890123', '123', 12, 2015).then(
         () => {},
         error => {
           expect(error).toEqual({
@@ -391,7 +390,7 @@ describe('tsys', () => {
               12,
               new Date().getFullYear() + 1,
             )
-            .subscribe(
+            .then(
               response => {
                 expect(response).toEqual({
                   responseCode: 'A0000',
@@ -418,7 +417,7 @@ describe('tsys', () => {
       tsys.init('staging', 'test', 'testingErrorMessage');
       tsys
         .encrypt('4111111111111111', '123', 12, new Date().getFullYear() + 1)
-        .subscribe(
+        .then(
           () => {
             done.fail('Should not have succeeded');
           },

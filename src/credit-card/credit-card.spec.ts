@@ -1,8 +1,5 @@
 import * as creditCard from './credit-card';
 import * as tsys from '../payment-providers/tsys/tsys';
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/of';
-import 'rxjs/add/observable/throw';
 
 describe('credit card', () => {
   describe('init', () => {
@@ -93,14 +90,14 @@ describe('credit card', () => {
       jasmine.clock().install();
       jasmine.clock().mockDate(new Date(2015, 3, 1)); // Apr 01 2015
       spyOn(tsys, 'encrypt').and.returnValue(
-        Observable.of('<tsys card token>'),
+        Promise.resolve('<tsys card token>'),
       );
     });
     afterEach(function() {
       jasmine.clock().uninstall();
     });
     it('should return an errored Observable if something is invalid', done => {
-      creditCard.encrypt('4111111111111112', '123', 4, 2015).subscribe(
+      creditCard.encrypt('4111111111111112', '123', 4, 2015).then(
         () => {
           done.fail('Observable should have thrown an error');
         },
@@ -111,7 +108,7 @@ describe('credit card', () => {
       );
     });
     it('should return a token if encryption was successful', done => {
-      creditCard.encrypt('4111111111111111', '123', 4, 2015).subscribe(
+      creditCard.encrypt('4111111111111111', '123', 4, 2015).then(
         response => {
           expect(response).toEqual('<tsys card token>');
           done();
@@ -122,7 +119,7 @@ describe('credit card', () => {
       );
     });
     it('should allow a null cvv which indicates that the cvv is optional', done => {
-      creditCard.encrypt('4111111111111111', null, 4, 2015).subscribe(
+      creditCard.encrypt('4111111111111111', null, 4, 2015).then(
         response => {
           expect(response).toEqual('<tsys card token>');
           done();
@@ -133,10 +130,8 @@ describe('credit card', () => {
       );
     });
     it('should return an errored Observable if encryption was unsuccessful', done => {
-      (<jasmine.Spy>tsys.encrypt).and.returnValue(
-        Observable.throw('some error'),
-      );
-      creditCard.encrypt('4111111111111111', '123', 4, 2015).subscribe(
+      (<jasmine.Spy>tsys.encrypt).and.returnValue(Promise.reject('some error'));
+      creditCard.encrypt('4111111111111111', '123', 4, 2015).then(
         () => {
           done.fail('Observable should have thrown an error');
         },

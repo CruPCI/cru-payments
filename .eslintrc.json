@@ -6,11 +6,11 @@
   "plugins": ["jasmine"],
   "env": {
     "browser": true,
-    "jasmine": true
+    "jasmine": true,
+    "es6": true
   },
   "ecmaFeatures": {},
   "extends": ["plugin:jasmine/recommended"],
-  "globals": {},
   "rules": {
     "no-alert": "error",
     "no-array-constructor": "off",
