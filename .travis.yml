@@ -1,19 +1,19 @@
 language: node_js
 node_js: '7'
 before_install:
-- curl -o- -L https://yarnpkg.com/install.sh | bash
-- export PATH=$HOME/.yarn/bin:$PATH
+  - curl -o- -L https://yarnpkg.com/install.sh | bash
+  - export PATH=$HOME/.yarn/bin:$PATH
 install:
-- yarn
+  - yarn
 script:
-- yarn run lint
-- yarn run test
-- yarn run build
+  - yarn run lint
+  - yarn run test
+  - yarn run build
 after_success:
-- bash <(curl -s https://codecov.io/bash)
+  - bash <(curl -s https://codecov.io/bash)
 cache:
   directories:
-  - node_modules
+    - node_modules
 deploy:
   provider: npm
   email: lee.braddock@cru.org
@@ -25,12 +25,8 @@ deploy:
     tags: true
   skip_cleanup: true
 notifications:
-  hipchat:
+  slack:
     rooms:
-      secure: Rfy9hfbS87Xp0JG6x33+JCPp9VSZoLYyRhcsPkKKIreO6WpM8eXtvS3Jn6f8Xyi/ZNPpJ0/M3lwz2Gr0HI2uWpbvsxgknBHwO5RFjZ3HnDzf2pQH7oep56+a3ps0QDY6blERdcB9OUw/SAeEkjPx+D5NSqRl/452/Lk7oybgF708u0szbBcQvol/mxE3bsBhHsJJFXRKn2J58TIImwbor3VZKWLnlRQMGrC3+l5j+AHQrl5L2MvCJHtqLAmt7ysW+vWXV6ABOcAyUO2PcJ7ripXXTXv0gYNBYfqcNH1VveN6nO7mTst63CZCOiHPU4zLb/FrPO0zcx8VMjh5qdIrfV/qbDUGQnxabfX3LxKtbhacbh0YHjk73XO82PTPRW6AtIStguhXi6f3Y0l0Ybm8d16ZYZlQWSE3wTRHr2TcB5nOVa6ZKgCS+4T77fGT5sizHTYN5mJUx2BLuoYAGcwNddAJdnQulcSEs8SFbl5fXBDtGTRkzh+ffo0F3CLmVgAKhB2HwfvgK8MonowSbng9AVZP0+OObHV+JWWmEext1Jd3lZn/pw399rm4AHaKx5WicV+wjFP53LckuX1scEzHIqwesunROjaIvViRkiZy1Ld1+5RPGrmOjkvUuhBdqfElheDlQ+GVG0PY/A87OZP0AYiaZ20rJZXOSbtbK1rQ8wU=
+      secure: fDnUwe65F3nz0eObbSpTK2nMVgbVf2jPdWtisu7fh/2iCPn1CHFbPwYFKVk519sWLBQ0Pk/4tPaXbYqnp/C/3cUOtzeNBUdMrOI1hpQe0RNv6LXa1KmY5sFAXL9t5Cd3a3ogb41ynqWEYCg8Td+W0Mqdzg1NAuaPUAMQAKu2tw0qv2E56ouBRQNTD/KQIitMpa7N6jBiHy+dmtWflTwHe5Oi1FN2NVABj5JSNGDtoqC0Grb05xzw/n/4DV6Ack7gwUnBa1UnwUvcIIbQtj7oFr3T/4tLuiCVOTewjK5lEYSqsGBuODCG2NmTZxjz2LaveltEPTGuFx7T14CF2x7IrSELhaw+F5d1TEJaxHqjx9txICRsStD/Sl/vr4xIC/jAT58+DjFgK6CGx+n1+hKylQlpQAJr+TG2/8YCq5FnECEK/toBLgj1F5hLRM/NuzDGi2E6Tg6mq/8xg5IGgsMDfVXS2E3GMLmMKC8HmW9Pgs11QbtbQIRhTlb12d/95+Lrnf/2d83GJg4Cx7fdNtdX8kEUkbR5GjMjBNdiNY7vF/uJUl9KBRKpMtpz7IjZSpgGAIXzH2RdZv0UvQntnPoAXxrRGMZhPCMEWJHkUXNOK5fah9cD/2Idmgq4gOSzutoNmnopNWtic3qEPGbig+GZ+4xW5cj2z5NP4iWAAFJPQfU=
     on_success: change
-    template:
-      - '<a href="%{build_url}">%{repository_slug}#%{build_number} - %{branch}</a> %{message} Commit by %{author}: <a href="%{compare_url}">%{commit_subject}</a>'
-    format: html
     on_pull_requests: false
-    notify: true
