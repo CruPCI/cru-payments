@@ -7,7 +7,8 @@ export function luhnCheck(cardNumber: string) {
   let odd = false;
   for (let i = cardNumber.length - 1; i >= 0; --i) {
     const digit = parseInt(cardNumber.charAt(i), 10);
-    counter += (odd = !odd) ? digit : luhnArray[digit];
+    odd = !odd;
+    counter += odd ? digit : luhnArray[digit];
   }
   return counter % 10 === 0;
 }

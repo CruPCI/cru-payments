@@ -13,18 +13,17 @@ export function init(env: string, backupKey?: string) {
 
     try {
       response = await fetch(env === 'production' ? prodKeyUri : stagingKeyUri);
+      if (response.ok) {
+        return await response.text();
+      } else {
+        throw response.statusText;
+      }
     } catch (error) {
       if (backupKey) {
         return backupKey;
       } else {
         throw `There was an error retrieving the key from CCP and no backup key was provided: ${error}`;
       }
-    }
-
-    if (response.ok) {
-      return await response.text();
-    } else {
-      throw response.statusText;
     }
   })());
 }
