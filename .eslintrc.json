@@ -3,13 +3,12 @@
   "parserOptions": {
     "sourceType": "module"
   },
-  "plugins": ["jasmine"],
   "env": {
     "browser": true,
-    "jasmine": true,
+    "jest": true,
     "es6": true
   },
-  "extends": ["plugin:jasmine/recommended"],
+  "extends": ["plugin:jest/recommended"],
   "rules": {
     "no-alert": "error",
     "no-array-constructor": "off",
@@ -178,8 +177,6 @@
     "wrap-iife": "off",
     "wrap-regex": "off",
     "yield-star-spacing": "off",
-    "yoda": "off",
-    "jasmine/no-spec-dupes": ["warn", "branch"],
-    "jasmine/no-suite-dupes": ["warn", "branch"]
+    "yoda": "off"
   }
 }

@@ -1,12 +1,13 @@
+import MockDate from 'mockdate';
+
 import { validateMonth, validateYear, errors } from './expiry-date';
 
 describe('expiry date', () => {
   beforeEach(function() {
-    jasmine.clock().install();
-    jasmine.clock().mockDate(new Date(2015, 3, 1)); // Apr 01 2015
+    MockDate.set(new Date(2015, 3, 1)); // Apr 01 2015
   });
   afterEach(function() {
-    jasmine.clock().uninstall();
+    MockDate.reset();
   });
   describe('validateMonth', () => {
     it('should return false if the month is out of range', () => {

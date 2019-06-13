@@ -1,5 +1,6 @@
 import * as creditCard from './credit-card';
 import * as tsys from '../payment-providers/tsys/tsys';
+import MockDate from 'mockdate';
 
 describe('credit card', () => {
   describe('init', () => {
@@ -57,11 +58,10 @@ describe('credit card', () => {
 
   describe('validate', () => {
     beforeEach(function() {
-      jasmine.clock().install();
-      jasmine.clock().mockDate(new Date(2015, 3, 1)); // Apr 01 2015
+      MockDate.set(new Date(2015, 3, 1)); // Apr 01 2015
     });
     afterEach(function() {
-      jasmine.clock().uninstall();
+      MockDate.reset();
     });
     it('should return true if card, cvv, and expiryDate are valid', () => {
       expect(creditCard.validate('4111111111111111', '123', 4, 2015)).toEqual(
@@ -87,14 +87,13 @@ describe('credit card', () => {
 
   describe('encrypt', () => {
     beforeEach(function() {
-      jasmine.clock().install();
-      jasmine.clock().mockDate(new Date(2015, 3, 1)); // Apr 01 2015
+      MockDate.set(new Date(2015, 3, 1)); // Apr 01 2015
       spyOn(tsys, 'encrypt').and.returnValue(
         Promise.resolve('<tsys card token>'),
       );
     });
     afterEach(function() {
-      jasmine.clock().uninstall();
+      MockDate.reset();
     });
     it('should return an errored Promise if something is invalid', done => {
       creditCard.encrypt('4111111111111112', '123', 4, 2015).then(

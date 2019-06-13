@@ -18,7 +18,7 @@ module.exports = (env = {}) => ({
   module: {
     rules: [
       // all files with a `.ts` extension but not `.spec.ts` will be handled by `ts-loader`
-      { test: /^.*\.ts$/, loader: 'ts-loader' },
+      { test: /\.ts$/, loader: 'babel-loader' },
     ],
   },
   devtool: 'source-map',

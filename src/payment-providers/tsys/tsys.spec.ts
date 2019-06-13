@@ -13,11 +13,10 @@ describe('tsys', () => {
   });
 
   beforeEach(() => {
-    jasmine.clock().install();
-    jasmine.clock().mockDate(new Date(2015, 3, 1)); // Apr 01 2015
+    MockDate.set(new Date(2015, 3, 1)); // Apr 01 2015
   });
   afterEach(() => {
-    jasmine.clock().uninstall();
+    MockDate.reset();
   });
 
   describe('init', () => {
@@ -126,7 +125,7 @@ describe('tsys', () => {
         expect(tsys._makeRequest).toHaveBeenCalledWith(
           'https://stagegw.transnox.com/transit-tsep-web/jsView/deviceId?manifest',
           {},
-          jasmine.any(Function),
+          expect.any(Function),
           'loading TSYS library',
         );
         expect(data).toEqual({
@@ -149,7 +148,7 @@ describe('tsys', () => {
         expect(tsys._makeRequest).toHaveBeenCalledWith(
           'https://gateway.transit-pass.com/transit-tsep-web/jsView/deviceId?manifest',
           {},
-          jasmine.any(Function),
+          expect.any(Function),
           'loading TSYS library',
         );
         expect(data).toEqual({
@@ -168,7 +167,7 @@ describe('tsys', () => {
         (error: TsysError) => {
           expect(error).toEqual({
             message: 'Error parsing TSYS code',
-            data: jasmine.any(SyntaxError),
+            data: expect.any(SyntaxError),
           });
           done();
         },
@@ -287,7 +286,7 @@ describe('tsys', () => {
             '<url>/generateTsepToken',
             {
               method: 'POST',
-              body: jasmine.stringMatching(
+              body: expect.stringMatching(
                 /\{"deviceID":"<deviceId>","uniqueKeyIdentifier":"<keyId>","manifest":"<manifest>","encCardNumber":.{100,},"expirationDate":"12\/2015","cvv2":"123"\}/,
               ),
               headers: new Headers({
@@ -295,7 +294,7 @@ describe('tsys', () => {
                 'Content-Type': 'application/json',
               }),
             },
-            jasmine.any(Function),
+            expect.any(Function),
             'performing tokenization',
           );
           expect(data).toEqual(tokenObj);
@@ -306,16 +305,16 @@ describe('tsys', () => {
     });
 
     it('should convert month to a string', done => {
-      spyOn(tsys, '_makeRequest').and.returnValue(
-        Promise.resolve({ status: 'PASS' }),
-      );
+      jest
+        .spyOn(tsys, '_makeRequest')
+        .mockReturnValue(Promise.resolve({ status: 'PASS' }));
       tsys.encrypt('1234567890123', '123', 1, 2015).then(
         data => {
           expect(tsys._makeRequest).toHaveBeenCalledWith(
             '<url>/generateTsepToken',
             {
               method: 'POST',
-              body: jasmine.stringMatching(
+              body: expect.stringMatching(
                 /\{"deviceID":"<deviceId>","uniqueKeyIdentifier":"<keyId>","manifest":"<manifest>","encCardNumber":.{100,},"expirationDate":"01\/2015","cvv2":"123"\}/,
               ),
               headers: new Headers({
@@ -323,7 +322,7 @@ describe('tsys', () => {
                 'Content-Type': 'application/json',
               }),
             },
-            jasmine.any(Function),
+            expect.any(Function),
             'performing tokenization',
           );
           expect(data).toEqual({ status: 'PASS' });
@@ -334,7 +333,7 @@ describe('tsys', () => {
     });
 
     it('should handle an invalid key', done => {
-      (<jasmine.Spy>tsys._fetchTsysData).and.returnValue(
+      (<jest.Spy>tsys._fetchTsysData).and.returnValue(
         Promise.resolve({
           url: '<url>',
           key: '<key>',
@@ -356,9 +355,9 @@ describe('tsys', () => {
     });
 
     it('should handle a error when TSYS status is not pass', done => {
-      spyOn(tsys, '_makeRequest').and.returnValue(
-        Promise.resolve({ status: 'FAILURE' }),
-      );
+      jest
+        .spyOn(tsys, '_makeRequest')
+        .mockReturnValue(Promise.resolve({ status: 'FAILURE' }));
       tsys.encrypt('1234567890123', '123', 12, 2015).then(
         () => {},
         error => {
@@ -373,6 +372,9 @@ describe('tsys', () => {
   });
 
   describe('perform live test', () => {
+    beforeAll(() => (fetchMock.config.fallbackToNetwork = true));
+    afterAll(() => (fetchMock.config.fallbackToNetwork = false));
+
     it('should successfully receive a token from TSYS', done => {
       // (<any>fetchMock)._unMock();
       (<any>window)
@@ -400,10 +402,10 @@ describe('tsys', () => {
                   message: 'Success',
                   expirationDate: '12/2016',
                   cvv2: '123',
-                  tsepToken: jasmine.stringMatching(/^[A-Za-z0-9]{16}$/),
+                  tsepToken: expect.stringMatching(/^[A-Za-z0-9]{16}$/),
                   maskedCardNumber: '1111',
                   cardType: 'V',
-                  transactionID: jasmine.stringMatching(/^\d{7,8}$/),
+                  transactionID: expect.stringMatching(/^\d{7,8}$/),
                 });
                 done();
               },
