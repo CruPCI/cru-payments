@@ -3,7 +3,6 @@ export function stripNonDigits(number: string): string {
 }
 
 export function cleanInput(number: string | number): string {
-  let numberString: string = String(number);
-  numberString = stripNonDigits(numberString);
-  return numberString;
+  const numberString = String(number);
+  return stripNonDigits(numberString);
 }

@@ -4,7 +4,7 @@ import * as ccp from '../payment-providers/ccp/ccp';
 describe('bank account', () => {
   describe('init', () => {
     it('should export init', () => {
-      expect(bankAccount.init).toEqual(jasmine.any(Function));
+      expect(bankAccount.init).toEqual(expect.any(Function));
     });
   });
 
@@ -12,11 +12,11 @@ describe('bank account', () => {
     it('should export all the published functions', () => {
       expect(bankAccount.routingNumber).toEqual({
         validate: {
-          length: jasmine.any(Function),
-          checksum: jasmine.any(Function),
-          all: jasmine.any(Function),
+          length: expect.any(Function),
+          checksum: expect.any(Function),
+          all: expect.any(Function),
         },
-        errors: jasmine.any(Function),
+        errors: expect.any(Function),
       });
     });
   });
@@ -25,11 +25,11 @@ describe('bank account', () => {
     it('should export all the published functions', () => {
       expect(bankAccount.accountNumber).toEqual({
         validate: {
-          minLength: jasmine.any(Function),
-          maxLength: jasmine.any(Function),
-          all: jasmine.any(Function),
+          minLength: expect.any(Function),
+          maxLength: expect.any(Function),
+          all: expect.any(Function),
         },
-        errors: jasmine.any(Function),
+        errors: expect.any(Function),
       });
     });
   });
@@ -51,9 +51,9 @@ describe('bank account', () => {
 
   describe('encrypt', () => {
     beforeEach(function() {
-      spyOn(ccp, 'encrypt').and.returnValue(
-        Promise.resolve('<encrypted account number>'),
-      );
+      jest
+        .spyOn(ccp, 'encrypt')
+        .mockReturnValue(Promise.resolve('<encrypted account number>'));
     });
     it('should return an error if something is invalid', done => {
       bankAccount.encrypt('1').then(
@@ -78,7 +78,7 @@ describe('bank account', () => {
       );
     });
     it('should return an errored Promise if encryption was unsuccessful', done => {
-      (<jasmine.Spy>ccp.encrypt).and.returnValue(Promise.reject('some error'));
+      (ccp.encrypt as jest.Mock).mockReturnValue(Promise.reject('some error'));
       bankAccount.encrypt('123456').then(
         () => {
           done.fail('Promise should have thrown an error');

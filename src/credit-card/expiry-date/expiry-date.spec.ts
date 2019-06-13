@@ -1,4 +1,4 @@
-import MockDate from 'mockdate';
+import * as MockDate from 'mockdate';
 
 import { validateMonth, validateYear, errors } from './expiry-date';
 

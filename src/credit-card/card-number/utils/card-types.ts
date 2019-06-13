@@ -60,7 +60,7 @@ function getCardType(cardNumber: string) {
   }
 }
 
-function lengthValid(cardType: any, cardNumber: string) {
+function lengthValid(cardType: typeof cardTypeConsts[0], cardNumber: string) {
   if (cardType && cardType.lengths) {
     for (const length of cardType.lengths) {
       if (length === cardNumber.length) return true;

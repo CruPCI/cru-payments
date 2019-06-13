@@ -1,11 +1,12 @@
+import * as MockDate from 'mockdate';
+
 import * as creditCard from './credit-card';
 import * as tsys from '../payment-providers/tsys/tsys';
-import MockDate from 'mockdate';
 
 describe('credit card', () => {
   describe('init', () => {
     it('should export init', () => {
-      expect(creditCard.init).toEqual(jasmine.any(Function));
+      expect(creditCard.init).toEqual(expect.any(Function));
     });
   });
 
@@ -13,17 +14,17 @@ describe('credit card', () => {
     it('should export all the published functions', () => {
       expect(creditCard.card).toEqual({
         validate: {
-          minLength: jasmine.any(Function),
-          maxLength: jasmine.any(Function),
-          knownType: jasmine.any(Function),
-          typeLength: jasmine.any(Function),
-          checksum: jasmine.any(Function),
-          all: jasmine.any(Function),
+          minLength: expect.any(Function),
+          maxLength: expect.any(Function),
+          knownType: expect.any(Function),
+          typeLength: expect.any(Function),
+          checksum: expect.any(Function),
+          all: expect.any(Function),
         },
-        errors: jasmine.any(Function),
+        errors: expect.any(Function),
         info: {
-          type: jasmine.any(Function),
-          expectedLengthForType: jasmine.any(Function),
+          type: expect.any(Function),
+          expectedLengthForType: expect.any(Function),
         },
       });
     });
@@ -33,12 +34,12 @@ describe('credit card', () => {
     it('should export all the published functions', () => {
       expect(creditCard.cvv).toEqual({
         validate: {
-          minLength: jasmine.any(Function),
-          maxLength: jasmine.any(Function),
-          cardTypeLength: jasmine.any(Function),
-          all: jasmine.any(Function),
+          minLength: expect.any(Function),
+          maxLength: expect.any(Function),
+          cardTypeLength: expect.any(Function),
+          all: expect.any(Function),
         },
-        errors: jasmine.any(Function),
+        errors: expect.any(Function),
       });
     });
   });
@@ -47,11 +48,11 @@ describe('credit card', () => {
     it('should export all the published functions', () => {
       expect(creditCard.expiryDate).toEqual({
         validate: {
-          month: jasmine.any(Function),
-          year: jasmine.any(Function),
-          all: jasmine.any(Function),
+          month: expect.any(Function),
+          year: expect.any(Function),
+          all: expect.any(Function),
         },
-        errors: jasmine.any(Function),
+        errors: expect.any(Function),
       });
     });
   });
@@ -88,9 +89,9 @@ describe('credit card', () => {
   describe('encrypt', () => {
     beforeEach(function() {
       MockDate.set(new Date(2015, 3, 1)); // Apr 01 2015
-      spyOn(tsys, 'encrypt').and.returnValue(
-        Promise.resolve('<tsys card token>'),
-      );
+      jest
+        .spyOn(tsys, 'encrypt')
+        .mockReturnValue(Promise.resolve('<tsys card token>'));
     });
     afterEach(function() {
       MockDate.reset();
@@ -129,7 +130,7 @@ describe('credit card', () => {
       );
     });
     it('should return an errored Promise if encryption was unsuccessful', done => {
-      (<jasmine.Spy>tsys.encrypt).and.returnValue(Promise.reject('some error'));
+      (tsys.encrypt as jest.Mock).mockReturnValue(Promise.reject('some error'));
       creditCard.encrypt('4111111111111111', '123', 4, 2015).then(
         () => {
           done.fail('Promise should have thrown an error');

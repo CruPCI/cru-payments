@@ -1,6 +1,13 @@
 import { JSEncrypt } from 'jsencrypt';
 
-declare let exports: any;
+declare let exports: {
+  _env: typeof env;
+  _deviceId: typeof deviceId;
+  _manifest: typeof manifest;
+  _makeRequest: typeof makeRequest;
+  _fetchTsysData: typeof fetchTsysData;
+  _removeAppendChild: typeof removeAppendChild;
+};
 
 /* eslint-disable no-undef */
 export interface TsysData {
@@ -55,7 +62,7 @@ async function makeRequest(
   };
 }
 
-async function fetchTsysData() {
+async function fetchTsysData(): Promise<TsysData> {
   const uri: string =
     env === 'production' ? tsepUri.production : tsepUri.staging;
   const response = await exports._makeRequest(
@@ -66,6 +73,7 @@ async function fetchTsysData() {
   );
   return new Promise((resolve, reject) => {
     // Watch tsepHandler for errors loading the TSYS library
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const tsepHandler = (eventType: string, event: any) => {
       if (eventType === 'ErrorEvent') {
         reject({ message: 'TSYS load error', data: event });
@@ -124,7 +132,7 @@ export async function encrypt(
     };
   }
 
-  const tsysData: TsysData = await exports._fetchTsysData();
+  const tsysData = await exports._fetchTsysData();
 
   let monthString = String(month);
   monthString = monthString.length === 1 ? '0' + monthString : monthString;

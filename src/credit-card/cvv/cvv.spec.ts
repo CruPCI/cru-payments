@@ -4,7 +4,7 @@ import * as parsing from '../../utils/parsing';
 describe('cvv', () => {
   describe('validateMinLength', () => {
     it('should clean input', () => {
-      spyOn(parsing, 'cleanInput').and.callThrough();
+      jest.spyOn(parsing, 'cleanInput');
       cvv.validateMinLength(123);
       expect(parsing.cleanInput).toHaveBeenCalledWith(123);
     });
@@ -24,7 +24,7 @@ describe('cvv', () => {
   });
   describe('validateMaxLength', () => {
     it('should clean input', () => {
-      spyOn(parsing, 'cleanInput').and.callThrough();
+      jest.spyOn(parsing, 'cleanInput');
       cvv.validateMaxLength(123);
       expect(parsing.cleanInput).toHaveBeenCalledWith(123);
     });
@@ -47,7 +47,7 @@ describe('cvv', () => {
   });
   describe('validateCardTypeLength', () => {
     it('should clean input', () => {
-      spyOn(parsing, 'cleanInput').and.callThrough();
+      jest.spyOn(parsing, 'cleanInput');
       cvv.validateCardTypeLength(123, 'Visa');
       expect(parsing.cleanInput).toHaveBeenCalledWith(123);
     });

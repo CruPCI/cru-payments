@@ -6,7 +6,7 @@ import * as luhn from './utils/luhn-check';
 describe('card number', () => {
   describe('validateMinLength', () => {
     it('should clean input', () => {
-      spyOn(parsing, 'cleanInput').and.callThrough();
+      jest.spyOn(parsing, 'cleanInput');
       cardNumber.validateMinLength(null);
       expect(parsing.cleanInput).toHaveBeenCalled();
     });
@@ -20,7 +20,7 @@ describe('card number', () => {
   });
   describe('validateMaxLength', () => {
     it('should clean input', () => {
-      spyOn(parsing, 'cleanInput').and.callThrough();
+      jest.spyOn(parsing, 'cleanInput');
       cardNumber.validateMaxLength(123);
       expect(parsing.cleanInput).toHaveBeenCalledWith(123);
     });
@@ -35,43 +35,45 @@ describe('card number', () => {
   });
   describe('validateKnownType', () => {
     it('should clean input', () => {
-      spyOn(parsing, 'cleanInput').and.callThrough();
+      jest.spyOn(parsing, 'cleanInput');
       cardNumber.validateKnownType(123);
       expect(parsing.cleanInput).toHaveBeenCalledWith(123);
     });
     it('should call validateKnownType', () => {
-      spyOn(cardTypes, 'validateKnownType').and.returnValue(true);
+      jest.spyOn(cardTypes, 'validateKnownType').mockReturnValue(true);
       expect(cardNumber.validateKnownType('123')).toEqual(true);
       expect(cardTypes.validateKnownType).toHaveBeenCalledWith('123');
     });
   });
   describe('validateTypeLength', () => {
     it('should clean input', () => {
-      spyOn(parsing, 'cleanInput').and.callThrough();
+      jest.spyOn(parsing, 'cleanInput');
       cardNumber.validateTypeLength(123);
       expect(parsing.cleanInput).toHaveBeenCalledWith(123);
     });
     it('should call validateCardType', () => {
-      spyOn(cardTypes, 'validateTypeLength').and.returnValue(true);
+      jest.spyOn(cardTypes, 'validateTypeLength').mockReturnValue(true);
       expect(cardNumber.validateTypeLength('123')).toEqual(true);
       expect(cardTypes.validateTypeLength).toHaveBeenCalledWith('123');
     });
   });
   describe('validateChecksum', () => {
     it('should clean input', () => {
-      spyOn(parsing, 'cleanInput').and.callThrough();
+      jest.spyOn(parsing, 'cleanInput');
       cardNumber.validateChecksum(123);
       expect(parsing.cleanInput).toHaveBeenCalledWith(123);
     });
     it('should call validateCardType', () => {
-      spyOn(luhn, 'luhnCheck').and.returnValue(true);
+      jest.spyOn(luhn, 'luhnCheck').mockReturnValue(true);
       expect(cardNumber.validateChecksum('123')).toEqual(true);
       expect(luhn.luhnCheck).toHaveBeenCalledWith('123');
     });
   });
   describe('validateAll', () => {
+    beforeEach(() => jest.restoreAllMocks());
+
     it('should clean input', () => {
-      spyOn(parsing, 'cleanInput').and.callThrough();
+      jest.spyOn(parsing, 'cleanInput');
       cardNumber.validateAll(123);
       expect(parsing.cleanInput).toHaveBeenCalledWith(123);
     });
@@ -184,12 +186,12 @@ describe('card number', () => {
 
   describe('getCardType', () => {
     it('should clean input', () => {
-      spyOn(parsing, 'cleanInput').and.callThrough();
+      jest.spyOn(parsing, 'cleanInput');
       cardNumber.getCardType(123);
       expect(parsing.cleanInput).toHaveBeenCalledWith(123);
     });
     it('should call getCardTypeName', () => {
-      spyOn(cardTypes, 'getCardTypeName').and.returnValue('Visa');
+      jest.spyOn(cardTypes, 'getCardTypeName').mockReturnValue('Visa');
       expect(cardNumber.getCardType('123')).toEqual('Visa');
       expect(cardTypes.getCardTypeName).toHaveBeenCalledWith('123');
     });

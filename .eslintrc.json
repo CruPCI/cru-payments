@@ -1,5 +1,5 @@
 {
-  "parser": "typescript-eslint-parser",
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "sourceType": "module"
   },
@@ -8,7 +8,10 @@
     "jest": true,
     "es6": true
   },
-  "extends": ["plugin:jest/recommended"],
+  "extends": [
+    "plugin:jest/recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
   "rules": {
     "no-alert": "error",
     "no-array-constructor": "off",
@@ -116,7 +119,6 @@
     "no-unsafe-finally": "off",
     "no-unused-expressions": "off",
     "no-unused-labels": "error",
-    "no-unused-vars": "error",
     "no-use-before-define": "off",
     "no-useless-call": "off",
     "no-useless-computed-key": "off",
@@ -177,6 +179,14 @@
     "wrap-iife": "off",
     "wrap-regex": "off",
     "yield-star-spacing": "off",
-    "yoda": "off"
+    "yoda": "off",
+    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/camelcase": "off",
+    "@typescript-eslint/indent": "off",
+    "@typescript-eslint/no-use-before-define": "off",
+    "@typescript-eslint/no-var-requires": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-member-accessibility": "off"
   }
 }

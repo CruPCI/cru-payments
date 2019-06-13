@@ -1,19 +1,19 @@
-import * as tsys from './tsys';
+import * as MockDate from 'mockdate';
+// @ts-ignore
+import fetchMock from 'jest-fetch-mock';
 
-import * as fetchMock from 'fetch-mock';
+import * as tsys from './tsys';
 
 interface TsysError {
   message: string;
-  data: any;
+  data: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 describe('tsys', () => {
-  afterEach(() => {
-    fetchMock.restore();
-  });
-
   beforeEach(() => {
     MockDate.set(new Date(2015, 3, 1)); // Apr 01 2015
+    // eslint-disable-next-line no-undef
+    jest.spyOn(global, 'fetch').mockImplementation(fetchMock);
   });
   afterEach(() => {
     MockDate.reset();
@@ -29,85 +29,75 @@ describe('tsys', () => {
   });
 
   describe('makeRequest', () => {
-    it('should handle a json response', done => {
-      fetchMock.once('<some url>', { key: 'value' });
-      tsys
-        ._makeRequest(
-          '<some url>',
-          { body: '<some body>' },
-          (request: Request) => request.json(),
-          'testing fetch',
-        )
-        .then((data: any) => {
-          expect(data.key).toEqual('value');
-          done();
-        });
+    it('should handle a json response', async () => {
+      fetchMock.once(JSON.stringify({ key: 'value' }));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const data: any = await tsys._makeRequest(
+        '<some url>',
+        { body: '<some body>' },
+        (request: Request) => request.json(),
+        'testing fetch',
+      );
+      expect(data.key).toEqual('value');
+      expect(fetchMock).toHaveBeenCalledWith('<some url>', {
+        body: '<some body>',
+      });
     });
-    it('should handle a text response', done => {
-      fetchMock.once('<some url>', 'some string');
-      tsys
-        ._makeRequest(
+    it('should handle a text response', async () => {
+      fetchMock.once('some string');
+      const data: string = await tsys._makeRequest(
+        '<some url>',
+        { body: '<some body>' },
+        (request: Request) => request.text(),
+        'testing fetch',
+      );
+      expect(data).toEqual('some string');
+      expect(fetchMock).toHaveBeenCalledWith('<some url>', {
+        body: '<some body>',
+      });
+    });
+    it('should handle a server error', async () => {
+      fetchMock.once('some error', {
+        status: 500,
+        statusText: 'Internal Server Error',
+      });
+      await expect(
+        tsys._makeRequest(
           '<some url>',
           { body: '<some body>' },
           (request: Request) => request.text(),
           'testing fetch',
-        )
-        .then((data: string) => {
-          expect(data).toEqual('some string');
-          done();
-        });
-    });
-    it('should handle a server error', done => {
-      fetchMock.once(
-        '<some url>',
-        new Response('some error', {
+        ),
+      ).rejects.toEqual({
+        message: `Server error while testing fetch`,
+        // @ts-ignore
+        data: {
           status: 500,
           statusText: 'Internal Server Error',
-        }),
-      );
-      tsys
-        ._makeRequest(
-          '<some url>',
-          { body: '<some body>' },
-          (request: Request) => request.text(),
-          'testing fetch',
-        )
-        .then(
-          () => done.fail(),
-          (error: TsysError) => {
-            expect(error).toEqual({
-              message: `Server error while testing fetch`,
-              data: {
-                status: 500,
-                statusText: 'Internal Server Error',
-                body: 'some error',
-              },
-            });
-            done();
-          },
-        );
-    });
-    it('should handle a network error', done => {
-      fetchMock.once('<some url>', {
-        throws: new TypeError('Failed to fetch'),
+          body: 'some error',
+        },
       });
-      tsys
-        ._makeRequest(
+      expect(fetchMock).toHaveBeenCalledWith('<some url>', {
+        body: '<some body>',
+      });
+    });
+    it('should handle a network error', async () => {
+      fetchMock.mockRejectOnce(new TypeError('Failed to fetch'));
+      await expect(
+        tsys._makeRequest(
           '<some url>',
           { body: '<some body>' },
           (request: Request) => request.text(),
           'testing fetch',
-        )
-        .then(
-          () => done.fail(),
-          (error: TsysError) => {
-            expect(error).toEqual({
-              message: `Network error while testing fetch`,
-              data: new TypeError('Failed to fetch'),
-            });
-            done();
-          },
-        );
+        ),
+      ).rejects.toEqual({
+        message: `Network error while testing fetch`,
+        // @ts-ignore
+        data: new TypeError('Failed to fetch'),
+      });
+      expect(fetchMock).toHaveBeenCalledWith('<some url>', {
+        body: '<some body>',
+      });
     });
   });
 
@@ -116,11 +106,13 @@ describe('tsys', () => {
       tsys.init('staging', 'deviceId', 'manifest');
     });
     it('should get the staging url, key, and keyId for tokenization', done => {
-      spyOn(tsys, '_makeRequest').and.returnValue(
-        Promise.resolve(
-          "function getKey() { return '<key>'; } function getKeyId() { return '<keyId>' } function getUrl() { return '<url>' }",
-        ),
-      );
+      jest
+        .spyOn(tsys, '_makeRequest')
+        .mockReturnValue(
+          Promise.resolve(
+            "function getKey() { return '<key>'; } function getKeyId() { return '<keyId>' } function getUrl() { return '<url>' }",
+          ),
+        );
       tsys._fetchTsysData().then((data: tsys.TsysData) => {
         expect(tsys._makeRequest).toHaveBeenCalledWith(
           'https://stagegw.transnox.com/transit-tsep-web/jsView/deviceId?manifest',
@@ -138,11 +130,13 @@ describe('tsys', () => {
     });
 
     it('should get the production url, key, and keyId for tokenization', done => {
-      spyOn(tsys, '_makeRequest').and.returnValue(
-        Promise.resolve(
-          "function getKey() { return '<key>'; } function getKeyId() { return '<keyId>' } function getUrl() { return '<url>' }",
-        ),
-      );
+      jest
+        .spyOn(tsys, '_makeRequest')
+        .mockReturnValue(
+          Promise.resolve(
+            "function getKey() { return '<key>'; } function getKeyId() { return '<keyId>' } function getUrl() { return '<url>' }",
+          ),
+        );
       tsys.init('production', 'deviceId', 'manifest');
       tsys._fetchTsysData().then((data: tsys.TsysData) => {
         expect(tsys._makeRequest).toHaveBeenCalledWith(
@@ -161,7 +155,7 @@ describe('tsys', () => {
     });
 
     it('should handle an error parsing the TSYS code', done => {
-      spyOn(tsys, '_makeRequest').and.returnValue(Promise.resolve('@'));
+      jest.spyOn(tsys, '_makeRequest').mockReturnValue(Promise.resolve('@'));
       tsys._fetchTsysData().then(
         () => {},
         (error: TsysError) => {
@@ -175,7 +169,7 @@ describe('tsys', () => {
     });
 
     it('should handle a missing function', done => {
-      spyOn(tsys, '_makeRequest').and.returnValue(Promise.resolve(''));
+      jest.spyOn(tsys, '_makeRequest').mockReturnValue(Promise.resolve(''));
       tsys._fetchTsysData().then(
         () => {},
         (error: TsysError) => {
@@ -190,11 +184,13 @@ describe('tsys', () => {
     });
 
     it('should handle a error passed by the TSYS library', done => {
-      spyOn(tsys, '_makeRequest').and.returnValue(
-        Promise.resolve(
-          'window.onload = function () {var eEvent = new Object();eEvent.responseCode="TSEPERR911";eEvent.status="FAIL";eEvent.message="Authentication Failed"; try{tsepHandler("ErrorEvent", eEvent);}catch(e){}};',
-        ),
-      );
+      jest
+        .spyOn(tsys, '_makeRequest')
+        .mockReturnValue(
+          Promise.resolve(
+            'window.onload = function () {var eEvent = new Object();eEvent.responseCode="TSEPERR911";eEvent.status="FAIL";eEvent.message="Authentication Failed"; try{tsepHandler("ErrorEvent", eEvent);}catch(e){}};',
+          ),
+        );
       tsys._fetchTsysData().then(
         () => {},
         (error: TsysError) => {
@@ -229,7 +225,7 @@ describe('tsys', () => {
       const validKey =
         '-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCH+HoBX8drfBn88Z49gYnK7Z9FVbbBg76lXHfoEUSPHLuzQ9ws4fR3PzDcKO3VIb6/9g3VBfFvMLrdimAGRwqmm4kk/JnnDFWF/HBVmncRTtDkNPuEN15+XJSB8RcvUVQ7s8gkutCU/w2ZXzI5+7XpEyX08Ao7f2IKuncBQmDQJwIDAQAB-----END PUBLIC KEY-----';
 
-      spyOn(tsys, '_fetchTsysData').and.returnValue(
+      jest.spyOn(tsys, '_fetchTsysData').mockReturnValue(
         Promise.resolve({
           url: '<url>',
           key: validKey,
@@ -279,7 +275,9 @@ describe('tsys', () => {
         transactionID: '6417599',
         tsepToken: 'aNWEmSu7RRF1000',
       };
-      spyOn(tsys, '_makeRequest').and.returnValue(Promise.resolve(tokenObj));
+      jest
+        .spyOn(tsys, '_makeRequest')
+        .mockReturnValue(Promise.resolve(tokenObj));
       tsys.encrypt('1234567890123', '123', 12, 2015).then(
         data => {
           expect(tsys._makeRequest).toHaveBeenCalledWith(
@@ -333,7 +331,7 @@ describe('tsys', () => {
     });
 
     it('should handle an invalid key', done => {
-      (<jest.Spy>tsys._fetchTsysData).and.returnValue(
+      (tsys._fetchTsysData as jest.Mock).mockReturnValue(
         Promise.resolve({
           url: '<url>',
           key: '<key>',
@@ -372,13 +370,10 @@ describe('tsys', () => {
   });
 
   describe('perform live test', () => {
-    beforeAll(() => (fetchMock.config.fallbackToNetwork = true));
-    afterAll(() => (fetchMock.config.fallbackToNetwork = false));
+    beforeEach(() => jest.restoreAllMocks());
 
     it('should successfully receive a token from TSYS', done => {
-      // (<any>fetchMock)._unMock();
-      (<any>window)
-        .fetch('https://give-stage2.cru.org/cortex/tsys/manifest')
+      fetch('https://give-stage2.cru.org/cortex/tsys/manifest')
         .then((response: Response) => {
           if (!response.ok) {
             throw 'Error fetching deviceId and manifest from EP';
@@ -414,10 +409,10 @@ describe('tsys', () => {
               },
             );
         })
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .catch((error: any) => done.fail(error));
     }, 10000); // Give TSYS 10s to respond
     it('should receive an error message from TSYS', done => {
-      // (<any>fetchMock)._unMock();
       tsys.init('staging', 'test', 'testingErrorMessage');
       tsys
         .encrypt('4111111111111111', '123', 12, new Date().getFullYear() + 1)
