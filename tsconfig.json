@@ -5,6 +5,7 @@
     "target": "es6",
     "lib": ["es6", "dom"],
     "noImplicitAny": true,
-    "noEmit": true
+    "noEmit": true,
+    "skipLibCheck": true
   }
 }
