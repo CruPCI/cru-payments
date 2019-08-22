@@ -132,7 +132,11 @@ module.exports = {
   // testEnvironment: "jest-environment-jsdom",
 
   // Options that will be passed to the testEnvironment
-  // testEnvironmentOptions: {},
+  testEnvironmentOptions: {
+    referrer:
+      'https://sites-stage.familylife.com/fldonate/' ||
+      process.env.TSYS_REFERRER,
+  },
 
   // Adds a location field to test results
   // testLocationInResults: false,
