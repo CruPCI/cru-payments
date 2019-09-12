@@ -15,7 +15,7 @@ import 'whatwg-fetch';
 import {JSEncrypt} from 'jsencrypt';
 
 const prodKeyUri = 'https://ccp.ccci.org/api/v1/rest/client-encryption-keys/current';
-const stagingKeyUri = 'https://ccpstaging.ccci.org/api/v1/rest/client-encryption-keys/current';
+const stagingKeyUri = 'https://ccpstaging.cru.org/api/v1/rest/client-encryption-keys/current';
 
 let ccpKeyObservable: Observable<string>;
 
