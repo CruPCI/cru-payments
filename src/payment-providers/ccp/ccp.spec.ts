@@ -1,6 +1,7 @@
 import * as ccp from './ccp';
 
 import {once as mockOnce} from 'fetch-mock';
+let validKey: string = '';
 
 describe('ccp', () => {
   describe('init', () => {
@@ -86,7 +87,7 @@ describe('ccp', () => {
         'https://ccpstaging.ccci.org/api/v1/rest/client-encryption-keys/current',
         500
       );
-      this.validKey = `-----BEGIN PUBLIC KEY-----
+      validKey = `-----BEGIN PUBLIC KEY-----
 MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCqGKukO1De7zhZj6+H0qtjTkVxwTCpvKe4eCZ0
 FPqri0cb2JZfXJ/DgYSF6vUpwmJG8wVQZKjeGcjDOL5UlsuusFncCzWBQ7RKNUSesmQRMSGkVb1/
 3j+skZ6UtW+5u09lHNsj6tQ51s1SPrCBkedbNf0Tp0GbMJDyR4e9T04ZZwIDAQAB
@@ -112,7 +113,7 @@ FPqri0cb2JZfXJ/DgYSF6vUpwmJG8wVQZKjeGcjDOL5UlsuusFncCzWBQ7RKNUSesmQRMSGkVb1/
         });
     });
     it('should return the encrypted account number', (done) => {
-      ccp.init('staging', this.validKey);
+      ccp.init('staging', validKey);
       ccp.encrypt('1234567890123456')
         .subscribe(value => {
           expect((<string> value).length).toBeGreaterThan(50);
