@@ -64,7 +64,7 @@ jobs:
 
   slackNotification:
     name: Slack Notification
-    needs: [test]
+    needs: [test, deploy]
     runs-on: ubuntu-latest
     if: github.event_name == 'release'
     steps:
