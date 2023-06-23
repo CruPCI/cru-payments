@@ -9,6 +9,7 @@ interface TsysError {
   data: any;
 }
 /* eslint-enable no-undef */
+let validKey: string = '';
 
 describe('tsys', () => {
   beforeEach(() => {
@@ -168,11 +169,11 @@ describe('tsys', () => {
 
   describe('encrypt', () => {
     beforeEach(() => {
-      this.validKey = '-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCH+HoBX8drfBn88Z49gYnK7Z9FVbbBg76lXHfoEUSPHLuzQ9ws4fR3PzDcKO3VIb6/9g3VBfFvMLrdimAGRwqmm4kk/JnnDFWF/HBVmncRTtDkNPuEN15+XJSB8RcvUVQ7s8gkutCU/w2ZXzI5+7XpEyX08Ao7f2IKuncBQmDQJwIDAQAB-----END PUBLIC KEY-----';
+      validKey = '-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCH+HoBX8drfBn88Z49gYnK7Z9FVbbBg76lXHfoEUSPHLuzQ9ws4fR3PzDcKO3VIb6/9g3VBfFvMLrdimAGRwqmm4kk/JnnDFWF/HBVmncRTtDkNPuEN15+XJSB8RcvUVQ7s8gkutCU/w2ZXzI5+7XpEyX08Ao7f2IKuncBQmDQJwIDAQAB-----END PUBLIC KEY-----';
 
       spyOn(tsys, '_fetchTsysData').and.returnValue(Observable.of({
         url: '<url>',
-        key: this.validKey,
+        key: validKey,
         keyId: '<keyId>'
       }));
       tsys.init('staging', '<deviceId>', '<manifest>');

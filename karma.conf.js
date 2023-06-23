@@ -21,7 +21,7 @@ module.exports = function(config) {
         }
       }
     },
-
+    
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
@@ -39,6 +39,7 @@ module.exports = function(config) {
     files: [
       'src/**/*.ts'
     ],
+    exclude: ["src/payment-providers/declarations.d.ts"],
 
     // level of logging
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
@@ -51,6 +52,11 @@ module.exports = function(config) {
     },
 
     karmaTypescriptConfig: {
+      bundlerOptions: {
+        transforms: [
+            require("karma-typescript-es6-transform")()
+        ]
+      },
       reports: {
         'html': 'coverage',
         'lcovonly': {

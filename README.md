@@ -2,10 +2,24 @@
 [![Build Status](https://travis-ci.org/CruPCI/cru-payments.svg?branch=master)](https://travis-ci.org/CruPCI/cru-payments)
 [![codecov](https://codecov.io/gh/CruPCI/cru-payments/branch/master/graph/badge.svg)](https://codecov.io/gh/CruPCI/cru-payments)
 
+## Breaking changes in v1.2.3
+#### This package is the new version of `cru-payments`.
+
+#### You will now need to import `@cruglobal/cru-payments` as a wildcard.
+```
+import * as cruPayments from '@cruglobal/cru-payments/dist/...';
+```
+instead of
+```
+import cruPayments from 'cru-payments/dist/...';
+```
+
+All other settings are the same.
+
 ## Importing
 
 ### Import package
-Import using `yarn add cru-payments` or `npm install cru-payments --save`
+Import using `yarn add @cruglobal/cru-payments` or `npm install @cruglobal/cru-payments --save`
 
 Note: If you only need to accept one type of payment, use one of the specific builds:
 - Use `dist/cru-payments.js` for credit cards and bank accounts
@@ -13,11 +27,11 @@ Note: If you only need to accept one type of payment, use one of the specific bu
 - Use `dist/cru-payments-cc.js` for credit cards only
 
 #### Use without a module loader
-1. Add `node_modules/cru-payments/dist/cru-payments.js` to a script tag in your app. You may have to move the file somewhere else for it to be publicly accessible.
+1. Add `node_modules/@cruglobal/cru-payments/dist/cru-payments.js` to a script tag in your app. You may have to move the file somewhere else for it to be publicly accessible.
 2. Use the global variable `cruPayments`
 
 #### Use with a module loader
-1. `import cruPayments from 'cru-payments/dist/cru-payments';`
+1. `import * as cruPayments from '@cruglobal/cru-payments/dist/cru-payments';`
 
 #### Use with Internet Explorer
 Credit card payments do not work in IE 9 or below
@@ -32,7 +46,7 @@ Bank account payments do not work in IE 8 or below
 
 ### With observable
 ```js
-import cruPayments from 'cru-payments/dist/cru-payments';
+import * as cruPayments from '@cruglobal/cru-payments/dist/cru-payments';
 
 cruPayments.creditCard.init('production', '00000000000000', '00000000000000000000');
 cruPayments.creditCard.encrypt('4111111111111111', '123', '03', '2020')
@@ -51,7 +65,7 @@ cruPayments.creditCard.encrypt('4111111111111111', '123', '03', '2020')
 ```
 ### Converting to promise
 ```js
-import cruPayments from 'cru-payments/dist/cru-payments';
+import * as cruPayments from '@cruglobal/cru-payments/dist/cru-payments';
 
 cruPayments.creditCard.init('production', '00000000000000', '00000000000000000000');
 cruPayments.creditCard.encrypt('4111111111111111', '123', '03', '2020')
