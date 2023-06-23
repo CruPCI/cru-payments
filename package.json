@@ -1,6 +1,6 @@
 {
   "name": "@cruglobal/cru-payments",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Library for validating and encrypting credit card and bank account info",
   "main": "dist/cru-payments.js",
   "scripts": {
