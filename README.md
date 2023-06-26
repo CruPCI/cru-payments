@@ -3,7 +3,7 @@
 [![codecov](https://codecov.io/gh/CruPCI/cru-payments/branch/master/graph/badge.svg)](https://codecov.io/gh/CruPCI/cru-payments)
 
 ## Breaking changes in v1.2.3
-#### This package is the new version of `cru-payments`.
+#### `@cruglobal/cru-payments` is the new version of `cru-payments`.
 
 #### You will now need to import `@cruglobal/cru-payments` as a wildcard.
 ```
