@@ -7,7 +7,7 @@ describe('ccp', () => {
   describe('init', () => {
     it('should use the backup key provided if there\'s a network error while fetching the key', (done) => {
       mockOnce(
-        'https://ccpstaging.ccci.org/api/v1/rest/client-encryption-keys/current',
+        'https://ccpstaging.cru.org/api/v1/rest/client-encryption-keys/current',
         { throws: new TypeError('Failed to fetch') }
       );
       ccp.init('staging', '<backup key>');
@@ -19,7 +19,7 @@ describe('ccp', () => {
     });
     it('should use the backup key provided if the api returns a non-ok status code while fetching the key', (done) => {
       mockOnce(
-        'https://ccpstaging.ccci.org/api/v1/rest/client-encryption-keys/current',
+        'https://ccpstaging.cru.org/api/v1/rest/client-encryption-keys/current',
         500
       );
       ccp.init('staging', '<backup key>');
@@ -31,7 +31,7 @@ describe('ccp', () => {
     });
     it('should throw an error if no backup key was provided and there was a network error fetching the key from the api', (done) => {
       mockOnce(
-        'https://ccpstaging.ccci.org/api/v1/rest/client-encryption-keys/current',
+        'https://ccpstaging.cru.org/api/v1/rest/client-encryption-keys/current',
         { throws: new TypeError('Failed to fetch') }
       );
       ccp.init('staging');
@@ -44,7 +44,7 @@ describe('ccp', () => {
     });
     it('should throw an error if no backup key was provided and there was a server error fetching the key from the api', (done) => {
       mockOnce(
-        'https://ccpstaging.ccci.org/api/v1/rest/client-encryption-keys/current',
+        'https://ccpstaging.cru.org/api/v1/rest/client-encryption-keys/current',
         500
       );
       ccp.init('staging');
@@ -57,7 +57,7 @@ describe('ccp', () => {
     });
     it('should use the key returned by the api', (done) => {
       mockOnce(
-        'https://ccpstaging.ccci.org/api/v1/rest/client-encryption-keys/current',
+        'https://ccpstaging.cru.org/api/v1/rest/client-encryption-keys/current',
         '<key from api>'
       );
       ccp.init('staging', '<backup key>');
@@ -84,7 +84,7 @@ describe('ccp', () => {
     beforeEach(() => {
       // Setup ccp to use provided backup key
       mockOnce(
-        'https://ccpstaging.ccci.org/api/v1/rest/client-encryption-keys/current',
+        'https://ccpstaging.cru.org/api/v1/rest/client-encryption-keys/current',
         500
       );
       validKey = `-----BEGIN PUBLIC KEY-----
