@@ -25,10 +25,10 @@ jobs:
     runs-on: ubuntu-latest
     name: Test and Build
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version-file: .tool-versions
       - name: 📦 Install Dependencies
         run: yarn install --immutable --immutable-cache
       - name: 💨 ESLint
@@ -45,11 +45,11 @@ jobs:
     name: Deploy to NPM
     needs: [test]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # Setup .npmrc file to publish to npm
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version-file: .tool-versions
           registry-url: "https://registry.npmjs.org"
           scope: "@cruglobal"
       - run: yarn install --immutable --immutable-cache
@@ -71,7 +71,7 @@ jobs:
       - name: Send Slack notification
         uses: slackapi/slack-github-action@v1.23.0
         with:
-          node-version: 16
+          node-version-file: .tool-versions
           payload: |
             {
               "text": "Cru Payments release ${{ github.event.release.tag_name }}\nTitle:${{ github.event.release.name }}\n${{ github.event.release.html_url || github.event.head_commit.url }}",
