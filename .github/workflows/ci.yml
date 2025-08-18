@@ -1,4 +1,4 @@
-name: CI & Deployment
+name: CI
 
 on:
   push:
@@ -21,9 +21,9 @@ env:
   TSYS_REFERRER: ${{ vars.TSYS_REFERRER }}
 
 jobs:
-  test:
+  lint:
     runs-on: ubuntu-latest
-    name: Test and Build
+    name: 🧹 Lint Check
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -33,17 +33,40 @@ jobs:
         run: yarn install --immutable --immutable-cache
       - name: 💨 ESLint
         run: yarn lint
-      - name: 🧪 Tests
+
+  test:
+    runs-on: ubuntu-latest
+    name: ✅ Tests
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .tool-versions
+      - name: 📦 Install Dependencies
+        run: yarn install --immutable --immutable-cache
+      - name: 🧪 Run Tests
         run: yarn test
+      - name: Upload Codecov Reports
+        uses: codecov/codecov-action@v3
+
+  build:
+    runs-on: ubuntu-latest
+    name: 🏗️ Build app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .tool-versions
+      - name: 📦 Install Dependencies
+        run: yarn install --immutable --immutable-cache
       - name: 🏗️ Build
         run: yarn build
-      - name: Codecov
-        uses: codecov/codecov-action@v3
+
   deploy:
     runs-on: ubuntu-latest
     if: github.event_name == 'release'
-    name: Deploy to NPM
-    needs: [test]
+    name: 🚀 Deploy to NPM
+    needs: [lint, test, build]
     steps:
       - uses: actions/checkout@v4
       # Setup .npmrc file to publish to npm
@@ -63,8 +86,8 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   slackNotification:
-    name: Slack Notification
-    needs: [test, deploy]
+    name: 📨 Slack Notification
+    needs: [lint, test, build, deploy]
     runs-on: ubuntu-latest
     if: github.event_name == 'release'
     steps:
