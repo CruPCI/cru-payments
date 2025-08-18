@@ -1,12 +1,15 @@
 import * as ccp from './ccp';
-
-import {once as mockOnce} from 'fetch-mock';
+import * as fetchMock from 'fetch-mock';
 let validKey: string = '';
 
 describe('ccp', () => {
+  afterEach(() => {
+    fetchMock.restore();
+  });
+
   describe('init', () => {
     it('should use the backup key provided if there\'s a network error while fetching the key', (done) => {
-      mockOnce(
+      fetchMock.once(
         'https://ccpstaging.ccci.org/api/v1/rest/client-encryption-keys/current',
         { throws: new TypeError('Failed to fetch') }
       );
@@ -18,7 +21,7 @@ describe('ccp', () => {
         }, () => done.fail('should not have thrown an error'));
     });
     it('should use the backup key provided if the api returns a non-ok status code while fetching the key', (done) => {
-      mockOnce(
+      fetchMock.once(
         'https://ccpstaging.ccci.org/api/v1/rest/client-encryption-keys/current',
         500
       );
@@ -30,7 +33,7 @@ describe('ccp', () => {
         }, () => done.fail('should not have thrown an error'));
     });
     it('should throw an error if no backup key was provided and there was a network error fetching the key from the api', (done) => {
-      mockOnce(
+      fetchMock.once(
         'https://ccpstaging.ccci.org/api/v1/rest/client-encryption-keys/current',
         { throws: new TypeError('Failed to fetch') }
       );
@@ -43,7 +46,7 @@ describe('ccp', () => {
           });
     });
     it('should throw an error if no backup key was provided and there was a server error fetching the key from the api', (done) => {
-      mockOnce(
+      fetchMock.once(
         'https://ccpstaging.ccci.org/api/v1/rest/client-encryption-keys/current',
         500
       );
@@ -56,7 +59,7 @@ describe('ccp', () => {
           });
     });
     it('should use the key returned by the api', (done) => {
-      mockOnce(
+      fetchMock.once(
         'https://ccpstaging.ccci.org/api/v1/rest/client-encryption-keys/current',
         '<key from api>'
       );
@@ -68,7 +71,7 @@ describe('ccp', () => {
         }, () => done.fail('should not have thrown an error'));
     });
     it('should use the key returned by the production api', (done) => {
-      mockOnce(
+      fetchMock.once(
         'https://ccp.ccci.org/api/v1/rest/client-encryption-keys/current',
         '<key from api>'
       );
@@ -83,7 +86,7 @@ describe('ccp', () => {
   describe('encrypt', () => {
     beforeEach(() => {
       // Setup ccp to use provided backup key
-      mockOnce(
+      fetchMock.once(
         'https://ccpstaging.ccci.org/api/v1/rest/client-encryption-keys/current',
         500
       );
