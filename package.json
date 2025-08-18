@@ -4,8 +4,8 @@
   "description": "Library for validating and encrypting credit card and bank account info",
   "main": "dist/cru-payments.js",
   "scripts": {
-    "start": "webpack-dev-server",
-    "build": "webpack -p",
+    "start": "webpack serve",
+    "build": "webpack --mode production",
     "lint": "eslint 'src/**'",
     "test": "karma start",
     "prepublish": "npm run build"
@@ -35,8 +35,9 @@
     "@types/fetch-mock": "7.3.5",
     "@types/jasmine": "^2.5.40",
     "@types/minimatch": "^3.0.5",
-    "@types/node": "17.0.41",
+    "@types/node": "^20.14.15",
     "@typescript-eslint/parser": "5.10.1",
+    "@webpack-cli/serve": "^1.7.0",
     "eslint": "7.32.0",
     "eslint-plugin-jasmine": "^2.2.0",
     "fetch-mock": "^5.9.4",
@@ -51,8 +52,8 @@
     "ts-loader": "^8.4.0",
     "typescript": "^4.9.5",
     "webpack": "^4.47.0",
-    "webpack-cli": "3.3.12",
-    "webpack-dev-server": "^3.11.3"
+    "webpack-cli": "^4.10.0",
+    "webpack-dev-server": "^4.15.2"
   },
   "resolutions": {
     "minimist": "^1.2.6",

@@ -20,8 +20,8 @@ module.exports = {
   },
   devtool: "source-map",
   devServer: {
-    inline: true,
-    port: 3000 // Whitelisted for TSYS staging
+    port: 3000, // Whitelisted for TSYS staging
+    hot: true
   },
   resolve: {
     extensions: ['.ts', '.js']
