@@ -34,7 +34,8 @@
   "devDependencies": {
     "@types/fetch-mock": "7.3.5",
     "@types/jasmine": "^2.5.40",
-    "@types/node": "17.0.41",
+    "@types/minimatch": "^3.0.5",
+    "@types/node": "24.3.0",
     "@typescript-eslint/parser": "5.10.1",
     "eslint": "7.32.0",
     "eslint-plugin-jasmine": "^2.2.0",
