@@ -42,10 +42,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: .tool-versions
+      - name: 🔧 Install PhantomJS Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libssl3 libfontconfig1
       - name: 📦 Install Dependencies
         run: yarn install --immutable --immutable-cache
       - name: 🧪 Run Tests
         run: yarn test
+        env:
+          TSYS_REFERRER: ${{ vars.TSYS_REFERRER }}
+          OPENSSL_CONF: /dev/null
       - name: Upload Codecov Reports
         uses: codecov/codecov-action@v3
 
