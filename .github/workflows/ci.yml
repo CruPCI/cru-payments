@@ -79,12 +79,9 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
-      # Setup .npmrc file to publish to npm
       - uses: actions/setup-node@v4
         with:
           node-version-file: .tool-versions
-          registry-url: "https://registry.npmjs.org"
-          scope: "@cruglobal"
       - run: yarn install --immutable --immutable-cache
       - name: 👤 Configure git
         run: |
