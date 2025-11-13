@@ -94,7 +94,7 @@ jobs:
           # Use the latest version of npm to ensure we have a version >= 11.5.1 that supports trusted publishing
           npm install --global npm@latest
           npm version ${{ github.event.release.tag_name }} --no-git-tag-version
-          npx publish --access public
+          npm publish --access public
 
   slackNotification:
     name: 📨 Slack Notification
