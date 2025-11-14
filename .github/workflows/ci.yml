@@ -74,23 +74,27 @@ jobs:
     if: github.event_name == 'release'
     name: 🚀 Deploy to NPM
     needs: [lint, test, build]
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - uses: actions/checkout@v4
-      # Setup .npmrc file to publish to npm
       - uses: actions/setup-node@v4
         with:
           node-version-file: .tool-versions
-          registry-url: "https://registry.npmjs.org"
-          scope: "@cruglobal"
-      - run: yarn install --immutable --immutable-cache
+      - name: 📦 Install Dependencies
+        run: yarn install --immutable --immutable-cache
       - name: 👤 Configure git
         run: |
           git config --global user.name 'GitHub Action'
           git config --global user.email 'github-action@users.noreply.github.com'
       - name: 🎁 Publish package to NPM and bump version
-        run: yarn publish --access public --new-version ${{ github.event.release.tag_name }}
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          # Use npm because yarn does not yet support trusted publishing
+          # Use the latest version of npm to ensure we have a version >= 11.5.1 that supports trusted publishing
+          npm install --global npm@latest
+          npm version ${{ github.event.release.tag_name }} --no-git-tag-version
+          npm publish --access public
 
   slackNotification:
     name: 📨 Slack Notification
