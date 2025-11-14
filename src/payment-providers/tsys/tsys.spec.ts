@@ -281,53 +281,105 @@ describe('tsys', () => {
   });
 
   describe('perform live test', () => {
-    it('should successfully receive a token from TSYS', (done) => {
-      (<any> fetchMock)._unMock();
-      (<any> window).fetch('https://give-stage2.cru.org/cortex/tsys/manifest')
-        .then((response: Response) => {
-          if (!response.ok) {
-            throw 'Error fetching deviceId and manifest from EP';
-          }
-          return response.json();
-        })
-        .then((tsysData: { deviceId: string, manifest: string }) => {
-          tsys.init('staging', tsysData.deviceId, tsysData.manifest);
-          tsys.encrypt('4111111111111111', '123', 12, new Date().getFullYear() + 1)
-            .subscribe(response => {
-                expect(response).toEqual({
-                  responseCode: 'A0000',
-                  status: 'PASS',
-                  message: 'Success',
-                  expirationDate: '12/2016',
-                  cvv2: '123',
-                  tsepToken: jasmine.stringMatching(/^[A-Za-z0-9]{16}$/),
-                  maskedCardNumber: '1111',
-                  cardType: 'V',
-                  transactionID: jasmine.stringMatching(/^\d{7,8}$/)
+    describe('staging', () => {
+      it('should successfully receive a token from TSYS', (done) => {
+        (<any> fetchMock)._unMock();
+        (<any> window).fetch('https://give-stage2.cru.org/cortex/tsys/manifest')
+          .then((response: Response) => {
+            if (!response.ok) {
+              throw 'Error fetching deviceId and manifest from EP';
+            }
+            return response.json();
+          })
+          .then((tsysData: { deviceId: string, manifest: string }) => {
+            tsys.init('staging', tsysData.deviceId, tsysData.manifest);
+            tsys.encrypt('4111111111111111', '123', 12, new Date().getFullYear() + 1)
+              .subscribe(response => {
+                  expect(response).toEqual({
+                    responseCode: 'A0000',
+                    status: 'PASS',
+                    message: 'Success',
+                    expirationDate: '12/2016',
+                    cvv2: '123',
+                    tsepToken: jasmine.stringMatching(/^[A-Za-z0-9]{16}$/),
+                    maskedCardNumber: '1111',
+                    cardType: 'V',
+                    transactionID: jasmine.stringMatching(/^\d{7,8}$/)
+                  });
+                  done();
+                },
+                error => {
+                  done.fail(error);
                 });
-                done();
-              },
-              error => {
-                done.fail(error);
+          })
+          .catch((error: any) => done.fail(error));
+      }, 10000); // Give TSYS 10s to respond
+      it('should receive an error message from TSYS', (done) => {
+        (<any> fetchMock)._unMock();
+        tsys.init('staging', 'test', 'testingErrorMessage');
+        tsys.encrypt('4111111111111111', '123', 12, new Date().getFullYear() + 1)
+          .subscribe(() => {
+              done.fail('Should not have succeeded');
+            },
+            error => {
+              expect(error).toEqual({ message: 'TSYS load error', data: {
+                responseCode: 'TSEPERR911',
+                status: 'FAIL',
+                message: 'Authentication Failed' }
               });
-        })
-        .catch((error: any) => done.fail(error));
-    }, 10000); // Give TSYS 10s to respond
-    it('should receive an error message from TSYS', (done) => {
-      (<any> fetchMock)._unMock();
-      tsys.init('staging', 'test', 'testingErrorMessage');
-      tsys.encrypt('4111111111111111', '123', 12, new Date().getFullYear() + 1)
-        .subscribe(() => {
-            done.fail('Should not have succeeded');
-          },
-          error => {
-            expect(error).toEqual({ message: 'TSYS load error', data: {
-              responseCode: 'TSEPERR911',
-              status: 'FAIL',
-              message: 'Authentication Failed' }
+              done();
             });
-            done();
-          });
-    }, 10000); // Give TSYS 10s to respond
+      }, 10000); // Give TSYS 10s to respond
+    });
+    describe('production', () => {
+      it('should successfully receive a token from TSYS', (done) => {
+        (<any> fetchMock)._unMock();
+        (<any> window).fetch('https://give.cru.org/cortex/tsys/manifest')
+          .then((response: Response) => {
+            if (!response.ok) {
+              throw 'Error fetching deviceId and manifest from EP';
+            }
+            return response.json();
+          })
+          .then((tsysData: { deviceId: string, manifest: string }) => {
+            tsys.init('production', tsysData.deviceId, tsysData.manifest);
+            tsys.encrypt('4111111111111111', '123', 12, new Date().getFullYear() + 1)
+              .subscribe(response => {
+                  expect(response).toEqual({
+                    responseCode: 'A0000',
+                    status: 'PASS',
+                    message: 'Success',
+                    expirationDate: '12/2016',
+                    cvv2: '123',
+                    tsepToken: jasmine.stringMatching(/^[A-Za-z0-9]{16}$/),
+                    maskedCardNumber: '1111',
+                    cardType: 'V',
+                    transactionID: jasmine.stringMatching(/^\d{7,8}$/)
+                  });
+                  done();
+                },
+                error => {
+                  done.fail(error);
+                });
+          })
+          .catch((error: any) => done.fail(error));
+      }, 10000); // Give TSYS 10s to respond
+      it('should receive an error message from TSYS', (done) => {
+        (<any> fetchMock)._unMock();
+        tsys.init('production', 'test', 'testingErrorMessage');
+        tsys.encrypt('4111111111111111', '123', 12, new Date().getFullYear() + 1)
+          .subscribe(() => {
+              done.fail('Should not have succeeded');
+            },
+            error => {
+              expect(error).toEqual({ message: 'TSYS load error', data: {
+                responseCode: 'TSEPERR911',
+                status: 'FAIL',
+                message: 'Authentication Failed' }
+              });
+              done();
+            });
+      }, 10000); // Give TSYS 10s to respond
+    });
   });
 });
