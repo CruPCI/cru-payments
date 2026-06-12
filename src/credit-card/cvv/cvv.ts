@@ -16,8 +16,12 @@ export function validateCardTypeLength(input: string|number, cardType?: string){
     return true;
   }
   const cvv = cleanInput(input);
-  const validLengths = cardTypeConsts.filter(cardTypeConst => cardTypeConst.name === cardType)[0].cvvLengths;
-  return validLengths.indexOf(cvv.length) !== -1;
+  const matchedCardType = cardTypeConsts.filter(cardTypeConst => cardTypeConst.name === cardType)[0];
+  if(!matchedCardType){
+    // Unrecognized card type. Like a missing card type, we can't judge the CVV length, so don't block.
+    return true;
+  }
+  return matchedCardType.cvvLengths.indexOf(cvv.length) !== -1;
 }
 
 export function validateAll(input: string|number, cardType?: string){

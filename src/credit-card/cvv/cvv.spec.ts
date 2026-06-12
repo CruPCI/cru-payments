@@ -78,6 +78,11 @@ describe('cvv', () => {
       expect(cvv.validateCardTypeLength(1234, 'Diners Club')).toEqual(false);
       expect(cvv.validateCardTypeLength(12345, 'Diners Club')).toEqual(false);
     });
+    it('should return true without throwing if cardType is unrecognized', () => {
+      expect(cvv.validateCardTypeLength(123, 'VISA')).toEqual(true);
+      expect(cvv.validateCardTypeLength(1234, 'Amex')).toEqual(true);
+      expect(cvv.validateCardTypeLength('123', 'Unknown')).toEqual(true);
+    });
   });
   describe('validateAll', () => {
     it('should return true if cvv is valid', () => {
@@ -128,6 +133,10 @@ describe('cvv', () => {
     });
     it('should return an empty array for a valid cvv', () => {
       expect(cvv.errors('123', 'MasterCard')).toEqual([]);
+    });
+    it('should not throw or return a card type length error for an unrecognized card type', () => {
+      expect(cvv.errors('1234', 'Amex')).toEqual([]);
+      expect(cvv.errors('123', 'VISA')).toEqual([]);
     });
     it('should return true if cvv is null which indicates that the cvv is optional', () => {
       expect(cvv.validateAll(null)).toEqual(true);
