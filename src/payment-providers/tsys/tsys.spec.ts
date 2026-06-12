@@ -128,8 +128,33 @@ describe('tsys', () => {
           (error: TsysError) => {
             expect(error).toEqual({
               message: 'Error parsing TSYS code',
-              data: jasmine.any(SyntaxError)
+              data: jasmine.any(String) // only the error message is forwarded, not the raw error object
             });
+            done();
+          });
+    });
+
+    it('should restore the host page\'s window.onload handler after executing the TSYS code', (done) => {
+      const hostOnload = () => 'host page onload sentinel';
+      (<any> window).onload = hostOnload;
+      spyOn(tsys, '_makeRequest').and.returnValue(Observable.of("window.onload = function () {}; function getKey() { return '<key>'; } function getKeyId() { return '<keyId>' } function getUrl() { return '<url>' }"));
+      tsys._fetchTsysData()
+        .subscribe(() => {
+          expect(window.onload).toBe(hostOnload);
+          (<any> window).onload = null;
+          done();
+        }, () => done.fail('should not have thrown an error'));
+    });
+
+    it('should restore the host page\'s window.onload handler even when executing the TSYS code throws', (done) => {
+      const hostOnload = () => 'host page onload sentinel';
+      (<any> window).onload = hostOnload;
+      spyOn(tsys, '_makeRequest').and.returnValue(Observable.of('@'));
+      tsys._fetchTsysData()
+        .subscribe(() => done.fail('should have thrown an error'),
+          () => {
+            expect(window.onload).toBe(hostOnload);
+            (<any> window).onload = null;
             done();
           });
     });

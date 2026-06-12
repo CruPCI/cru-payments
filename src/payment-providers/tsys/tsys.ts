@@ -70,29 +70,52 @@ function fetchTsysData(){
         };
 
         try {
-          // Execute TSYS code in function. Add return values to get data that is not publicly advertised by TSYS. Call onload to run TSYS error handling if unsuccessful.
-          const tsysData: TsysData = new Function('tsepHandler', `${removeAppendChild(response)}
-          try{
-            return { url: getUrl(), key: getKey(), keyId: getKeyId() };
-          } catch(e){}
-          try{
-            window.onload();
-          } catch(e){}
-          return null;
-          `)(tsepHandler);
+          // SECURITY NOTE: `new Function` below executes the raw JavaScript response fetched from
+          // TSYS's jsView endpoint with full access to this page's globals. Executing this response
+          // means fully trusting TSYS and the TLS channel it was fetched over; `removeAppendChild`
+          // is NOT a security boundary. Future work: execute the TSYS payload inside a sandboxed
+          // iframe so TSYS-served code cannot touch the host DOM.
+          //
+          // The TSYS code assigns `window.onload`, which the wrapper invokes to run TSYS's error
+          // handling. Capture the host page's onload handler first and restore it afterwards so
+          // this library doesn't permanently clobber the host page's own handler.
+          const previousOnload = window.onload;
+          let tsysData: TsysData;
+          try {
+            // Execute TSYS code in function. Add return values to get data that is not publicly advertised by TSYS. Call onload to run TSYS error handling if unsuccessful.
+            tsysData = new Function('tsepHandler', `${removeAppendChild(response)}
+            try{
+              return { url: getUrl(), key: getKey(), keyId: getKeyId() };
+            } catch(e){}
+            try{
+              window.onload();
+            } catch(e){}
+            return null;
+            `)(tsepHandler);
+          } finally {
+            window.onload = previousOnload;
+          }
           if(!tsysData) {
             observer.error({ message: 'TSYS load error', data: 'TSYS did not provide a getUrl, getKey, and/or getKeyId function' });
           }else{
             observer.next(tsysData);
           }
         } catch(e){
-          observer.error({ message: 'Error parsing TSYS code', data: e });
+          // Forward only the error message; the raw error object can embed a chunk of the fetched TSYS source
+          observer.error({ message: 'Error parsing TSYS code', data: e && e.message ? e.message : String(e) });
         }
         observer.complete();
       });
     });
 }
 
+// SECURITY NOTE: this regex strips the `appendChild` statements TSYS uses to import its own
+// scripts into the DOM, purely as defense-in-depth for that specific, known pattern. It is NOT a
+// security boundary: it is trivially bypassed (a statement without a trailing semicolon defeats
+// it, and insertBefore/document.write/innerHTML/etc. are untouched), and the greedy `[^;]*` can
+// even consume legitimate adjacent code back to the previous semicolon. The executed response is
+// trusted as if it were TSYS-authored code delivered over TLS (see fetchTsysData). Future work:
+// sandboxed iframe execution instead of regex filtering.
 function removeAppendChild(code: string){
   return code.replace(/[^;]*appendChild.*?;/g, ''); // Prevent script imports from being added to the DOM
 }
