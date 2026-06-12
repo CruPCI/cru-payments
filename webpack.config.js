@@ -15,7 +15,9 @@ module.exports = {
   module: {
     rules: [
       // all files with a `.ts` extension but not `.spec.ts` will be handled by `ts-loader`
-      { test: /^(?!.*\.spec\.ts$).*\.ts$/, loader: 'ts-loader' }
+      // module is overridden to es2015 (tsconfig.json uses commonjs for karma-typescript)
+      // so webpack can tree-shake rxjs's ES module build
+      { test: /^(?!.*\.spec\.ts$).*\.ts$/, loader: 'ts-loader', options: { compilerOptions: { module: 'es2015' } } }
     ]
   },
   devtool: "source-map",

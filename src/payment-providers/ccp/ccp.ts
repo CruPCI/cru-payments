@@ -1,10 +1,5 @@
-import {Observable} from 'rxjs/Observable';
-import 'rxjs/add/observable/from';
-import 'rxjs/add/observable/of';
-import 'rxjs/add/observable/throw';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/mergeMap';
-import 'rxjs/add/operator/catch';
+import {Observable, from, of, throwError} from 'rxjs';
+import {catchError, map, mergeMap} from 'rxjs/operators';
 
 import {Promise} from 'es6-promise';
 if (!(<any> window).Promise) {
@@ -20,41 +15,43 @@ const stagingKeyUri = 'https://ccpstaging.ccci.org/api/v1/rest/client-encryption
 let ccpKeyObservable: Observable<string>;
 
 export function init(env: string, backupKey?: string){
-  ccpKeyObservable = Observable.from((<any> window).fetch(env === 'production' ? prodKeyUri : stagingKeyUri))
-    .mergeMap((response: Response) => {
+  ccpKeyObservable = from((<any> window).fetch(env === 'production' ? prodKeyUri : stagingKeyUri)).pipe(
+    mergeMap((response: Response) => {
       if (response.ok) {
-        return Observable.from(response.text());
+        return from(response.text());
       }else{
-        return Observable.throw(response.statusText);
+        return throwError(() => response.statusText);
+      }
+    }),
+    catchError(error => {
+      if(backupKey){
+        return of(backupKey);
+      }else{
+        return throwError(() => 'There was an error retrieving the key from CCP and no backup key was provided: ' + error);
       }
     })
-    .catch(error => {
-      if(backupKey){
-        return Observable.of(backupKey);
-      }else{
-        return Observable.throw('There was an error retrieving the key from CCP and no backup key was provided: ' + error);
-      }
-    });
+  );
 }
 
 export function encrypt(accountNumber: string){
   if(!ccpKeyObservable){
-    return Observable.throw('init must be called first');
+    return throwError(() => 'init must be called first');
   }
 
-  return ccpKeyObservable
-    .map(key => {
+  return ccpKeyObservable.pipe(
+    map(key => {
       const encryptor = new JSEncrypt();
       encryptor.setKey(key);
       return encryptor.encrypt(accountNumber);
-    })
-    .mergeMap(encryptedNumber => {
+    }),
+    mergeMap(encryptedNumber => {
       if (encryptedNumber !== false) {
-        return Observable.of(encryptedNumber);
+        return of(encryptedNumber);
       }else{
-        return Observable.throw('Error encrypting bank account number');
+        return throwError(() => 'Error encrypting bank account number');
       }
-    });
+    })
+  );
 }
 
 function clear(){

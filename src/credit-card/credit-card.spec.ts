@@ -1,8 +1,6 @@
 import * as creditCard from './credit-card';
 import * as tsys from '../payment-providers/tsys/tsys';
-import {Observable} from 'rxjs/Observable';
-import 'rxjs/add/observable/of';
-import 'rxjs/add/observable/throw';
+import {of, throwError} from 'rxjs';
 
 describe('credit card', () => {
 
@@ -85,7 +83,7 @@ describe('credit card', () => {
     beforeEach(function() {
       jasmine.clock().install();
       jasmine.clock().mockDate(new Date(2015, 3, 1)); // Apr 01 2015
-      spyOn(tsys, 'encrypt').and.returnValue(Observable.of('<tsys card token>'));
+      spyOn(tsys, 'encrypt').and.returnValue(of('<tsys card token>'));
     });
     afterEach(function() {
       jasmine.clock().uninstall();
@@ -118,7 +116,7 @@ describe('credit card', () => {
         });
     });
     it('should return an errored Observable if encryption was unsuccessful', (done) => {
-      (<jasmine.Spy> tsys.encrypt).and.returnValue(Observable.throw('some error'));
+      (<jasmine.Spy> tsys.encrypt).and.returnValue(throwError(() => 'some error'));
       creditCard.encrypt('4111111111111111', '123', 4, 2015)
         .subscribe(() => {
           done.fail('Observable should have thrown an error');
