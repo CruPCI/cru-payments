@@ -41,6 +41,14 @@ describe('expiry date', () => {
       expect(validateMonth('0', '2016')).toEqual(false);
       expect(validateMonth('12', '2016')).toEqual(true);
     });
+    it('should support 2-digit years', () => {
+      const currentTwoDigitYear = new Date().getFullYear() - 2000; // 15
+      expect(validateMonth(1, currentTwoDigitYear - 1)).toEqual(false); // '14' is in the past
+      expect(validateMonth(3, String(currentTwoDigitYear))).toEqual(false); // month in the past of '15'
+      expect(validateMonth(4, String(currentTwoDigitYear))).toEqual(true); // current month of '15'
+      expect(validateMonth('12', String(currentTwoDigitYear + 1))).toEqual(true); // '16' is in the future
+      expect(validateMonth('12', '28')).toEqual(true);
+    });
   });
   describe('validateYear', () => {
     it('should return false if the year is less than the current year', () => {
@@ -59,6 +67,20 @@ describe('expiry date', () => {
       expect(validateYear('2014')).toEqual(false);
       expect(validateYear('2015')).toEqual(true);
       expect(validateYear('2016')).toEqual(true);
+    });
+    it('should support 2-digit years', () => {
+      const currentTwoDigitYear = new Date().getFullYear() - 2000; // 15
+      expect(validateYear(String(currentTwoDigitYear - 1))).toEqual(false); // '14' is in the past
+      expect(validateYear(String(currentTwoDigitYear))).toEqual(true); // '15' is the current year
+      expect(validateYear(currentTwoDigitYear + 1)).toEqual(true); // '16' is in the future
+      expect(validateYear('28')).toEqual(true);
+    });
+    it('should return false if the year is more than 50 years in the future', () => {
+      const currentYear = new Date().getFullYear(); // 2015
+      expect(validateYear(currentYear + 50)).toEqual(true);
+      expect(validateYear(currentYear + 51)).toEqual(false);
+      expect(validateYear('99')).toEqual(false); // 2099 is too far in the future
+      expect(validateYear(9999)).toEqual(false);
     });
   });
   describe('errors', () => {
@@ -92,6 +114,24 @@ describe('expiry date', () => {
     });
     it('should return an empty array for a valid month and year', () => {
       expect(errors('5', '2015')).toEqual([]);
+    });
+    it('should return errors for an invalid 2-digit year', () => {
+      const pastTwoDigitYear = String(new Date().getFullYear() - 2000 - 1); // '14'
+      expect(errors('6', pastTwoDigitYear)).toEqual([
+        'Year cannot be in the past',
+        'Month cannot be in the past'
+      ]);
+    });
+    it('should return errors for a year too far in the future', () => {
+      const farFutureYear = String(new Date().getFullYear() + 51); // '2066'
+      expect(errors('6', farFutureYear)).toEqual([
+        'Year is too far in the future'
+      ]);
+    });
+    it('should return an empty array for a valid month and 2-digit year', () => {
+      const currentTwoDigitYear = String(new Date().getFullYear() - 2000); // '15'
+      expect(errors('5', currentTwoDigitYear)).toEqual([]);
+      expect(errors('12', '28')).toEqual([]);
     });
   });
 });
