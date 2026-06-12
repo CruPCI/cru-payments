@@ -3988,10 +3988,10 @@ jsbn@~0.1.0:
   resolved "https://registry.yarnpkg.com/jsbn/-/jsbn-0.1.1.tgz#a5e654c2e5a2deb5f201d96cefbca80c0ef2f513"
   integrity sha512-UVU9dibq2JcFWxQPA6KCqj5O42VOmAY3zQUfEKxU0KpTGXwNoCjkX1e13eHNvw/xPynt6pU0rZ1htjWTNTSXsg==
 
-jsencrypt@3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/jsencrypt/-/jsencrypt-3.1.0.tgz#634226c92c548dd9a69f8352770a32e58e831728"
-  integrity sha512-A4fIgyPN38G7wwB5t1Vkpi+w7j/nHKdradl/k9/GQqwAsxJqAJ55j3P5rWO3dvjhzOyWKOmK//WwzPO+o6gW0g==
+jsencrypt@3.5.4:
+  version "3.5.4"
+  resolved "https://registry.yarnpkg.com/jsencrypt/-/jsencrypt-3.5.4.tgz#8db335ab164359449dd200d120f125f459476b25"
+  integrity sha512-kNjfYEMNASxrDGsmcSQh/rUTmcoRfSUkxnAz+MMywM8jtGu+fFEZ3nJjHM58zscVnwR0fYmG9sGkTDjqUdpiwA==
 
 jsesc@^3.0.2:
   version "3.1.0"

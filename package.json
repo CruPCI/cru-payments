@@ -27,7 +27,7 @@
   "homepage": "https://github.com/CruPCI/cru-payments#readme",
   "dependencies": {
     "es6-promise": "^4.0.5",
-    "jsencrypt": "3.1.0",
+    "jsencrypt": "3.5.4",
     "rxjs": "^5.0.3",
     "whatwg-fetch": "^2.0.1"
   },
