@@ -226,3 +226,5 @@ Returns an array of error message strings. For each invalid validator above (exc
 #### Run tests
 
 `yarn run test` or `npm run test`
+
+Tests run in headless Chrome. The live TSYS integration tests (which make real network calls to TSYS staging) are skipped by default; opt in with `RUN_LIVE_TSYS_TESTS=true yarn run test`.

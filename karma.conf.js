@@ -12,16 +12,20 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['PhantomJS-customReferrer'],
+    browsers: ['ChromeHeadlessNoSandbox'],
     customLaunchers: {
-      'PhantomJS-customReferrer': {
-        base: 'PhantomJS',
-        options: {
-          customHeaders: { Referer: process.env.TSYS_REFERRER }
-        }
+      ChromeHeadlessNoSandbox: {
+        base: 'ChromeHeadless',
+        flags: ['--no-sandbox', '--disable-gpu']
       }
     },
-    
+
+    // values in `client` are exposed to tests via window.__karma__.config
+    client: {
+      // Live TSYS integration tests are opt-in; set RUN_LIVE_TSYS_TESTS=true to run them
+      runLiveTsysTests: !!process.env.RUN_LIVE_TSYS_TESTS
+    },
+
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
