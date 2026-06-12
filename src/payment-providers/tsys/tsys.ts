@@ -1,12 +1,7 @@
-import {Observable} from 'rxjs/Observable';
+import {Observable, from, of, throwError} from 'rxjs';
 // eslint-disable-next-line no-unused-vars
-import {Observer} from 'rxjs/Observer';
-import 'rxjs/add/observable/from';
-import 'rxjs/add/observable/of';
-import 'rxjs/add/observable/throw';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/operator/mergeMap';
-import 'rxjs/add/operator/toPromise';
+import {Observer} from 'rxjs';
+import {catchError, mergeMap} from 'rxjs/operators';
 
 import {Promise} from 'es6-promise';
 if (!(<any> window).Promise) {
@@ -40,15 +35,17 @@ export function init(_env: string, _deviceId: string, _manifest: string){
 }
 
 function makeRequest(url: RequestInfo, init: RequestInit, bodyFn: Function, action: string){
-  return Observable.from((<any> window).fetch(url, init))
-    .catch((error: Response) => Observable.throw({ message: `Network error while ${action}`, data: error }))
-    .mergeMap((response: Response) => {
+  return from((<any> window).fetch(url, init)).pipe(
+    catchError((error: Response) => throwError(() => ({ message: `Network error while ${action}`, data: error }))),
+    mergeMap((response: Response) => {
       if (response.ok) {
-        return Observable.from(bodyFn(response));
+        return from(bodyFn(response));
       }
-      return Observable.from(response.text())
-        .mergeMap(body => Observable.throw({ message: `Server error while ${action}`, data: { status: response.status, statusText: response.statusText, body: body } }));
-    });
+      return from(response.text()).pipe(
+        mergeMap(body => throwError(() => ({ message: `Server error while ${action}`, data: { status: response.status, statusText: response.statusText, body: body } })))
+      );
+    })
+  );
 }
 
 function fetchTsysData(){
@@ -59,7 +56,7 @@ function fetchTsysData(){
     (request: Request) => request.text(),
     'loading TSYS library'
   )
-    .mergeMap((response: string) => {
+    .pipe(mergeMap((response: string) => {
       return new Observable((observer: Observer<any>) => {
         // Watch tsepHandler for errors loading the TSYS library
         const tsepHandler = (eventType: string, event: any) => {
@@ -90,7 +87,7 @@ function fetchTsysData(){
         }
         observer.complete();
       });
-    });
+    }));
 }
 
 function removeAppendChild(code: string){
@@ -99,14 +96,14 @@ function removeAppendChild(code: string){
 
 export function encrypt(cardNumber: string, cvv: string, month: number, year: number): Observable<any> {
   if(!deviceId){
-    return Observable.throw({ message: 'Device ID not set', data: 'init needs to be called first' });
+    return throwError(() => ({ message: 'Device ID not set', data: 'init needs to be called first' }));
   }
   if(!manifest){
-    return Observable.throw({ message: 'Manifest not set', data: 'init needs to be called first' });
+    return throwError(() => ({ message: 'Manifest not set', data: 'init needs to be called first' }));
   }
 
   return exports._fetchTsysData()
-    .mergeMap((tsysData: TsysData) => {
+    .pipe(mergeMap((tsysData: TsysData) => {
       let monthString = String(month);
       monthString = monthString.length === 1 ? '0' + monthString : monthString;
       const expiryDate = monthString + '/' + String(year);
@@ -116,7 +113,7 @@ export function encrypt(cardNumber: string, cvv: string, month: number, year: nu
       encryptor.setKey(tsysData.key);
       const encryptedNumber = encryptor.encrypt(cardNumber);
       if (encryptedNumber === false) {
-        return Observable.throw({ message: 'Encryption error', data: 'Could not encrypt the card number with the key provided by TSYS' });
+        return throwError(() => ({ message: 'Encryption error', data: 'Could not encrypt the card number with the key provided by TSYS' }));
       }
 
       // Request format not publicly advertised by TSYS. /generateTsepToken url fragment, method, and request body format extracted from tsep.js.
@@ -140,13 +137,13 @@ export function encrypt(cardNumber: string, cvv: string, month: number, year: nu
         (request: Request) => request.json(),
         'performing tokenization'
       );
-    })
-    .mergeMap((response: any) => {
+    }),
+    mergeMap((response: any) => {
       if(response.status === 'PASS'){
-        return Observable.of(response);
+        return of(response);
       }
-      return Observable.throw({ message: 'Tokenization error', data: response });
-    });
+      return throwError(() => ({ message: 'Tokenization error', data: response }));
+    }));
 }
 
 // For testing
