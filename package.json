@@ -3,9 +3,11 @@
   "version": "1.3.2",
   "description": "Library for validating and encrypting credit card and bank account info",
   "main": "dist/cru-payments.js",
+  "types": "dist/types/index.d.ts",
   "scripts": {
     "start": "webpack serve",
-    "build": "webpack --mode production",
+    "build": "webpack --mode production && npm run build:types",
+    "build:types": "tsc -p tsconfig.types.json",
     "lint": "eslint 'src/**'",
     "test": "karma start",
     "prepublish": "npm run build"
