@@ -39,7 +39,7 @@ export function init(_env: string, _deviceId: string, _manifest: string){
   manifest = _manifest;
 }
 
-function makeRequest(url: RequestInfo, init: RequestInit, bodyFn: Function, action: string){
+function makeRequest(url: RequestInfo, init: RequestInit, bodyFn: Function, action: string, errorBodySanitizer?: Function){
   return Observable.from((<any> window).fetch(url, init))
     .catch((error: Response) => Observable.throw({ message: `Network error while ${action}`, data: error }))
     .mergeMap((response: Response) => {
@@ -47,8 +47,24 @@ function makeRequest(url: RequestInfo, init: RequestInit, bodyFn: Function, acti
         return Observable.from(bodyFn(response));
       }
       return Observable.from(response.text())
-        .mergeMap(body => Observable.throw({ message: `Server error while ${action}`, data: { status: response.status, statusText: response.statusText, body: body } }));
+        .mergeMap((body: string) => Observable.throw({ message: `Server error while ${action}`, data: { status: response.status, statusText: response.statusText, body: errorBodySanitizer ? errorBodySanitizer(body) : body } }));
     });
+}
+
+// PCI-DSS forbids storing CVV2. Strip it from parsed tokenization responses so it can't leak into consumer code or error trackers.
+function stripCvv2(response: any){
+  const sanitized: any = {};
+  for(const key in response){
+    if(key !== 'cvv2'){
+      sanitized[key] = response[key];
+    }
+  }
+  return sanitized;
+}
+
+// Redact CVV2 values echoed back in raw error body text from the tokenization endpoint
+function redactCvv2(body: string){
+  return body.replace(/"cvv2"\s*:\s*"[^"]*"/g, '"cvv2":"[REDACTED]"');
 }
 
 function fetchTsysData(){
@@ -138,14 +154,16 @@ export function encrypt(cardNumber: string, cvv: string, month: number, year: nu
           })
         },
         (request: Request) => request.json(),
-        'performing tokenization'
+        'performing tokenization',
+        redactCvv2
       );
     })
     .mergeMap((response: any) => {
+      const sanitizedResponse = stripCvv2(response);
       if(response.status === 'PASS'){
-        return Observable.of(response);
+        return Observable.of(sanitizedResponse);
       }
-      return Observable.throw({ message: 'Tokenization error', data: response });
+      return Observable.throw({ message: 'Tokenization error', data: sanitizedResponse });
     });
 }
 

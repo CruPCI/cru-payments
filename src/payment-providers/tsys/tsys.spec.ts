@@ -225,9 +225,29 @@ describe('tsys', () => {
               })
             },
             jasmine.any(Function),
-            'performing tokenization'
+            'performing tokenization',
+            jasmine.any(Function)
           );
-          expect(data).toEqual(tokenObj);
+          expect(data).toEqual({
+            cardType: 'X',
+            expirationDate: '10/2017',
+            maskedCardNumber: '1000',
+            message: 'Success',
+            responseCode: 'A0000',
+            status: 'PASS',
+            transactionID: '6417599',
+            tsepToken: 'aNWEmSu7RRF1000'
+          });
+          done();
+        }, () => done.fail('should not have thrown an error'));
+    });
+
+    it('should not include cvv2 in a successful tokenization response', (done) => {
+      spyOn(tsys, '_makeRequest').and.returnValue(Observable.of({ status: 'PASS', cvv2: '123', tsepToken: 'aNWEmSu7RRF1000' }));
+      tsys.encrypt('1234567890123', '123', 12, 2015)
+        .subscribe(data => {
+          expect(data.cvv2).toBeUndefined();
+          expect(data).toEqual({ status: 'PASS', tsepToken: 'aNWEmSu7RRF1000' });
           done();
         }, () => done.fail('should not have thrown an error'));
     });
@@ -247,7 +267,8 @@ describe('tsys', () => {
               })
             },
             jasmine.any(Function),
-            'performing tokenization'
+            'performing tokenization',
+            jasmine.any(Function)
           );
           expect(data).toEqual({ status: 'PASS' });
           done();
@@ -278,6 +299,31 @@ describe('tsys', () => {
             done();
           });
     });
+
+    it('should not include cvv2 in a tokenization error', (done) => {
+      spyOn(tsys, '_makeRequest').and.returnValue(Observable.of({ status: 'FAILURE', cvv2: '123', message: 'Tokenization failed' }));
+      tsys.encrypt('1234567890123', '123', 12, 2015)
+        .subscribe(() => done.fail('should have thrown an error'),
+          (error: TsysError) => {
+            expect(error.data.cvv2).toBeUndefined();
+            expect(error).toEqual({ message: 'Tokenization error', data: { status: 'FAILURE', message: 'Tokenization failed' } });
+            done();
+          });
+    });
+
+    it('should redact cvv2 from the body of a tokenization server error', (done) => {
+      fetchMock.once(
+        '<url>/generateTsepToken',
+        new Response('{"status":"FAILURE","cvv2":"123","message":"Bad Request"}', { status: 400, statusText: 'Bad Request' })
+      );
+      tsys.encrypt('1234567890123', '123', 12, 2015)
+        .subscribe(() => done.fail('should have thrown an error'),
+          (error: TsysError) => {
+            expect(error.data.body).toEqual('{"status":"FAILURE","cvv2":"[REDACTED]","message":"Bad Request"}');
+            expect(error.data.body).not.toContain('"cvv2":"123"');
+            done();
+          });
+    });
   });
 
   describe('perform live test', () => {
@@ -294,12 +340,12 @@ describe('tsys', () => {
           tsys.init('staging', tsysData.deviceId, tsysData.manifest);
           tsys.encrypt('4111111111111111', '123', 12, new Date().getFullYear() + 1)
             .subscribe(response => {
+                expect(response.cvv2).toBeUndefined();
                 expect(response).toEqual({
                   responseCode: 'A0000',
                   status: 'PASS',
                   message: 'Success',
                   expirationDate: '12/2016',
-                  cvv2: '123',
                   tsepToken: jasmine.stringMatching(/^[A-Za-z0-9]{16}$/),
                   maskedCardNumber: '1111',
                   cardType: 'V',
