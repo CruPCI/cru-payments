@@ -90,9 +90,8 @@ jobs:
           git config --global user.email 'github-action@users.noreply.github.com'
       - name: 🎁 Publish package to NPM and bump version
         run: |
-          # Use npm because yarn does not yet support trusted publishing
-          # Use the latest version of npm to ensure we have a version >= 11.5.1 that supports trusted publishing
-          npm install --global npm@latest
+          # Use npm because yarn does not yet support trusted publishing.
+          # Trusted publishing needs npm >= 11.5.1; which the npm bundled with the Node version in .tool-versions satisfies.
           npm version ${{ github.event.release.tag_name }} --no-git-tag-version
           npm publish --access public
 
