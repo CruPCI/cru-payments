@@ -64,6 +64,18 @@ describe('tsys', () => {
             done();
           });
     });
+    it('should redact cvv2 from a server error body', (done) => {
+      fetchMock.once(
+        '<some url>',
+        new Response('{"status":"FAILURE","cvv2":"123","message":"Bad Request"}', { status: 400, statusText: 'Bad Request' })
+      );
+      tsys._makeRequest('<some url>', { body: '<some body>' }, (request: Request) => request.json(), 'testing fetch')
+        .subscribe(() => done.fail(),
+          (error: TsysError) => {
+            expect(error.data.body).toEqual('{"status":"FAILURE","cvv2":"[REDACTED]","message":"Bad Request"}');
+            done();
+          });
+    });
     it('should handle a network error', (done) => {
       fetchMock.once(
         '<some url>',
@@ -225,8 +237,7 @@ describe('tsys', () => {
               })
             },
             jasmine.any(Function),
-            'performing tokenization',
-            jasmine.any(Function)
+            'performing tokenization'
           );
           expect(data).toEqual({
             cardType: 'X',
@@ -267,8 +278,7 @@ describe('tsys', () => {
               })
             },
             jasmine.any(Function),
-            'performing tokenization',
-            jasmine.any(Function)
+            'performing tokenization'
           );
           expect(data).toEqual({ status: 'PASS' });
           done();

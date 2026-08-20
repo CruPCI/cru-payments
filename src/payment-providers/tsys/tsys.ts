@@ -39,7 +39,7 @@ export function init(_env: string, _deviceId: string, _manifest: string){
   manifest = _manifest;
 }
 
-function makeRequest(url: RequestInfo, init: RequestInit, bodyFn: Function, action: string, errorBodySanitizer?: Function){
+function makeRequest(url: RequestInfo, init: RequestInit, bodyFn: Function, action: string){
   return Observable.from((<any> window).fetch(url, init))
     .catch((error: Response) => Observable.throw({ message: `Network error while ${action}`, data: error }))
     .mergeMap((response: Response) => {
@@ -47,7 +47,7 @@ function makeRequest(url: RequestInfo, init: RequestInit, bodyFn: Function, acti
         return Observable.from(bodyFn(response));
       }
       return Observable.from(response.text())
-        .mergeMap((body: string) => Observable.throw({ message: `Server error while ${action}`, data: { status: response.status, statusText: response.statusText, body: errorBodySanitizer ? errorBodySanitizer(body) : body } }));
+        .mergeMap((body: string) => Observable.throw({ message: `Server error while ${action}`, data: { status: response.status, statusText: response.statusText, body: redactCvv2(body) } }));
     });
 }
 
@@ -62,7 +62,7 @@ function stripCvv2(response: any){
   return sanitized;
 }
 
-// Redact CVV2 values echoed back in raw error body text from the tokenization endpoint
+// Redact CVV2 values echoed back in the raw body of an HTTP error response
 function redactCvv2(body: string){
   return body.replace(/"cvv2"\s*:\s*"[^"]*"/g, '"cvv2":"[REDACTED]"');
 }
@@ -154,8 +154,7 @@ export function encrypt(cardNumber: string, cvv: string, month: number, year: nu
           })
         },
         (request: Request) => request.json(),
-        'performing tokenization',
-        redactCvv2
+        'performing tokenization'
       );
     })
     .mergeMap((response: any) => {
