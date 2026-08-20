@@ -280,9 +280,7 @@ describe('tsys', () => {
     });
   });
 
-  // These tests make real network calls to give-stage2.cru.org and TSYS staging. TSYS
-  // validates the Referer header, which karma/chrome-referer-launcher.js sets from the
-  // TSYS_REFERRER environment variable.
+  // Real network calls to TSYS staging; needs the Referer configured in karma.conf.js.
   describe('perform live test', () => {
     it('should successfully receive a token from TSYS', (done) => {
       (<any> fetchMock)._unMock();

@@ -44,7 +44,7 @@ jobs:
       - name: 🧪 Run Tests
         run: yarn test
         env:
-          # Required by the live TSYS integration tests; see karma/chrome-referer-launcher.js
+          # Referer for the live TSYS tests; see customLaunchers in karma.conf.js
           TSYS_REFERRER: ${{ vars.TSYS_REFERRER }}
       - name: Upload Codecov Reports
         uses: codecov/codecov-action@v3

@@ -1,19 +1,17 @@
-// Karma launcher: headless Chrome with a spoofed Referer header.
+// Karma launcher: headless Chrome that sends a configurable Referer header.
 //
-// The "perform live test" TSYS spec makes real calls to TSYS staging, which
-// validates the Referer header against the domain registered with Cru's TSYS
-// account. Browsers forbid setting Referer from page JavaScript, and Chrome has
-// no launcher-level equivalent of PhantomJS's `customHeaders`, so this launcher
-// drives Chrome over the DevTools Protocol (via puppeteer-core) and rewrites the
-// Referer on every outgoing request to the value of TSYS_REFERRER.
+// Browsers forbid setting Referer from page JavaScript and karma-chrome-launcher
+// has no header hook, so this drives Chrome over the DevTools Protocol
+// (puppeteer-core) and rewrites the Referer on every request before the karma
+// page loads. Configure it through karma `customLaunchers`:
 //
-// Interception is enabled before the karma page is loaded, so the header is in
-// place before any test runs.
+//   MyChrome: {
+//     base: 'ChromeHeadlessReferer',
+//     referer: 'https://example.org/',  // value for the Referer header
+//     flags: ['--no-sandbox']           // optional extra Chrome flags
+//   }
 //
-// Chrome binary resolution: CHROME_BIN if set, otherwise the system-installed
-// stable Chrome (puppeteer `channel: 'chrome'`).
-
-const TSYS_REFERRER = process.env.TSYS_REFERRER;
+// Chrome binary: CHROME_BIN if set, otherwise the system-installed stable Chrome.
 
 function ChromeHeadlessRefererLauncher(baseLauncherDecorator, logger, args) {
   baseLauncherDecorator(this);
@@ -22,62 +20,52 @@ function ChromeHeadlessRefererLauncher(baseLauncherDecorator, logger, args) {
   this.name = 'ChromeHeadlessReferer';
 
   let browser = null;
-  let closing = false;
+
+  const onDisconnected = () => {
+    log.error('Chrome disconnected unexpectedly');
+    this._done('crashed');
+  };
 
   this.on('start', async (url) => {
     try {
-      if (!TSYS_REFERRER) {
-        log.warn(
-          'TSYS_REFERRER is not set; requests will carry Chrome\'s default Referer ' +
-          'and the live TSYS tests will fail. Set TSYS_REFERRER=https://give-stage2.cru.org/'
-        );
-      }
-
-      // puppeteer-core is ESM-only; load it lazily so karma.conf.js can stay CommonJS.
+      // puppeteer-core is ESM; load it lazily.
       const { default: puppeteer } = await import('puppeteer-core');
 
       browser = await puppeteer.launch({
-        headless: true,
         ...(process.env.CHROME_BIN
           ? { executablePath: process.env.CHROME_BIN }
           : { channel: 'chrome' }),
-        args: ['--no-sandbox', '--disable-gpu', ...((args && args.flags) || [])]
+        args: args.flags || []
       });
+      browser.on('disconnected', onDisconnected);
 
-      browser.on('disconnected', () => {
-        if (!closing) {
-          log.error('Chrome disconnected unexpectedly');
-          this._done('crashed');
-        }
-      });
+      const [page] = await browser.pages();
 
-      const page = (await browser.pages())[0] || (await browser.newPage());
-
-      // CloudFront in front of give-stage2.cru.org returns 403 (with no CORS headers) to
-      // the "HeadlessChrome" user agent, which breaks the manifest fetch in the live test.
-      // Present the same UA a real Chrome of this version would send.
+      // Present as a regular Chrome of this version; some origins reject "HeadlessChrome".
       const userAgent = await browser.userAgent();
       await page.setUserAgent(userAgent.replace('HeadlessChrome', 'Chrome'));
 
-      if (TSYS_REFERRER) {
+      if (args.referer) {
         await page.setRequestInterception(true);
         page.on('request', (request) => {
           request
-            .continue({ headers: { ...request.headers(), referer: TSYS_REFERRER } })
+            .continue({ headers: { ...request.headers(), referer: args.referer } })
             .catch((err) => log.debug(`continue() failed for ${request.url()}: ${err.message}`));
         });
+      } else {
+        log.warn('No `referer` configured for this launcher; Referer header left untouched');
       }
 
       await page.goto(url);
     } catch (err) {
-      log.error(`Failed to launch Chrome: ${err && err.stack ? err.stack : err}`);
+      log.error(`Failed to launch Chrome: ${err.stack || err}`);
       this._done(err);
     }
   });
 
   this.on('kill', async (done) => {
-    closing = true;
     if (browser) {
+      browser.off('disconnected', onDisconnected);
       try {
         await browser.close();
       } catch (err) {
