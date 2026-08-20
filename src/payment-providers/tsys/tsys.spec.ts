@@ -257,7 +257,6 @@ describe('tsys', () => {
       spyOn(tsys, '_makeRequest').and.returnValue(Observable.of({ status: 'PASS', cvv2: '123', tsepToken: 'aNWEmSu7RRF1000' }));
       tsys.encrypt('1234567890123', '123', 12, 2015)
         .subscribe(data => {
-          expect(data.cvv2).toBeUndefined();
           expect(data).toEqual({ status: 'PASS', tsepToken: 'aNWEmSu7RRF1000' });
           done();
         }, () => done.fail('should not have thrown an error'));
@@ -315,7 +314,6 @@ describe('tsys', () => {
       tsys.encrypt('1234567890123', '123', 12, 2015)
         .subscribe(() => done.fail('should have thrown an error'),
           (error: TsysError) => {
-            expect(error.data.cvv2).toBeUndefined();
             expect(error).toEqual({ message: 'Tokenization error', data: { status: 'FAILURE', message: 'Tokenization failed' } });
             done();
           });
@@ -350,7 +348,6 @@ describe('tsys', () => {
           tsys.init('staging', tsysData.deviceId, tsysData.manifest);
           tsys.encrypt('4111111111111111', '123', 12, new Date().getFullYear() + 1)
             .subscribe(response => {
-                expect(response.cvv2).toBeUndefined();
                 expect(response).toEqual({
                   responseCode: 'A0000',
                   status: 'PASS',
