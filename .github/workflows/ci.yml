@@ -91,8 +91,7 @@ jobs:
       - name: 🎁 Publish package to NPM and bump version
         run: |
           # Use npm because yarn does not yet support trusted publishing.
-          # Trusted publishing needs npm >= 11.5.1; the npm bundled with the Node version in .tool-versions satisfies that,
-          # so don't install npm@latest here (npm 12 requires a newer Node than we run and fails with EBADENGINE).
+          # Trusted publishing needs npm >= 11.5.1; which the npm bundled with the Node version in .tool-versions satisfies.
           npm version ${{ github.event.release.tag_name }} --no-git-tag-version
           npm publish --access public
 
