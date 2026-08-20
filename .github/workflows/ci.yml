@@ -43,6 +43,9 @@ jobs:
         run: yarn install --immutable --immutable-cache
       - name: 🧪 Run Tests
         run: yarn test
+        env:
+          # Required by the live TSYS integration tests; see karma/chrome-referer-launcher.js
+          TSYS_REFERRER: ${{ vars.TSYS_REFERRER }}
       - name: Upload Codecov Reports
         uses: codecov/codecov-action@v3
 

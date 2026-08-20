@@ -280,16 +280,10 @@ describe('tsys', () => {
     });
   });
 
-  // The live tests below make real network calls to give-stage2.cru.org and the TSYS
-  // staging environment, so they are skipped by default. Opt in by setting the
-  // RUN_LIVE_TSYS_TESTS environment variable when running karma (see karma.conf.js,
-  // which exposes it to the browser via window.__karma__.config.runLiveTsysTests).
-  // Note: TSYS staging validates the Referer header, which headless Chrome cannot
-  // spoof, so these tests can only pass in an environment TSYS trusts.
-  const karmaConfig: { runLiveTsysTests?: boolean } = ((<any> window).__karma__ || { config: {} }).config;
-  const describeLive: typeof describe = karmaConfig.runLiveTsysTests ? describe : xdescribe;
-
-  describeLive('perform live test', () => {
+  // These tests make real network calls to give-stage2.cru.org and TSYS staging. TSYS
+  // validates the Referer header, which karma/chrome-referer-launcher.js sets from the
+  // TSYS_REFERRER environment variable.
+  describe('perform live test', () => {
     it('should successfully receive a token from TSYS', (done) => {
       (<any> fetchMock)._unMock();
       (<any> window).fetch('https://give-stage2.cru.org/cortex/tsys/manifest')

@@ -12,19 +12,11 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['ChromeHeadlessNoSandbox'],
-    customLaunchers: {
-      ChromeHeadlessNoSandbox: {
-        base: 'ChromeHeadless',
-        flags: ['--no-sandbox', '--disable-gpu']
-      }
-    },
-
-    // values in `client` are exposed to tests via window.__karma__.config
-    client: {
-      // Live TSYS integration tests are opt-in; set RUN_LIVE_TSYS_TESTS=true to run them
-      runLiveTsysTests: !!process.env.RUN_LIVE_TSYS_TESTS
-    },
+    // ChromeHeadlessReferer (karma/chrome-referer-launcher.js) runs headless Chrome and
+    // rewrites the Referer header on every request to TSYS_REFERRER, which TSYS staging
+    // requires for the live integration tests in tsys.spec.ts.
+    browsers: ['ChromeHeadlessReferer'],
+    plugins: ['karma-*', require('./karma/chrome-referer-launcher')],
 
     // test results reporter to use
     // possible values: 'dots', 'progress'

@@ -227,4 +227,4 @@ Returns an array of error message strings. For each invalid validator above (exc
 
 `yarn run test` or `npm run test`
 
-Tests run in headless Chrome. The live TSYS integration tests (which make real network calls to TSYS staging) are skipped by default; opt in with `RUN_LIVE_TSYS_TESTS=true yarn run test`.
+Tests run in headless Chrome (the system-installed Chrome, or the binary at `CHROME_BIN`). The live TSYS integration tests make real network calls to TSYS staging, which validates the `Referer` header, so set `TSYS_REFERRER=https://give-stage2.cru.org/` when running the tests (CI provides it via a repository variable).
