@@ -123,5 +123,17 @@ FPqri0cb2JZfXJ/DgYSF6vUpwmJG8wVQZKjeGcjDOL5UlsuusFncCzWBQ7RKNUSesmQRMSGkVb1/
           done();
         }, () => done.fail('should not have thrown an error'));
     });
+    it('should return a base64 RSA ciphertext of the expected length for the key size', (done) => {
+      ccp.init('staging', validKey);
+      ccp.encrypt('1234567890123456')
+        .subscribe(value => {
+          expect(value).not.toBe(false);
+          // validKey is a 1024-bit RSA public key, so the PKCS#1 v1.5 ciphertext
+          // is always 128 bytes, which is 172 characters when base64 encoded
+          expect((<string> value).length).toEqual(172);
+          expect(<string> value).toMatch(/^[A-Za-z0-9+/]+={0,2}$/);
+          done();
+        }, () => done.fail('should not have thrown an error'));
+    });
   });
 });
