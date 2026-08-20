@@ -14,8 +14,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  id-token: write
-  contents: write
+  contents: read
 
 env:
   TSYS_REFERRER: ${{ vars.TSYS_REFERRER }}
@@ -54,7 +53,7 @@ jobs:
           TSYS_REFERRER: ${{ vars.TSYS_REFERRER }}
           OPENSSL_CONF: /dev/null
       - name: Upload Codecov Reports
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@ab904c41d6ece82784817410c45d8b8c02684457 # v3.1.6
 
   build:
     runs-on: ubuntu-latest
@@ -89,11 +88,13 @@ jobs:
           git config --global user.name 'GitHub Action'
           git config --global user.email 'github-action@users.noreply.github.com'
       - name: 🎁 Publish package to NPM and bump version
+        env:
+          TAG: ${{ github.event.release.tag_name }}
         run: |
           # Use npm because yarn does not yet support trusted publishing
           # Use the latest version of npm to ensure we have a version >= 11.5.1 that supports trusted publishing
           npm install --global npm@latest
-          npm version ${{ github.event.release.tag_name }} --no-git-tag-version
+          npm version "$TAG" --no-git-tag-version
           npm publish --access public
 
   slackNotification:
@@ -102,23 +103,32 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'release'
     steps:
-      - name: Send Slack notification
-        uses: slackapi/slack-github-action@v1.23.0
-        with:
-          node-version-file: .tool-versions
-          payload: |
+      - name: Build Slack payload
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+          TITLE: ${{ github.event.release.name }}
+          URL: ${{ github.event.release.html_url || github.event.head_commit.url }}
+        run: |
+          # Build the payload with jq so release-controlled values are safely JSON-escaped
+          jq -n --arg tag "$TAG" --arg title "$TITLE" --arg url "$URL" '
+            ("Cru Payments release \($tag)\nTitle:\($title)\n\($url)") as $message |
             {
-              "text": "Cru Payments release ${{ github.event.release.tag_name }}\nTitle:${{ github.event.release.name }}\n${{ github.event.release.html_url || github.event.head_commit.url }}",
-              "blocks": [
+              text: $message,
+              blocks: [
                 {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "Cru Payments release ${{ github.event.release.tag_name }}\nTitle:${{ github.event.release.name }}\n${{ github.event.release.html_url || github.event.head_commit.url }}"
+                  type: "section",
+                  text: {
+                    type: "mrkdwn",
+                    text: $message
                   }
                 }
               ]
-            }
+            }' > "$RUNNER_TEMP/slack-payload.json"
+      - name: Send Slack notification
+        uses: slackapi/slack-github-action@fcfb566f8b0aab22203f066d80ca1d7e4b5d05b3 # v1.27.1
+        with:
+          payload-file-path: ${{ runner.temp }}/slack-payload.json
+          payload-file-path-parsed: false
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
