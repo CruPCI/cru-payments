@@ -12,16 +12,21 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['PhantomJS-customReferrer'],
+    browsers: ['ChromeHeadlessTsys'],
+    plugins: ['karma-*', require('./karma/chrome-referer-launcher')],
     customLaunchers: {
-      'PhantomJS-customReferrer': {
-        base: 'PhantomJS',
-        options: {
-          customHeaders: { Referer: process.env.TSYS_REFERRER }
-        }
+      // The live TSYS tests in tsys.spec.ts call give-stage2.cru.org and TSYS staging for
+      // real. TSYS validates the Referer header, so the launcher rewrites it on every
+      // request to TSYS_REFERRER (https://give-stage2.cru.org/ — a CI repository variable;
+      // export it locally too). The launcher also drops "Headless" from the user agent
+      // because CloudFront in front of give-stage2 returns 403 to HeadlessChrome.
+      ChromeHeadlessTsys: {
+        base: 'ChromeHeadlessReferer',
+        referer: process.env.TSYS_REFERRER,
+        flags: ['--no-sandbox'] // ubuntu-latest runners restrict the user namespaces Chrome's sandbox needs
       }
     },
-    
+
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter

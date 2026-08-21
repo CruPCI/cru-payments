@@ -334,6 +334,7 @@ describe('tsys', () => {
     });
   });
 
+  // Real network calls to TSYS staging; needs the Referer configured in karma.conf.js.
   describe('perform live test', () => {
     it('should successfully receive a token from TSYS', (done) => {
       (<any> fetchMock)._unMock();
