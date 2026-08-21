@@ -35,12 +35,12 @@ describe('account number', () => {
       expect(accountNumber.validateAll('12345678901234567')).toEqual(true);
     });
     it('should return false for invalid numbers', () => {
-      expect(accountNumber.validateMinLength(undefined)).toEqual(false);
-      expect(accountNumber.validateMinLength(null)).toEqual(false);
+      expect(accountNumber.validateAll(undefined)).toEqual(false);
+      expect(accountNumber.validateAll(null)).toEqual(false);
       expect(accountNumber.validateAll('')).toEqual(false);
       expect(accountNumber.validateAll('1')).toEqual(false);
-      expect(accountNumber.validateMaxLength('123456789012345678')).toEqual(false);
-      expect(accountNumber.validateMaxLength('12345678901234567890')).toEqual(false);
+      expect(accountNumber.validateAll('123456789012345678')).toEqual(false);
+      expect(accountNumber.validateAll('12345678901234567890')).toEqual(false);
     });
   });
   describe('errors', () => {
