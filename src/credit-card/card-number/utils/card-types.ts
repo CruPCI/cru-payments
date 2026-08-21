@@ -22,13 +22,15 @@ export const cardTypeConsts = [
   {
     name: 'Discover',
     lengths: [16],
-    prefixExpression: '65|64[4-9]|622|6011|35[2-8]',
+    // 622126-622925 is the UnionPay range that interoperates with the Discover network
+    // 3528-3589 is the JCB range, which is processed on the Discover network in the US
+    prefixExpression: '65|64[4-9]|62212[6-9]|6221[3-9][0-9]|622[2-8][0-9][0-9]|6229[01][0-9]|62292[0-5]|6011|35(2[89]|[3-8][0-9])',
     cvvLengths: [3]
   },
   {
     name: 'Diners Club',
-    lengths: [14],
-    prefixExpression: '36|38|30[0-5]',
+    lengths: [14, 16],
+    prefixExpression: '36|3[89]|30[0-5]|3095',
     cvvLengths: [3]
   }
 ];
