@@ -3,6 +3,9 @@
 const luhnArray = [0, 2, 4, 6, 8, 1, 3, 5, 7, 9];
 
 export function luhnCheck(cardNumber: string) {
+  if (cardNumber.length === 0) {
+    return false;
+  }
   let counter = 0;
   let odd = false;
   for (let i = cardNumber.length - 1; i >= 0; --i) {
