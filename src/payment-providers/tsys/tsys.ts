@@ -51,7 +51,9 @@ function makeRequest(url: RequestInfo, init: RequestInit, bodyFn: Function, acti
     });
 }
 
-// PCI-DSS forbids storing CVV2. Strip it from parsed tokenization responses so it can't leak into consumer code or error trackers.
+// Strip cvv2 from parsed error payloads. PCI-DSS forbids storing CVV2, and error data is what
+// typically ends up in logs and error trackers. The success path intentionally keeps cvv2 so the
+// caller can forward it with the token to authorize the charge.
 function stripCvv2(response: any){
   const sanitized: any = {};
   for(const key in response){
@@ -158,11 +160,12 @@ export function encrypt(cardNumber: string, cvv: string, month: number, year: nu
       );
     })
     .mergeMap((response: any) => {
-      const sanitizedResponse = stripCvv2(response);
       if(response.status === 'PASS'){
-        return Observable.of(sanitizedResponse);
+        // cvv2 is the CVV echoed back by TSYS. It is returned so the caller can send it with the
+        // token to authorize the charge. Callers must not log or store it.
+        return Observable.of(response);
       }
-      return Observable.throw({ message: 'Tokenization error', data: sanitizedResponse });
+      return Observable.throw({ message: 'Tokenization error', data: stripCvv2(response) });
     });
 }
 
