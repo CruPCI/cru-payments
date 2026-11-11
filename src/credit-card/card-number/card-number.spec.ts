@@ -112,6 +112,14 @@ describe('card number', () => {
       expect(cardNumber.validateAll('30307967235998')).toEqual(true);
       expect(cardNumber.validateAll('30028342701708')).toEqual(true);
       expect(cardNumber.validateAll('30151350318072')).toEqual(true);
+      expect(cardNumber.validateAll('3600000000000008')).toEqual(true);
+      expect(cardNumber.validateAll('3900000000000005')).toEqual(true);
+      expect(cardNumber.validateAll('3095000000000000')).toEqual(true);
+      // JCB (processed as Discover)
+      expect(cardNumber.validateAll('3528000000000007')).toEqual(true);
+      // UnionPay (processed as Discover)
+      expect(cardNumber.validateAll('6221260000000000')).toEqual(true);
+      expect(cardNumber.validateAll('6229250000000003')).toEqual(true);
     });
     it('should return false for invalid card numbers', () => {
       // Empty
@@ -132,6 +140,11 @@ describe('card number', () => {
       expect(cardNumber.validateAll('3510000000000000')).toEqual(false);
       expect(cardNumber.validateAll('3060000000000000')).toEqual(false);
       expect(cardNumber.validateAll('5800000000000000')).toEqual(false);
+      // Luhn-valid but below the JCB range, which starts at 3528
+      expect(cardNumber.validateAll('3520000000000005')).toEqual(false);
+      // Luhn-valid but outside the UnionPay/Discover interop range of 622126-622925
+      expect(cardNumber.validateAll('6221250000000001')).toEqual(false);
+      expect(cardNumber.validateAll('6229260000000002')).toEqual(false);
       // Incorrect length for a recognized type
       expect(cardNumber.validateAll('411111111111111')).toEqual(false);
       // Invalid luhn check
