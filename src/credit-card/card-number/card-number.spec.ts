@@ -68,6 +68,11 @@ describe('card number', () => {
       expect(cardNumber.validateChecksum('123')).toEqual(true);
       expect(luhn.luhnCheck).toHaveBeenCalledWith('123');
     });
+    it('should return false for empty or non-digit input', () => {
+      expect(cardNumber.validateChecksum('')).toEqual(false);
+      expect(cardNumber.validateChecksum('----')).toEqual(false);
+      expect(cardNumber.validateChecksum('abcd')).toEqual(false);
+    });
   });
   describe('validateAll', () => {
     it('should clean input', () => {

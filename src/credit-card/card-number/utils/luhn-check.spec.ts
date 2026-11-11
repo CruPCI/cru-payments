@@ -14,4 +14,7 @@ describe('luhnCheck', () => {
     expect(luhnCheck('5111111111111111')).toEqual(false);
     expect(luhnCheck('4408041234567892')).toEqual(false);
   });
+  it('should return false for an empty string', () => {
+    expect(luhnCheck('')).toEqual(false);
+  });
 });

@@ -55,7 +55,7 @@ export function errors(input: string|number){
   if(validateKnownType(cardNumber) && !validateTypeLength(cardNumber)){
     errors.push(`This is an invalid ${cardTypes.getCardTypeName(cardNumber)} number. It should have ${cardTypes.expectedLength(cardNumber).join(' or ')} digits but the number entered has ${cardNumber.length}.`);
   }
-  if(!validateChecksum(cardNumber)){
+  if(cardNumber && !validateChecksum(cardNumber)){
     errors.push('Card number is invalid. At least one digit was entered incorrectly.');
   }
   return errors;
