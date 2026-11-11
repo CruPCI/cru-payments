@@ -86,6 +86,10 @@ cruPayments.creditCard.encrypt('4111111111111111', '123', '03', '2020')
 
 You can pass a valid ES2015 compatible promise to `.toPromise(PromiseConstructor)` to prevent it from failing on browsers without promise implementations. Passing Angular's `$q` works. Providing a polyfill would also work. See: http://reactivex.io/rxjs/class/es6/Observable.js~Observable.html#instance-method-toPromise
 
+## Security model
+
+The TSYS (credit card) integration fetches JavaScript from TSYS's gateway (`jsView` endpoint) over TLS and executes it in the page in order to obtain the tokenization URL, key, and key ID. This means the library — and any page using it — fully trusts TSYS and the TLS channel: code served by that endpoint runs with the same privileges as the host page. The internal `removeAppendChild` filtering is defense-in-depth against TSYS's known script-import pattern, not a security boundary. Future work is to execute the TSYS payload in a sandboxed iframe so it cannot touch the host DOM.
+
 ## API Usage
 
 ### Credit Card
