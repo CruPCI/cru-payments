@@ -101,6 +101,13 @@ Returns true if card number, cvv, and expiry date are all valid
 #### `cruPayments.creditCard.encrypt(cardNumber, cvv, month, year)`
 Returns an Observable of that emits the results of the tokenization. If a `Promise` is desired, call `.toPromise()` on this Observable. `cruPayments.creditCard.init` must have been called first.
 
+> **Handling `cvv2`.** On a successful tokenization TSYS echoes the submitted security code back as
+> `cvv2`, and this library passes it through so it can be forwarded with `tsepToken` to authorize the
+> charge. PCI-DSS forbids storing it. Pass it straight through to authorization and do not log it,
+> persist it, or include it in analytics or error reports. Add `cvv2` to the scrub list of any error
+> tracker you use. The library keeps `cvv2` out of its own error payloads and redacts it from raw HTTP
+> error bodies, so only the success path ever exposes it.
+
 #### Card Number
 
 ##### `cruPayments.creditCard.card.validate.minLength(cardNumber)`

@@ -241,6 +241,7 @@ describe('tsys', () => {
           );
           expect(data).toEqual({
             cardType: 'X',
+            cvv2: '1234',
             expirationDate: '10/2017',
             maskedCardNumber: '1000',
             message: 'Success',
@@ -253,11 +254,12 @@ describe('tsys', () => {
         }, () => done.fail('should not have thrown an error'));
     });
 
-    it('should not include cvv2 in a successful tokenization response', (done) => {
+    it('should include cvv2 in a successful tokenization response so it can be forwarded for authorization', (done) => {
       spyOn(tsys, '_makeRequest').and.returnValue(Observable.of({ status: 'PASS', cvv2: '123', tsepToken: 'aNWEmSu7RRF1000' }));
       tsys.encrypt('1234567890123', '123', 12, 2015)
         .subscribe(data => {
-          expect(data).toEqual({ status: 'PASS', tsepToken: 'aNWEmSu7RRF1000' });
+          expect(data.cvv2).toEqual('123');
+          expect(data).toEqual({ status: 'PASS', cvv2: '123', tsepToken: 'aNWEmSu7RRF1000' });
           done();
         }, () => done.fail('should not have thrown an error'));
     });
@@ -353,6 +355,7 @@ describe('tsys', () => {
                   responseCode: 'A0000',
                   status: 'PASS',
                   message: 'Success',
+                  cvv2: '123',
                   expirationDate: '12/2016',
                   tsepToken: jasmine.stringMatching(/^[A-Za-z0-9]{16}$/),
                   maskedCardNumber: '1111',
