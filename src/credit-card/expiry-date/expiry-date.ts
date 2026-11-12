@@ -27,7 +27,7 @@ export function errors(
 ) {
   const month = Number(cleanInput(inputMonth));
   const year = Number(cleanInput(inputYear));
-  let errors: string[] = [];
+  const errors: string[] = [];
   if (!month) {
     errors.push('Month cannot be blank');
   }

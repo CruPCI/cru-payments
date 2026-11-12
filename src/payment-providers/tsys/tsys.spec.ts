@@ -3,12 +3,11 @@ import * as tsys from './tsys';
 import { Observable } from 'rxjs/Observable';
 import * as fetchMock from 'fetch-mock';
 
-/* eslint-disable no-undef */
 interface TsysError {
   message: string;
   data: any;
 }
-/* eslint-enable no-undef */
+
 let validKey: string = '';
 
 describe('tsys', () => {

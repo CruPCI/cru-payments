@@ -32,7 +32,7 @@ export function validateAll(input: string | number) {
 
 export function errors(input: string | number) {
   const routingNumber = cleanInput(input);
-  let errors: string[] = [];
+  const errors: string[] = [];
   if (!routingNumber) {
     errors.push('Routing number cannot be blank');
   }

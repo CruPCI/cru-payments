@@ -24,10 +24,6 @@ export default defineConfig([
     rules: {
       'no-alert': 'error',
       'no-console': 'error',
-      // A warning, not an error: the pre-commit hook auto-fixes it, and an
-      // auto-fixed error would leave a stale entry in eslint-suppressions.json
-      // and fail the commit.
-      'prefer-const': 'warn',
     },
   },
 

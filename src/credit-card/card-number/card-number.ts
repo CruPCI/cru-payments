@@ -41,7 +41,7 @@ export function validateAll(input: string | number) {
 
 export function errors(input: string | number) {
   const cardNumber = cleanInput(input);
-  let errors: string[] = [];
+  const errors: string[] = [];
   if (!cardNumber) {
     errors.push('Card number cannot be blank');
   }

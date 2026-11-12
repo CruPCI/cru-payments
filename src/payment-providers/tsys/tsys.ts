@@ -1,5 +1,4 @@
 import { Observable } from 'rxjs/Observable';
-// eslint-disable-next-line no-unused-vars
 import { Observer } from 'rxjs/Observer';
 import 'rxjs/add/observable/from';
 import 'rxjs/add/observable/of';
@@ -18,13 +17,11 @@ import { JSEncrypt } from 'jsencrypt';
 
 declare let exports: any;
 
-/* eslint-disable no-undef */
 export interface TsysData {
   url: string;
   key: string;
   keyId: string;
 }
-/* eslint-enable no-undef */
 
 const tsepUri = {
   staging: 'https://stagegw.transnox.com/transit-tsep-web/jsView',

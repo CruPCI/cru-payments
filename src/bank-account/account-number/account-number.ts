@@ -21,7 +21,7 @@ export function validateAll(input: string | number) {
 
 export function errors(input: string | number) {
   const accountNumber = cleanInput(input);
-  let errors: string[] = [];
+  const errors: string[] = [];
   if (!accountNumber) {
     errors.push('Account number cannot be blank');
   }

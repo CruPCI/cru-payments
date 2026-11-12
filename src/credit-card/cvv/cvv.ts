@@ -41,7 +41,7 @@ export function validateAll(input: string | number, cardType?: string) {
 
 export function errors(input: string | number, cardType?: string) {
   const cvv = cleanInput(input);
-  let errors: string[] = [];
+  const errors: string[] = [];
   if (!cvv) {
     errors.push('CVV cannot be blank');
   }
