@@ -1,8 +1,7 @@
 // Karma configuration
 
-module.exports = function(config) {
+module.exports = function (config) {
   config.set({
-
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '.',
 
@@ -23,14 +22,14 @@ module.exports = function(config) {
       ChromeHeadlessTsys: {
         base: 'ChromeHeadlessReferer',
         referer: process.env.TSYS_REFERRER,
-        flags: ['--no-sandbox'] // ubuntu-latest runners restrict the user namespaces Chrome's sandbox needs
-      }
+        flags: ['--no-sandbox'], // ubuntu-latest runners restrict the user namespaces Chrome's sandbox needs
+      },
     },
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['mocha', "karma-typescript"],
+    reporters: ['mocha', 'karma-typescript'],
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
@@ -41,10 +40,8 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
 
-    files: [
-      'src/**/*.ts'
-    ],
-    exclude: ["src/payment-providers/declarations.d.ts"],
+    files: ['src/**/*.ts'],
+    exclude: ['src/payment-providers/declarations.d.ts'],
 
     // level of logging
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
@@ -53,22 +50,20 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      "**/*.ts": ["karma-typescript"]
+      '**/*.ts': ['karma-typescript'],
     },
 
     karmaTypescriptConfig: {
       bundlerOptions: {
-        transforms: [
-            require("karma-typescript-es6-transform")()
-        ]
+        transforms: [require('karma-typescript-es6-transform')()],
       },
       reports: {
-        'html': 'coverage',
-        'lcovonly': {
-          "directory": "coverage",
-          "filename": "lcov.info"
-        }
-      }
-    }
+        html: 'coverage',
+        lcovonly: {
+          directory: 'coverage',
+          filename: 'lcov.info',
+        },
+      },
+    },
   });
 };

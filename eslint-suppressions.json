@@ -1,0 +1,25 @@
+{
+  "src/credit-card/card-number/utils/card-types.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "src/payment-providers/ccp/ccp.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 3
+    }
+  },
+  "src/payment-providers/tsys/tsys.spec.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 6
+    }
+  },
+  "src/payment-providers/tsys/tsys.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 10
+    },
+    "@typescript-eslint/no-unsafe-function-type": {
+      "count": 1
+    }
+  }
+}

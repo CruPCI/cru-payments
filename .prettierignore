@@ -1,0 +1,2 @@
+# ESLint writes this file itself (eslint --suppress-all / --prune-suppressions)
+eslint-suppressions.json

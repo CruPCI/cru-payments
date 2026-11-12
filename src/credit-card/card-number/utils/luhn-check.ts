@@ -10,5 +10,5 @@ export function luhnCheck(cardNumber: string) {
     // eslint-disable-next-line no-cond-assign
     counter += (odd = !odd) ? digit : luhnArray[digit];
   }
-  return (counter % 10 === 0);
+  return counter % 10 === 0;
 }
