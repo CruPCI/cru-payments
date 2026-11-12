@@ -1,7 +1,6 @@
 import * as routingNumber from './routing-number';
 
 describe('routing number', () => {
-
   describe('validateLength', () => {
     it('should return true for valid routing numbers', () => {
       expect(routingNumber.validateLength(267084131)).toEqual(true);
@@ -10,7 +9,9 @@ describe('routing number', () => {
       expect(routingNumber.validateLength(122038251)).toEqual(true);
       expect(routingNumber.validateLength(300000001)).toEqual(true);
       expect(routingNumber.validateLength('043-318-092')).toEqual(true);
-      expect(routingNumber.validateLength('043-318-092njkjknjk&#*@')).toEqual(true);
+      expect(routingNumber.validateLength('043-318-092njkjknjk&#*@')).toEqual(
+        true,
+      );
       expect(routingNumber.validateLength('000000000')).toEqual(true); // sum of 0
       expect(routingNumber.validateLength(400000008)).toEqual(true); // number that starts above 3 with a valid checksum
       expect(routingNumber.validateLength(800000006)).toEqual(true); // number that starts above 3 with a valid checksum
@@ -39,7 +40,9 @@ describe('routing number', () => {
       expect(routingNumber.validateChecksum(122038251)).toEqual(true);
       expect(routingNumber.validateChecksum(300000001)).toEqual(true);
       expect(routingNumber.validateChecksum('043-318-092')).toEqual(true);
-      expect(routingNumber.validateChecksum('043-318-092njkjknjk&#*@')).toEqual(true);
+      expect(routingNumber.validateChecksum('043-318-092njkjknjk&#*@')).toEqual(
+        true,
+      );
     });
     it('should return false for invalid routing numbers', () => {
       expect(routingNumber.validateChecksum('000000000')).toEqual(false); // sum of 0
@@ -68,7 +71,9 @@ describe('routing number', () => {
       expect(routingNumber.validateAll(122038251)).toEqual(true);
       expect(routingNumber.validateAll(300000001)).toEqual(true);
       expect(routingNumber.validateAll('043-318-092')).toEqual(true);
-      expect(routingNumber.validateAll('043-318-092njkjknjk&#*@')).toEqual(true);
+      expect(routingNumber.validateAll('043-318-092njkjknjk&#*@')).toEqual(
+        true,
+      );
     });
     it('should return false for invalid routing numbers', () => {
       expect(routingNumber.validateAll('000000000')).toEqual(false); // sum of 0
@@ -92,18 +97,18 @@ describe('routing number', () => {
       expect(routingNumber.errors('')).toEqual([
         'Routing number cannot be blank',
         'Routing number must contain 9 digits',
-        'Routing number is invalid. At least one digit was entered incorrectly.'
+        'Routing number is invalid. At least one digit was entered incorrectly.',
       ]);
     });
     it('should return errors for a routing number without the correct number of digits', () => {
       expect(routingNumber.errors('12345678')).toEqual([
         'Routing number must contain 9 digits',
-        'Routing number is invalid. At least one digit was entered incorrectly.'
+        'Routing number is invalid. At least one digit was entered incorrectly.',
       ]);
     });
     it('should return errors for a routing number with an invalid checksum', () => {
       expect(routingNumber.errors('123456789')).toEqual([
-        'Routing number is invalid. At least one digit was entered incorrectly.'
+        'Routing number is invalid. At least one digit was entered incorrectly.',
       ]);
     });
     it('should return an empty array for a valid routing number', () => {

@@ -35,7 +35,7 @@ function ChromeHeadlessRefererLauncher(baseLauncherDecorator, logger, args) {
         ...(process.env.CHROME_BIN
           ? { executablePath: process.env.CHROME_BIN }
           : { channel: 'chrome' }),
-        args: args.flags || []
+        args: args.flags || [],
       });
       browser.on('disconnected', onDisconnected);
 
@@ -49,11 +49,19 @@ function ChromeHeadlessRefererLauncher(baseLauncherDecorator, logger, args) {
         await page.setRequestInterception(true);
         page.on('request', (request) => {
           request
-            .continue({ headers: { ...request.headers(), referer: args.referer } })
-            .catch((err) => log.debug(`continue() failed for ${request.url()}: ${err.message}`));
+            .continue({
+              headers: { ...request.headers(), referer: args.referer },
+            })
+            .catch((err) =>
+              log.debug(
+                `continue() failed for ${request.url()}: ${err.message}`,
+              ),
+            );
         });
       } else {
-        log.warn('No `referer` configured for this launcher; Referer header left untouched');
+        log.warn(
+          'No `referer` configured for this launcher; Referer header left untouched',
+        );
       }
 
       await page.goto(url);
@@ -78,8 +86,12 @@ function ChromeHeadlessRefererLauncher(baseLauncherDecorator, logger, args) {
   });
 }
 
-ChromeHeadlessRefererLauncher.$inject = ['baseLauncherDecorator', 'logger', 'args'];
+ChromeHeadlessRefererLauncher.$inject = [
+  'baseLauncherDecorator',
+  'logger',
+  'args',
+];
 
 module.exports = {
-  'launcher:ChromeHeadlessReferer': ['type', ChromeHeadlessRefererLauncher]
+  'launcher:ChromeHeadlessReferer': ['type', ChromeHeadlessRefererLauncher],
 };

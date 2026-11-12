@@ -3,7 +3,7 @@
 declare module 'jsencrypt' {
   interface JSEncryptPrototype {
     setKey(key: string): void;
-    encrypt(value: string): string|boolean;
+    encrypt(value: string): string | boolean;
   }
   const JSEncrypt: {
     new (): JSEncryptPrototype;

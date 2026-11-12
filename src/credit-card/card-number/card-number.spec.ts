@@ -143,38 +143,38 @@ describe('card number', () => {
       expect(cardNumber.errors('')).toEqual([
         'Card number cannot be blank',
         'Card number must contain at least 13 digits',
-        'Card type is not accepted by this system'
+        'Card type is not accepted by this system',
       ]);
     });
     it('should return errors for a card without enough digits', () => {
       expect(cardNumber.errors('123')).toEqual([
         'Card number must contain at least 13 digits',
         'Card type is not accepted by this system',
-        'Card number is invalid. At least one digit was entered incorrectly.'
+        'Card number is invalid. At least one digit was entered incorrectly.',
       ]);
     });
     it('should return errors for a card with too many digits', () => {
       expect(cardNumber.errors('12345678901234567')).toEqual([
         'Card number cannot contain more than 16 digits',
         'Card type is not accepted by this system',
-        'Card number is invalid. At least one digit was entered incorrectly.'
+        'Card number is invalid. At least one digit was entered incorrectly.',
       ]);
     });
     it('should return errors for a card with an unknown type', () => {
       expect(cardNumber.errors('1234567890123456')).toEqual([
         'Card type is not accepted by this system',
-        'Card number is invalid. At least one digit was entered incorrectly.'
+        'Card number is invalid. At least one digit was entered incorrectly.',
       ]);
     });
     it('should return errors for a card with known type but incorrect length', () => {
       expect(cardNumber.errors('41111111111111')).toEqual([
         'This is an invalid Visa number. It should have 13 or 16 digits but the number entered has 14.',
-        'Card number is invalid. At least one digit was entered incorrectly.'
+        'Card number is invalid. At least one digit was entered incorrectly.',
       ]);
     });
     it('should return errors for a card with an invalid luhn check', () => {
       expect(cardNumber.errors('4111111111111112')).toEqual([
-        'Card number is invalid. At least one digit was entered incorrectly.'
+        'Card number is invalid. At least one digit was entered incorrectly.',
       ]);
     });
     it('should return an empty array for a valid card', () => {

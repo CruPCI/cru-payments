@@ -58,7 +58,9 @@ describe('cvv', () => {
     it('should return true if cvv length is correct for the given card type', () => {
       expect(cvv.validateCardTypeLength(123, 'Visa')).toEqual(true);
       expect(cvv.validateCardTypeLength(123, 'MasterCard')).toEqual(true);
-      expect(cvv.validateCardTypeLength(1234, 'American Express')).toEqual(true);
+      expect(cvv.validateCardTypeLength(1234, 'American Express')).toEqual(
+        true,
+      );
       expect(cvv.validateCardTypeLength(123, 'Discover')).toEqual(true);
       expect(cvv.validateCardTypeLength(123, 'Diners Club')).toEqual(true);
     });
@@ -69,8 +71,12 @@ describe('cvv', () => {
       expect(cvv.validateCardTypeLength(12, 'MasterCard')).toEqual(false);
       expect(cvv.validateCardTypeLength(1234, 'MasterCard')).toEqual(false);
       expect(cvv.validateCardTypeLength(12345, 'MasterCard')).toEqual(false);
-      expect(cvv.validateCardTypeLength(123, 'American Express')).toEqual(false);
-      expect(cvv.validateCardTypeLength(12345, 'American Express')).toEqual(false);
+      expect(cvv.validateCardTypeLength(123, 'American Express')).toEqual(
+        false,
+      );
+      expect(cvv.validateCardTypeLength(12345, 'American Express')).toEqual(
+        false,
+      );
       expect(cvv.validateCardTypeLength(12, 'Discover')).toEqual(false);
       expect(cvv.validateCardTypeLength(1234, 'Discover')).toEqual(false);
       expect(cvv.validateCardTypeLength(12345, 'Discover')).toEqual(false);
@@ -87,7 +93,9 @@ describe('cvv', () => {
       expect(cvv.validateAll('1234')).toEqual(true);
       expect(cvv.validateAll(9876)).toEqual(true);
       expect(cvv.validateAll('987')).toEqual(true);
-      expect(cvv.validateCardTypeLength(1234, 'American Express')).toEqual(true);
+      expect(cvv.validateCardTypeLength(1234, 'American Express')).toEqual(
+        true,
+      );
       expect(cvv.validateCardTypeLength(123, 'Visa')).toEqual(true);
     });
     it('should return false if cvv is invalid', () => {
@@ -100,7 +108,9 @@ describe('cvv', () => {
       expect(cvv.validateAll('12345')).toEqual(false);
       expect(cvv.validateAll('123456')).toEqual(false);
       expect(cvv.validateAll(1234567)).toEqual(false);
-      expect(cvv.validateCardTypeLength(123, 'American Express')).toEqual(false);
+      expect(cvv.validateCardTypeLength(123, 'American Express')).toEqual(
+        false,
+      );
       expect(cvv.validateCardTypeLength(1234, 'Visa')).toEqual(false);
     });
   });
@@ -108,22 +118,20 @@ describe('cvv', () => {
     it('should return errors for an empty cvv', () => {
       expect(cvv.errors('')).toEqual([
         'CVV cannot be blank',
-        'CVV must contain at least 3 digits'
+        'CVV must contain at least 3 digits',
       ]);
     });
     it('should return errors for a cvv without enough digits', () => {
-      expect(cvv.errors('12')).toEqual([
-        'CVV must contain at least 3 digits'
-      ]);
+      expect(cvv.errors('12')).toEqual(['CVV must contain at least 3 digits']);
     });
     it('should return errors for a cvv with too many digits', () => {
       expect(cvv.errors('12345')).toEqual([
-        'CVV cannot contain more than 4 digits'
+        'CVV cannot contain more than 4 digits',
       ]);
     });
     it('should return errors for a cvv that is invalid for a card type', () => {
       expect(cvv.errors('123', 'American Express')).toEqual([
-        'CVV is not valid for this card type'
+        'CVV is not valid for this card type',
       ]);
     });
     it('should return an empty array for a valid cvv', () => {

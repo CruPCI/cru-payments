@@ -58,9 +58,15 @@ describe('card types', () => {
     it('should detect MasterCard correctly', () => {
       expect(cardTypes.getCardTypeName('51')).toEqual('MasterCard');
       expect(cardTypes.getCardTypeName('52')).toEqual('MasterCard');
-      expect(cardTypes.getCardTypeName('530000000000000000')).toEqual('MasterCard');
-      expect(cardTypes.getCardTypeName('540000000000000000')).toEqual('MasterCard');
-      expect(cardTypes.getCardTypeName('550000000000000000')).toEqual('MasterCard');
+      expect(cardTypes.getCardTypeName('530000000000000000')).toEqual(
+        'MasterCard',
+      );
+      expect(cardTypes.getCardTypeName('540000000000000000')).toEqual(
+        'MasterCard',
+      );
+      expect(cardTypes.getCardTypeName('550000000000000000')).toEqual(
+        'MasterCard',
+      );
       expect(cardTypes.getCardTypeName('2221')).toEqual('MasterCard');
       expect(cardTypes.getCardTypeName('2229')).toEqual('MasterCard');
       expect(cardTypes.getCardTypeName('223')).toEqual('MasterCard');
@@ -70,13 +76,19 @@ describe('card types', () => {
       expect(cardTypes.getCardTypeName('270')).toEqual('MasterCard');
       expect(cardTypes.getCardTypeName('271')).toEqual('MasterCard');
       expect(cardTypes.getCardTypeName('2720')).toEqual('MasterCard');
-      expect(cardTypes.getCardTypeName('2223000048400011')).toEqual('MasterCard');
+      expect(cardTypes.getCardTypeName('2223000048400011')).toEqual(
+        'MasterCard',
+      );
     });
     it('should detect American Express correctly', () => {
       expect(cardTypes.getCardTypeName('34')).toEqual('American Express');
       expect(cardTypes.getCardTypeName('37')).toEqual('American Express');
-      expect(cardTypes.getCardTypeName('34000000000000000')).toEqual('American Express');
-      expect(cardTypes.getCardTypeName('37000000000000000')).toEqual('American Express');
+      expect(cardTypes.getCardTypeName('34000000000000000')).toEqual(
+        'American Express',
+      );
+      expect(cardTypes.getCardTypeName('37000000000000000')).toEqual(
+        'American Express',
+      );
     });
     it('should detect Discover correctly', () => {
       expect(cardTypes.getCardTypeName('65')).toEqual('Discover');
@@ -106,7 +118,9 @@ describe('card types', () => {
       expect(cardTypes.getCardTypeName('303')).toEqual('Diners Club');
       expect(cardTypes.getCardTypeName('304')).toEqual('Diners Club');
       expect(cardTypes.getCardTypeName('305')).toEqual('Diners Club');
-      expect(cardTypes.getCardTypeName('36000000000000')).toEqual('Diners Club');
+      expect(cardTypes.getCardTypeName('36000000000000')).toEqual(
+        'Diners Club',
+      );
     });
     it('should return an empty string for an unknown type', () => {
       expect(cardTypes.getCardTypeName('39')).toEqual('');
@@ -117,7 +131,7 @@ describe('card types', () => {
 
   describe('expectedLength', () => {
     it('should return the expected length for a given type', () => {
-      expect(cardTypes.expectedLength('4111111111111')).toEqual([13,16]);
+      expect(cardTypes.expectedLength('4111111111111')).toEqual([13, 16]);
       expect(cardTypes.expectedLength('51')).toEqual([16]);
       expect(cardTypes.expectedLength('34')).toEqual([15]);
     });

@@ -1,6 +1,6 @@
-import {Observable} from 'rxjs/Observable';
+import { Observable } from 'rxjs/Observable';
 // eslint-disable-next-line no-unused-vars
-import {Observer} from 'rxjs/Observer';
+import { Observer } from 'rxjs/Observer';
 import 'rxjs/add/observable/from';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/observable/throw';
@@ -8,15 +8,15 @@ import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/toPromise';
 
-import {Promise} from 'es6-promise';
-if (!(<any> window).Promise) {
-  (<any> window).Promise = Promise;
+import { Promise } from 'es6-promise';
+if (!(<any>window).Promise) {
+  (<any>window).Promise = Promise;
 }
 import 'whatwg-fetch';
 
-import {JSEncrypt} from 'jsencrypt';
+import { JSEncrypt } from 'jsencrypt';
 
-declare let exports : any;
+declare let exports: any;
 
 /* eslint-disable no-undef */
 export interface TsysData {
@@ -28,34 +28,52 @@ export interface TsysData {
 
 const tsepUri = {
   staging: 'https://stagegw.transnox.com/transit-tsep-web/jsView',
-  production: 'https://gateway.transit-pass.com/transit-tsep-web/jsView'
+  production: 'https://gateway.transit-pass.com/transit-tsep-web/jsView',
 };
 
 let env: string, deviceId: string, manifest: string;
 
-export function init(_env: string, _deviceId: string, _manifest: string){
+export function init(_env: string, _deviceId: string, _manifest: string) {
   env = _env;
   deviceId = _deviceId;
   manifest = _manifest;
 }
 
-function makeRequest(url: RequestInfo, init: RequestInit, bodyFn: Function, action: string){
-  return Observable.from((<any> window).fetch(url, init))
-    .catch((error: Response) => Observable.throw({ message: `Network error while ${action}`, data: error }))
+function makeRequest(
+  url: RequestInfo,
+  init: RequestInit,
+  bodyFn: Function,
+  action: string,
+) {
+  return Observable.from((<any>window).fetch(url, init))
+    .catch((error: Response) =>
+      Observable.throw({
+        message: `Network error while ${action}`,
+        data: error,
+      }),
+    )
     .mergeMap((response: Response) => {
       if (response.ok) {
         return Observable.from(bodyFn(response));
       }
-      return Observable.from(response.text())
-        .mergeMap((body: string) => Observable.throw({ message: `Server error while ${action}`, data: { status: response.status, statusText: response.statusText, body: redactCvv2(body) } }));
+      return Observable.from(response.text()).mergeMap((body: string) =>
+        Observable.throw({
+          message: `Server error while ${action}`,
+          data: {
+            status: response.status,
+            statusText: response.statusText,
+            body: redactCvv2(body),
+          },
+        }),
+      );
     });
 }
 
 // PCI-DSS forbids storing CVV2. Strip it from parsed tokenization responses so it can't leak into consumer code or error trackers.
-function stripCvv2(response: any){
+function stripCvv2(response: any) {
   const sanitized: any = {};
-  for(const key in response){
-    if(key !== 'cvv2'){
+  for (const key in response) {
+    if (key !== 'cvv2') {
       sanitized[key] = response[key];
     }
   }
@@ -63,23 +81,25 @@ function stripCvv2(response: any){
 }
 
 // Redact CVV2 values echoed back in the raw body of an HTTP error response
-function redactCvv2(body: string){
+function redactCvv2(body: string) {
   return body.replace(/"cvv2"\s*:\s*"[^"]*"/g, '"cvv2":"[REDACTED]"');
 }
 
-function fetchTsysData(){
-  const uri: string = env === 'production' ? tsepUri.production : tsepUri.staging;
-  return exports._makeRequest(
-    `${uri}/${deviceId}?${manifest}`,
-    {},
-    (request: Request) => request.text(),
-    'loading TSYS library'
-  )
+function fetchTsysData() {
+  const uri: string =
+    env === 'production' ? tsepUri.production : tsepUri.staging;
+  return exports
+    ._makeRequest(
+      `${uri}/${deviceId}?${manifest}`,
+      {},
+      (request: Request) => request.text(),
+      'loading TSYS library',
+    )
     .mergeMap((response: string) => {
       return new Observable((observer: Observer<any>) => {
         // Watch tsepHandler for errors loading the TSYS library
         const tsepHandler = (eventType: string, event: any) => {
-          if(eventType === 'ErrorEvent'){
+          if (eventType === 'ErrorEvent') {
             observer.error({ message: 'TSYS load error', data: event });
             observer.complete();
           }
@@ -87,7 +107,9 @@ function fetchTsysData(){
 
         try {
           // Execute TSYS code in function. Add return values to get data that is not publicly advertised by TSYS. Call onload to run TSYS error handling if unsuccessful.
-          const tsysData: TsysData = new Function('tsepHandler', `${removeAppendChild(response)}
+          const tsysData: TsysData = new Function(
+            'tsepHandler',
+            `${removeAppendChild(response)}
           try{
             return { url: getUrl(), key: getKey(), keyId: getKeyId() };
           } catch(e){}
@@ -95,13 +117,17 @@ function fetchTsysData(){
             window.onload();
           } catch(e){}
           return null;
-          `)(tsepHandler);
-          if(!tsysData) {
-            observer.error({ message: 'TSYS load error', data: 'TSYS did not provide a getUrl, getKey, and/or getKeyId function' });
-          }else{
+          `,
+          )(tsepHandler);
+          if (!tsysData) {
+            observer.error({
+              message: 'TSYS load error',
+              data: 'TSYS did not provide a getUrl, getKey, and/or getKeyId function',
+            });
+          } else {
             observer.next(tsysData);
           }
-        } catch(e){
+        } catch (e) {
           observer.error({ message: 'Error parsing TSYS code', data: e });
         }
         observer.complete();
@@ -109,19 +135,31 @@ function fetchTsysData(){
     });
 }
 
-function removeAppendChild(code: string){
+function removeAppendChild(code: string) {
   return code.replace(/[^;]*appendChild.*?;/g, ''); // Prevent script imports from being added to the DOM
 }
 
-export function encrypt(cardNumber: string, cvv: string, month: number, year: number): Observable<any> {
-  if(!deviceId){
-    return Observable.throw({ message: 'Device ID not set', data: 'init needs to be called first' });
+export function encrypt(
+  cardNumber: string,
+  cvv: string,
+  month: number,
+  year: number,
+): Observable<any> {
+  if (!deviceId) {
+    return Observable.throw({
+      message: 'Device ID not set',
+      data: 'init needs to be called first',
+    });
   }
-  if(!manifest){
-    return Observable.throw({ message: 'Manifest not set', data: 'init needs to be called first' });
+  if (!manifest) {
+    return Observable.throw({
+      message: 'Manifest not set',
+      data: 'init needs to be called first',
+    });
   }
 
-  return exports._fetchTsysData()
+  return exports
+    ._fetchTsysData()
     .mergeMap((tsysData: TsysData) => {
       let monthString = String(month);
       monthString = monthString.length === 1 ? '0' + monthString : monthString;
@@ -132,7 +170,10 @@ export function encrypt(cardNumber: string, cvv: string, month: number, year: nu
       encryptor.setKey(tsysData.key);
       const encryptedNumber = encryptor.encrypt(cardNumber);
       if (encryptedNumber === false) {
-        return Observable.throw({ message: 'Encryption error', data: 'Could not encrypt the card number with the key provided by TSYS' });
+        return Observable.throw({
+          message: 'Encryption error',
+          data: 'Could not encrypt the card number with the key provided by TSYS',
+        });
       }
 
       // Request format not publicly advertised by TSYS. /generateTsepToken url fragment, method, and request body format extracted from tsep.js.
@@ -146,23 +187,26 @@ export function encrypt(cardNumber: string, cvv: string, month: number, year: nu
             manifest: manifest,
             encCardNumber: encryptedNumber,
             expirationDate: expiryDate,
-            cvv2: cvv
+            cvv2: cvv,
           }),
           headers: new Headers({
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          })
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          }),
         },
         (request: Request) => request.json(),
-        'performing tokenization'
+        'performing tokenization',
       );
     })
     .mergeMap((response: any) => {
       const sanitizedResponse = stripCvv2(response);
-      if(response.status === 'PASS'){
+      if (response.status === 'PASS') {
         return Observable.of(sanitizedResponse);
       }
-      return Observable.throw({ message: 'Tokenization error', data: sanitizedResponse });
+      return Observable.throw({
+        message: 'Tokenization error',
+        data: sanitizedResponse,
+      });
     });
 }
 
@@ -173,5 +217,5 @@ export {
   manifest as _manifest,
   makeRequest as _makeRequest,
   fetchTsysData as _fetchTsysData,
-  removeAppendChild as _removeAppendChild
+  removeAppendChild as _removeAppendChild,
 };
